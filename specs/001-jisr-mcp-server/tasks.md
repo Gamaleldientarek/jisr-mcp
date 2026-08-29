@@ -98,23 +98,23 @@ contract, both adapters, and the tests for the controls built here
 
 - [X] T039 Define the SDK-free tool definition shape and registry in `src/core/tools/registry.ts`, carrying schema, handler, annotations, declared field groups, and required authorization
 - [X] T040 Implement dynamic tool filtering in `src/core/tools/registry.ts` so unauthorized tools are absent from the list, not merely refused (spec FR-018)
-- [ ] T041 Author the server instructions in `src/core/server-instructions.ts` covering all six enumerated subjects (spec FR-005)
-- [ ] T042 Document the tool naming convention and the cross-release name stability and deprecation policy in `docs/tool-naming.md` (spec FR-009)
-- [ ] T043 Implement the v2 adapter in `src/adapters/mcp-v2/`, including `ttlMs` and `cacheScope` set so a filtered tool list can never be served to another principal (research R5)
-- [ ] T044 Implement the v1 adapter in `src/adapters/mcp-v1/`, delivering server instructions via `initialize` (research R3, R4)
-- [ ] T045 Implement the executable entry point in `src/bin/jisr-mcp.ts` with stdio transport and adapter selection
+- [X] T041 Author the server instructions in `src/core/server-instructions.ts` covering all six enumerated subjects (spec FR-005)
+- [X] T042 Document the tool naming convention and the cross-release name stability and deprecation policy in `docs/tool-naming.md` (spec FR-009)
+- [X] T043 Implement the v2 adapter in `src/adapters/mcp-v2/`, including `ttlMs` and `cacheScope` set so a filtered tool list can never be served to another principal (research R5)
+- [X] T044 Implement the v1 adapter in `src/adapters/mcp-v1/`, delivering server instructions via `initialize` (research R3, R4)
+- [X] T045 Implement the executable entry point in `src/bin/jisr-mcp.ts` with stdio transport and adapter selection
 
 ### Foundational tests
 
 - [ ] T046 [P] Create fixtures in `tests/fixtures/jisr/` derived from the snapshot's own examples, containing no real employee or payroll data (spec FR-042)
 - [ ] T047 [P] Test the coverage gate in `tests/contract/endpoint-coverage.test.ts`, asserting it fails on an injected divergence and that no write client method or write code path exists (spec FR-010, FR-012)
-- [ ] T048 [P] Test that no registered tool accepts a caller-supplied path, URL, or HTTP method in `tests/security/no-generic-tool.test.ts` (spec FR-008)
-- [ ] T049 [P] Test that no `@modelcontextprotocol/*` import exists under `src/core/` in `tests/unit/core-boundary.test.ts`
+- [X] T048 [P] Test that no registered tool accepts a caller-supplied path, URL, or HTTP method in `tests/security/no-generic-tool.test.ts` (spec FR-008)
+- [X] T049 [P] Test that no `@modelcontextprotocol/*` import exists under `src/core/` in `tests/unit/core-boundary.test.ts`
 - [ ] T050 [P] Test authentication behaviour in `tests/integration/authentication.test.ts`: invalid slug, key, and secret; expired token; exactly one retry; no refresh loop
 - [ ] T051 [P] Test cursor binding and expiry in `tests/security/cursor.test.ts` covering tampering, expiry, and operation mismatch
 - [ ] T052 Implement the repository-wide secret-absence assertion in `tests/security/no-secrets.test.ts`, scanning all test output, logs, and artifacts (spec SC-003)
 - [ ] T053 [P] Test that a cached tool list cannot cross principals in `tests/security/tool-list-cache.test.ts`, using two differently-authorized principals (quickstart V9, research R5)
-- [ ] T054 [P] Test adapter parity in `tests/contract/adapter-parity.test.ts`, asserting identical inputs, outputs, envelopes, error codes, and annotations through v1 and v2 (spec FR-002a, SC-014)
+- [X] T054 [P] Test adapter parity in `tests/contract/adapter-parity.test.ts`, asserting identical inputs, outputs, envelopes, error codes, and annotations through v1 and v2 (spec FR-002a, SC-014)
 
 **Checkpoint**: Core, adapters, and the controls built here are implemented **and tested**
 

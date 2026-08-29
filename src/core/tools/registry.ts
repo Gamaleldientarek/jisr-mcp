@@ -7,7 +7,7 @@
  * later, a hosted deployment (research R3, spec FR-002).
  */
 
-import type { z } from 'zod';
+import { z } from 'zod';
 import type { Classification } from '../authorization/field-policy.js';
 import { isToolDiscoverable, type AuthorizationContext } from '../authorization/policies.js';
 import type { ResultEnvelope } from '../envelope.js';
@@ -46,7 +46,14 @@ export interface ToolDefinition<Input = unknown> {
   readonly name: string;
   readonly title: string;
   readonly description: string;
-  readonly inputSchema: z.ZodType<Input>;
+  /**
+   * The tool's input as a Zod shape.
+   *
+   * A shape rather than a built schema because both MCP SDK lines accept
+   * `Record<string, ZodType>` directly for `registerTool`, so neither adapter
+   * has to unwrap anything -- and zod is not an SDK, so the core boundary holds.
+   */
+  readonly inputShape: Record<string, z.ZodType>;
   readonly annotations: ToolAnnotations;
   /**
    * The classified field groups this tool's responses may contain, and why
@@ -60,6 +67,11 @@ export interface ToolDefinition<Input = unknown> {
   readonly declaredFieldGroups: readonly Classification[];
   readonly fieldGroupPurpose: string;
   readonly handler: (input: Input, context: AuthorizationContext) => Promise<ToolResult>;
+}
+
+/** The built schema, for validating input inside the core. */
+export function inputSchemaOf<Input>(definition: ToolDefinition<Input>): z.ZodType<Input> {
+  return z.object(definition.inputShape) as unknown as z.ZodType<Input>;
 }
 
 export class ToolRegistry {
@@ -76,7 +88,7 @@ export class ToolRegistry {
         `Tool "${definition.name}" is not read-only. This release exposes no write surface.`,
       );
     }
-    this.#tools.set(definition.name, definition as unknown as ToolDefinition<never>);
+    this.#tools.set(definition.name, definition);
   }
 
   get(name: string): ToolDefinition<never> | undefined {

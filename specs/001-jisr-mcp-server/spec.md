@@ -125,6 +125,7 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 
 - **FR-017**: Every request MUST be authorized against two independent gates: the caller's role and granted scopes, and the connected Jisr key's permissions. Neither MUST be inferred from the other.
 - **FR-018**: The listed tool surface MUST be filtered to what the caller is authorized to use, such that unauthorized capabilities are undiscoverable rather than merely refused on call.
+- **FR-018a**: Every tool returning a collection MUST scope its result set to the records the caller's role profile can reach, and MUST apply that scope before pagination. A caller MUST NOT be able to observe the existence of a record outside their reachable set by any means, including total counts, page counts, or other pagination metadata. Reachable sets are: `employee_self` — its own records only; `manager` — its own records plus those of its direct reports per FR-019a; `hr_operations`, `finance`, `auditor`, and `integration_admin` — the organization, subject to each profile's domain authorization; `platform_operator` — none.
 - **FR-019**: The server MUST define these distinct role profiles: employee self-service reader, manager reader, HR operations, payroll and finance, integration administrator, auditor, and platform operator. In this release the operator selects the active profile by configuration; the profile definitions MUST be the same ones a future identity provider would map onto.
 - **FR-019a**: The manager profile reaches an employee if and only if that employee's `line_manager` resolves to the caller — direct reports only. The server MUST NOT derive, infer, or traverse an indirect reporting tree.
 - **FR-020**: Financial authorization MUST be separate from general HR authorization; holding one MUST NOT confer the other.
@@ -200,12 +201,11 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 - **SC-007**: 100% of read results state their source and the time the data reflects, and 0 results present stored data as live.
 - **SC-008**: A complete authorized employee collection can be traversed to its end without any single response exceeding the published per-call limit, and 0 traversals require the caller to construct an upstream address.
 - **SC-009**: 100% of injected unknown upstream fields are detected and withheld rather than passed through to a caller.
-- **SC-010**: An HR operations user answers questions spanning at least 4 distinct Jisr domains within one uninterrupted assistant session, with 0 switches to the Jisr web application.
+- **SC-010**: An HR operations user answers questions spanning at least 4 distinct Jisr domains within one uninterrupted assistant session, with 0 switches to the Jisr web application, verified as a scripted end-to-end scenario.
 - **SC-011**: Every tool call in a replayed session has a corresponding audit record, with 0 records containing sensitive payloads.
 - **SC-012**: 100% of the project's own Definition of Done items are satisfied before the first public release is tagged.
 - **SC-013**: Financial tools are absent from the listed surface in 100% of deployments that have not explicitly enabled them, including deployments whose Jisr key permits financial access.
 - **SC-014**: For identical inputs and authorization, every tool produces identical structured output, error codes, and annotations through every shipped protocol adapter, with 0 divergences.
-- **SC-015**: An operator can answer questions spanning at least 4 distinct Jisr domains in one assistant session with 0 switches to the Jisr web application, verified as a scripted end-to-end scenario.
 
 ## Out of Scope (Deferred)
 

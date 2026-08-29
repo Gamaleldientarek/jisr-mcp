@@ -53,27 +53,27 @@ contract, both adapters, and the tests for the controls built here
 
 ### Configuration
 
-- [ ] T011 Implement validated configuration loading in `src/config/environment.ts`, failing with a message naming the specific invalid setting and never echoing a credential (spec FR-006)
-- [ ] T012 [P] Implement feature flags in `src/config/feature-flags.ts`, including the explicit finance-surface opt-in (spec FR-023a)
+- [X] T011 Implement validated configuration loading in `src/config/environment.ts`, failing with a message naming the specific invalid setting and never echoing a credential (spec FR-006)
+- [X] T012 [P] Implement feature flags in `src/config/feature-flags.ts`, including the explicit finance-surface opt-in (spec FR-023a)
 
 ### Jisr integration core
 
-- [ ] T013 Generate the endpoint manifest in `src/core/jisr/endpoint-manifest.ts` from the committed snapshot, covering all 29 operations with release bindings and canonical role profiles per `contracts/endpoint-manifest.md`
-- [ ] T014 Implement the coverage gate in `scripts/verify-endpoint-coverage.ts`, asserting all six gate conditions and failing the build on divergence (spec FR-010)
+- [X] T013 Generate the endpoint manifest in `src/core/jisr/endpoint-manifest.ts` from the committed snapshot, covering all 29 operations with release bindings and canonical role profiles per `contracts/endpoint-manifest.md`
+- [X] T014 Implement the coverage gate in `scripts/verify-endpoint-coverage.ts`, asserting all six gate conditions and failing the build on divergence (spec FR-010)
 - [ ] T015 [P] Define Zod schemas for employees and attendance in `src/core/jisr/schemas/employees.ts` and `src/core/jisr/schemas/attendance.ts`, from the snapshot
 - [ ] T016 [P] Define Zod schemas for leave, accruals, finance, lookups, webhooks, and audit in `src/core/jisr/schemas/`, from the snapshot
-- [ ] T017 Implement approved-host validation in `src/core/jisr/client.ts` accepting only the two documented base URLs (spec FR-006)
-- [ ] T018 Implement the typed request helper in `src/core/jisr/client.ts` with timeouts, bounded retries, and required headers
-- [ ] T019 Implement authentication in `src/core/jisr/authentication.ts` with a token cache keyed by organization and credential identity, never by connection, and at most one re-authentication per rejection with no refresh loop (research R4, R7)
-- [ ] T020 [P] Implement bracket-syntax filter encoding in `src/core/jisr/query-encoding.ts` so no caller ever constructs `filter[...]` or `date[from]` strings (research R7)
-- [ ] T021 [P] Implement page/rpp translation in `src/core/jisr/pagination.ts`, enforcing the documented maximum of 100
-- [ ] T022 Implement upstream failure mapping to stable codes in `src/core/jisr/errors.ts` per `contracts/result-envelope-and-errors.md`
+- [X] T017 Implement approved-host validation in `src/core/jisr/client.ts` accepting only the two documented base URLs (spec FR-006)
+- [X] T018 Implement the typed request helper in `src/core/jisr/client.ts` with timeouts, bounded retries, and required headers
+- [X] T019 Implement authentication in `src/core/jisr/authentication.ts` with a token cache keyed by organization and credential identity, never by connection, and at most one re-authentication per rejection with no refresh loop (research R4, R7)
+- [X] T020 [P] Implement bracket-syntax filter encoding in `src/core/jisr/query-encoding.ts` so no caller ever constructs `filter[...]` or `date[from]` strings (research R7)
+- [X] T021 [P] Implement page/rpp translation in `src/core/jisr/pagination.ts`, enforcing the documented maximum of 100
+- [X] T022 Implement upstream failure mapping to stable codes in `src/core/jisr/errors.ts` per `contracts/result-envelope-and-errors.md`
 
 ### Result contract
 
 - [ ] T023 [P] Implement the result envelope in `src/core/envelope.ts` with source, freshness, partial, and pagination fields (spec FR-030, FR-031)
 - [ ] T024 [P] Implement opaque cursors in `src/core/cursor.ts`, binding organization, operation, page, and filter hash with an expiry, refusing any mismatch (spec FR-033)
-- [ ] T025 [P] Implement the stable error model in `src/core/errors.ts` with retryability and suggested action, exposing no upstream body (spec FR-035)
+- [X] T025 [P] Implement the stable error model in `src/core/errors.ts` with retryability and suggested action, exposing no upstream body (spec FR-035)
 - [ ] T026 [P] Implement the human-readable result summary generator in `src/core/summary.ts`, producing the short prose that accompanies every structured result (spec FR-032)
 
 ### Authorization and data protection

@@ -61,28 +61,11 @@ A payroll specialist needs salary, monthly payables, and payroll transaction dat
 
 ---
 
-### User Story 4 - One hosted server, many organizations (Priority: P4)
-
-A platform operator runs the server as a hosted service for several organizations. Each organization's users authenticate through the operator's identity provider, see only their own organization's data, and receive only the tools their role and their organization's Jisr key permit. The operator can run and maintain the platform without thereby gaining access to any organization's HR or financial data.
-
-**Why this priority**: This unlocks the commercial and multi-client deployment shape, but it is not required for the open-source product to be useful, and it carries the largest amount of additional machinery. It is deliberately later so the read surface and its guardrails are proven before tenancy is added.
-
-**Independent Test**: Provision two organizations with different Jisr keys and overlapping identifier values, then verify through the full cross-tenant test suite that no identity, identifier, or pagination cursor from one organization can reach the other.
-
-**Acceptance Scenarios**:
-
-1. **Given** two connected organizations, **When** a user of one supplies an identifier or cursor belonging to the other, **Then** the request is refused as a mismatch and the refusal reveals nothing about the other organization.
-2. **Given** a user whose access token is missing, expired, wrongly issued, or wrongly addressed, **When** they connect, **Then** access is refused before any tool is listed.
-3. **Given** a platform operator with infrastructure access but no organization membership, **When** they connect as themselves, **Then** they receive no organization HR or financial data.
-4. **Given** the same tool invoked in hosted and self-hosted deployments by equivalently authorized users, **When** results are compared, **Then** the tool's inputs, outputs, envelope, and safety annotations are identical.
-
----
-
-### User Story 5 - Prove what happened and notice when Jisr changes (Priority: P5)
+### User Story 4 - Prove what happened and notice when Jisr changes (Priority: P4)
 
 An auditor needs to review who accessed what. An operator needs to know when Jisr's API has changed underneath the server before that change reaches users as a wrong or unsafe answer.
 
-**Why this priority**: These are the properties that keep the system trustworthy over time rather than on launch day. They are last because they are only meaningful once there is a surface to audit and a schema to drift from, but they must exist before any production use.
+**Why this priority**: These are the properties that keep the system trustworthy over time rather than on launch day. They are last because they are only meaningful once there is a surface to audit and a schema to drift from, but they must exist before any public release.
 
 **Independent Test**: Replay a session of tool calls and verify a complete audit trail exists with no sensitive payloads; separately, inject an unknown field into a simulated upstream response and verify it is detected, recorded, and withheld rather than passed through.
 
@@ -115,7 +98,7 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 #### Adoption and client compatibility
 
 - **FR-001**: The server MUST be runnable by an adopter in a local, single-organization deployment using a single documented command, with no build step and no database requirement.
-- **FR-002**: The server MUST support both a local deployment and a hosted multi-organization deployment from one shared core, such that a given tool's inputs, outputs, result envelope, error codes, and safety annotations are identical in both. [NEEDS CLARIFICATION: Is the hosted multi-organization deployment in scope for this release, or is this release the self-hosted server only with hosting deferred?]
+- **FR-002**: This release MUST deliver the self-hosted single-organization deployment only. The server MUST nonetheless obtain caller authorization, organization context, and credentials through a deployment boundary rather than assuming a single organization, so that a hosted multi-organization deployment can be added later without altering any tool contract, result envelope, error code, or safety annotation.
 - **FR-003**: The server MUST work with any specification-compliant MCP client without client-specific code paths, and MUST be verified against at least Claude Code, Claude Desktop, Cursor, a ChatGPT/Codex-family client, and the official MCP Inspector.
 - **FR-004**: The project MUST publish a copy-pasteable configuration block for each verified client, and a documented invocation for use from a terminal or script.
 - **FR-005**: The server MUST provide instructions at connection time sufficient for an agent to understand the domain, the identifier conventions, the sensitivity boundaries, and the freshness semantics without reading external documentation.
@@ -141,11 +124,13 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 
 - **FR-017**: Every request MUST be authorized against two independent gates: the caller's role and granted scopes, and the connected Jisr key's permissions. Neither MUST be inferred from the other.
 - **FR-018**: The listed tool surface MUST be filtered to what the caller is authorized to use, such that unauthorized capabilities are undiscoverable rather than merely refused on call.
-- **FR-019**: The server MUST support these distinct roles: employee self-service reader, manager reader, HR operations, payroll and finance, integration administrator, auditor, and platform operator.
+- **FR-019**: The server MUST define these distinct role profiles: employee self-service reader, manager reader, HR operations, payroll and finance, integration administrator, auditor, and platform operator. In this release the operator selects the active profile by configuration; the profile definitions MUST be the same ones a future identity provider would map onto.
 - **FR-020**: Financial authorization MUST be separate from general HR authorization; holding one MUST NOT confer the other.
 - **FR-021**: Integration administration MUST NOT confer access to employee financial data, and infrastructure or platform access MUST NOT confer access to any organization's HR or financial data.
-- **FR-022**: Every request that resolves records MUST be bound to a single organization context, and any identifier or cursor from another organization MUST be refused.
-- **FR-023**: In a local single-organization deployment, the boundary of what the server can reach MUST be the connected Jisr key's own permissions, and the operator MUST be able to further narrow the exposed surface by configuration. [NEEDS CLARIFICATION: In local deployment, should financial and sensitive-identity tools be exposed whenever the Jisr key permits them, or require an additional explicit opt-in by the operator?]
+- **FR-022**: Every request, stored record, and data-access operation MUST carry explicit organization context even though this release serves one organization, and any identifier or cursor bearing a different organization context MUST be refused. Organization context MUST NOT be ambient or implicit.
+- **FR-023**: The connected Jisr key's permissions MUST be the outer boundary of what the server can reach, and the operator MUST be able to narrow the exposed surface further by configuration.
+- **FR-023a**: Financial and sensitive-identity tools MUST remain hidden unless the operator enables them by an explicit, separate configuration setting, even when the connected Jisr key permits them. Permission from the key alone MUST NOT be sufficient to expose them.
+- **FR-023b**: The documentation MUST recommend configuring a separate, finance-scoped Jisr credential when the finance surface is enabled, and the server MUST support a distinct credential for it.
 
 #### Data protection
 
@@ -182,7 +167,7 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 - **FR-042**: No real credential, employee, or payroll data may exist anywhere in the repository or its test fixtures, and an automated secret scan MUST run on every change.
 - **FR-043**: The full automated test suite MUST run on every proposed change before merge.
 - **FR-044**: Releases MUST be versioned, and the supported MCP protocol version and supported Jisr specification snapshot MUST be documented per release.
-- **FR-045**: The synchronized local store and webhook-driven refresh MUST be optional and disabled by default; the server MUST be fully functional against live Jisr data alone. [NEEDS CLARIFICATION: Is the synchronized store in scope for this release at all, or is this release live-only with synchronization deferred to a later one?]
+- **FR-045**: This release MUST operate against live Jisr data only, requiring no database, queue, or background worker to run. The result envelope MUST nonetheless carry the source and freshness fields defined in FR-030 from the outset, so that a later synchronized store becomes an additive change rather than a breaking one.
 
 ### Key Entities
 
@@ -201,10 +186,10 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 
 ### Measurable Outcomes
 
-- **SC-001**: A person who has never seen the project reaches their first successful authorized Jisr answer in under 10 minutes, using only the published README and without reading source code.
+- **SC-001**: A person who has never seen the project reaches their first successful authorized Jisr answer in under 10 minutes, using only the published README, without reading source code, and without installing a database or any other service.
 - **SC-002**: 100% of documented Jisr read operations are reachable through a purpose-built tool, and 0% of undocumented operations are reachable, proven by an automated gate that fails the build on divergence.
 - **SC-003**: Across the entire automated test suite, credential, secret, and token values appear 0 times in any result, summary, error, log, trace, or stored artifact.
-- **SC-004**: Every cell of the role-by-tool authorization matrix resolves to its expected allow or deny, with 0 cells where an unauthorized capability is discoverable.
+- **SC-004**: Every cell of the role-profile-by-tool authorization matrix resolves to its expected allow or deny, with 0 cells where an unauthorized capability is discoverable.
 - **SC-005**: In 100% of cases where a capability is unavailable, an agent can determine the reason and the corrective action from the server's own response, without human investigation.
 - **SC-006**: The server is verified working against at least 5 independent MCP clients with 0 client-specific code paths.
 - **SC-007**: 100% of read results state their source and the time the data reflects, and 0 results present stored data as live.
@@ -213,15 +198,33 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 - **SC-010**: An HR operations user answers questions spanning at least 4 distinct Jisr domains within one uninterrupted assistant session, with 0 switches to the Jisr web application.
 - **SC-011**: Every tool call in a replayed session has a corresponding audit record, with 0 records containing sensitive payloads.
 - **SC-012**: 100% of the project's own Definition of Done items are satisfied before the first public release is tagged.
+- **SC-013**: Financial tools are absent from the listed surface in 100% of deployments that have not explicitly enabled them, including deployments whose Jisr key permits financial access.
+
+## Out of Scope (Deferred)
+
+These are deliberately excluded from this release. Each is deferred rather than rejected,
+and the design must not preclude any of them.
+
+- **Hosted multi-organization deployment.** Identity-provider authentication, per-tenant
+  credential management, and the cross-tenant test matrix belong to a later feature. The
+  deployment boundary required by FR-002 is what keeps that feature additive.
+- **Write, create, update, delete, and test operations.** The write surface is absent from
+  this release, not present and disabled (FR-012).
+- **Synchronized local store and webhook ingestion.** Deferred with the envelope fields
+  already in place so it arrives without a breaking change (FR-045).
+- **Derived analytics and KPI tooling.** Sits above this data layer and must not influence
+  the tool structure or authorization model defined here.
+- **Asynchronous bulk export.** Bounded pagination only; complete exports require their own
+  security, retention, and delivery review.
 
 ## Assumptions
 
 - **Access exists.** The target organization's Jisr subscription has Open API access enabled and an administrator can issue API credentials with the required permissions. Without this the product cannot function and cannot be tested.
 - **Specification-driven, not documentation-driven.** The live Jisr OpenAPI specification is authoritative; the endpoint inventory in the baseline plan is a starting point to be verified, not a source of truth.
 - **Unanswered upstream questions are dependencies, not blockers to specify.** Rate limits, token lifetime, webhook guarantees, complete schemas for several domains, and the external-aggregator onboarding process are currently unknown and recorded as open questions. Where a behavior is unknown, the server presents a safe bounded abstraction rather than an assumed one.
-- **Live-first architecture.** Correct behavior is defined against live upstream data. Any local storage is an optimization that must announce itself through the result envelope, never a silent substitute.
+- **Live-only in this release.** Correct behavior is defined against live upstream data, and this release stores no Jisr records. A later synchronized store would be an optimization that must announce itself through the result envelope, never a silent substitute.
 - **Separate credentials per permission set.** Organizations are expected to be able to issue distinct Jisr keys for HR read and finance read; the product does not require this but is designed to benefit from it.
-- **Roles come from the deployment's identity provider** in a hosted deployment, and from operator configuration in a local deployment. The product does not implement its own user directory.
+- **Roles come from operator configuration** in this release, and would come from an identity provider in a future hosted deployment. The product does not implement its own user directory in either case.
 - **Bilingual data is normal.** Employee and lookup records may contain Arabic text; correct handling of Arabic names and localized lookup values is a functional expectation, not an enhancement.
 - **Permissive open-source license.** A permissive license is assumed for public release, allowing commercial use by adopters. The specific license is a publication-time decision, not a design constraint.
 - **Legal review is a release gate, not a design input.** Saudi PDPL obligations are designed for; qualified legal review is required before production use and is tracked as an external dependency.
@@ -231,5 +234,5 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 
 - A Jisr organization with Open API access, and preferably a test or sandbox organization, for development and verification.
 - Answers from Jisr to the recorded open questions, particularly rate limits, token lifetime, and the complete schemas for accrual transactions, monthly payables, and payroll transactions.
-- An identity provider, for the hosted deployment only.
 - Qualified legal review of the privacy, retention, and data-transfer position before production use.
+- A published license decision before the repository is made public.

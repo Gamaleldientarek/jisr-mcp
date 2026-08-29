@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,21 +31,22 @@
 
 ## Notes
 
-**Iteration 1 (2026-08-29) — one item failing.**
+**Iteration 1 (2026-08-29) — one item failing.** Three `[NEEDS CLARIFICATION]` markers
+remained at FR-002, FR-023, and FR-045. Each was retained rather than defaulted because it
+materially changed scope or security posture and had no defensible default.
 
-Three `[NEEDS CLARIFICATION]` markers remain, at FR-002, FR-023, and FR-045. Each was
-retained rather than defaulted because it materially changes scope or the security
-posture, and no defensible default exists:
+**Iteration 2 (2026-08-29) — all items passing.** All three resolved by the project owner:
 
-| Marker | Requirement | Why it cannot be defaulted |
+| Question | Decision | Effect on the spec |
 |---|---|---|
-| Hosted deployment scope | FR-002 | Determines whether identity-provider integration, multi-tenancy, and per-tenant secret management are in this release or a later one. Roughly doubles the surface. |
-| Sensitive-tool gating in local mode | FR-023 | Determines whether an operator self-hosting with a broadly-permissioned Jisr key exposes salary data to their assistant by default. Security-significant either way. |
-| Synchronized store scope | FR-045 | Determines whether the server requires a database and background workers, which directly contradicts the zero-dependency adoption goal in FR-001 if answered "in scope". |
+| Hosted multi-organization deployment in scope? | Self-hosted only this release, tenancy seams designed in | FR-002 rewritten as a deployment-boundary requirement; the hosted user story removed and moved to Out of Scope; FR-019 reframed as configurable role profiles; FR-022 requires explicit organization context even with one organization; remaining stories renumbered P1–P4 |
+| How are finance and sensitive tools gated when self-hosted? | Explicit operator opt-in | FR-023 split into FR-023 / FR-023a / FR-023b; SC-013 added to make the default-hidden behaviour measurable; separate finance credential documented as recommended practice |
+| Synchronized store in scope? | Live-only this release | FR-045 rewritten as a no-database requirement; envelope source and freshness fields retained so synchronization stays additive; SC-001 strengthened to forbid installing any supporting service |
 
-Content-quality note: references to MCP, MCP clients, and the MCP Inspector are treated
-as domain vocabulary rather than implementation detail — the protocol is the product,
-not a technology choice made during implementation. Transport names, runtime, language,
-and storage technology are deliberately excluded and belong in `plan.md`.
+Content-quality note: references to MCP, MCP clients, and the MCP Inspector are treated as
+domain vocabulary rather than implementation detail — the protocol is the product, not a
+technology choice made during implementation. Transport names, runtime, language, and
+storage technology are deliberately excluded and belong in `plan.md`.
 
-Resolve the three markers before `/speckit-plan`.
+**Status: ready for `/speckit-plan`.** `/speckit-clarify` is not required — the three
+questions it would have surfaced are already resolved above.

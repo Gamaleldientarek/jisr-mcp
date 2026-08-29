@@ -1936,6 +1936,11 @@ Record verified answers here. Do not invent them.
 | 2026-08-29 | Separate HR, finance, integration-admin, and audit permissions | Jisr domains have materially different sensitivity | Dynamic tools and scopes are required |
 | 2026-08-29 | Use tool-specific wrappers instead of arbitrary HTTP access | Prevents permission bypass, SSRF, and undocumented endpoint usage | More schemas and coverage tests are required |
 | 2026-08-29 | Treat KPI as an optional extension | KPI is only one consumer of Jisr data | Full source tools remain independent |
+| 2026-08-29 | Adopt a project constitution as governing document | Security, privacy, and tenancy rules need a single authority that outranks the plan | `.specify/memory/constitution.md` v1.0.0; conflicts resolve by amendment, never by exception in code |
+| 2026-08-29 | Ship the self-hosted single-organization server first; defer hosted multi-tenant | Open-source adoption is the near-term goal, and the read guardrails should be proven before tenancy multiplies them | Release 1 has no identity provider, no per-tenant secret store; a deployment boundary supplies authorization, organization context, and credentials so hosted mode is additive |
+| 2026-08-29 | Hide finance and sensitive-identity tools behind explicit operator opt-in | A convenience Jisr key with broad permissions would otherwise expose salary data to any connected agent by default | Jisr key permission alone is insufficient to expose the finance surface; a separate finance-scoped credential is documented as recommended practice |
+| 2026-08-29 | Release 1 is live-only; no database, queue, or worker | A self-hosted server requiring Postgres and Redis contradicts the ten-minute adoption goal | Synchronization deferred; result envelope carries source and freshness fields from the outset so a later store is not a breaking change |
+| 2026-08-29 | Verify against at least five independent MCP clients with no client-specific code | The product is only useful if it works wherever the user already is | Claude Code, Claude Desktop, Cursor, a ChatGPT/Codex-family client, and MCP Inspector become release gates |
 
 ---
 

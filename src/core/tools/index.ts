@@ -14,6 +14,7 @@ import { connectionStatusTool } from './discovery/connection-status.js';
 import { createDataCatalogTool } from './discovery/data-catalog.js';
 import { employeeBasicInfoTool } from './employees/basic-info-get.js';
 import { employeesListTool } from './employees/employees-list.js';
+import { financeTools } from './finance/index.js';
 import { leaveSummaryTool } from './leave/summary-get.js';
 import { lookupTools } from './lookups/index.js';
 import type { ToolRegistry } from './registry.js';
@@ -32,6 +33,8 @@ export function registerReadTools(registry: ToolRegistry): void {
   registry.register(accrualTransactionsTool);
 
   for (const tool of lookupTools()) registry.register(tool);
+
+  for (const tool of financeTools()) registry.register(tool);
 
   registry.register(webhooksListTool);
   registry.register(auditEventsTool);

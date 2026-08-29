@@ -58,8 +58,21 @@ otherwise AWS. Any other host is rejected at startup.
 `auditor`, `platform_operator`. The profile decides which tools you see and which records they
 return.
 
+### Enabling the finance surface
+
+The six financial tools — employee financial information, monthly payables, payroll transactions,
+GL transaction types, paygroups and accounting journals — require **two independent conditions**:
+
+1. `JISR_ROLE_PROFILE=finance`, **and**
+2. `JISR_FINANCE_SURFACE=enabled`
+
+Either alone is insufficient, and that is deliberate. If key permission alone were enough, the
+first operator to create one convenient broad key would expose payroll to every agent connected to
+it. With the surface disabled the tools do not appear in the tool list at all — a non-finance
+caller cannot discover that payroll tooling exists.
+
 <details>
-<summary><strong>Enabling the finance surface</strong></summary>
+<summary><strong>Configuration</strong></summary>
 
 ```bash
 JISR_FINANCE_SURFACE=enabled

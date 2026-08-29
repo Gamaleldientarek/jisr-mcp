@@ -76,3 +76,50 @@ export const paygroupSchema = z.object({
 });
 
 export const paygroupsSchema = collection('paygroups', paygroupSchema);
+
+/**
+ * Accounting journal (GET /accounting/journals/{id}).
+ *
+ * The snapshot declares this response only as `type: object`, but documents a
+ * complete EXAMPLE. The shape below is taken from that example -- documentation,
+ * not inference. Anything outside it is drift and is withheld.
+ *
+ * Note `journal_lines[].employee_name` and `employee_id`: employee personal data
+ * inside a financial document, classified accordingly.
+ */
+export const journalLineSchema = z.object({
+  account_id: z.string().nullable().optional(),
+  account_name: z.string().nullable().optional(),
+  transaction_name: z.string().nullable().optional(),
+  cost_center_items: z.array(z.unknown()).optional(),
+  employee_name: z.string().nullable().optional(),
+  employee_id: z.union([z.string(), z.number()]).nullable().optional(),
+  credit_amount: money,
+  debit_amount: money,
+  narrative: z.string().nullable().optional(),
+});
+
+export const journalSchema = z.object({
+  id: z.string().nullable().optional(),
+  journal_type: z.string().nullable().optional(),
+  pay_period_start: z.string().nullable().optional(),
+  pay_period_end: z.string().nullable().optional(),
+  subsidiary: z.string().nullable().optional(),
+  total_credit: money,
+  total_debit: money,
+  journal_lines: z.array(journalLineSchema).optional(),
+  pagination: paginationSchema.optional(),
+});
+
+export const accountingJournalSchema = z.object({
+  journal_export_request: z.object({
+    id: z.string().nullable().optional(),
+    source: z.string().nullable().optional(),
+    status: z.string().nullable().optional(),
+    created_at: z.string().nullable().optional(),
+    updated_at: z.string().nullable().optional(),
+    query_params: z.unknown().optional(),
+    journal_preparation_errors: z.unknown().nullable().optional(),
+    journals: z.array(journalSchema).optional(),
+  }),
+});

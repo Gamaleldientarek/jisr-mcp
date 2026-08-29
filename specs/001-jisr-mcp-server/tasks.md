@@ -198,22 +198,22 @@ expected, with denied capabilities absent from the tool list rather than refused
 ### Tests for User Story 3
 
 - [X] T085 [US3] Implement the salary-leak test in `tests/field-policy/employee-list-financial-leak.test.ts`: finance-permissioned key, non-finance caller, finance surface disabled — assert zero salary fields reach the caller (quickstart V4, research R2)
-- [ ] T086 [P] [US3] Implement the role-profile-by-tool authorization matrix in `tests/authorization/role-matrix.test.ts` covering all seven canonical profiles against all 23 tools (spec SC-004)
-- [ ] T087 [P] [US3] Test that denied capabilities are absent from the tool list in `tests/authorization/tool-list-filtering.test.ts` (spec FR-018)
+- [X] T086 [P] [US3] Implement the role-profile-by-tool authorization matrix in `tests/authorization/role-matrix.test.ts` covering all seven canonical profiles against all 23 tools (spec SC-004)
+- [X] T087 [P] [US3] Test that denied capabilities are absent from the tool list in `tests/authorization/tool-list-filtering.test.ts` (spec FR-018)
 - [X] T088 [P] [US3] Test collection scoping in `tests/authorization/collection-scoping.test.ts`: a manager listing employees sees only direct reports, employee-self sees only itself, and no total or page count discloses records outside the reachable set (spec FR-018a)
-- [ ] T089 [P] [US3] Test enumeration resistance in `tests/security/enumeration.test.ts`, asserting refusals do not reveal whether a record exists
-- [ ] T090 [P] [US3] Test the financial-info field allowlist in `tests/field-policy/financial-info.test.ts`, asserting only approved schema fields are returned
+- [X] T089 [P] [US3] Test enumeration resistance in `tests/security/enumeration.test.ts`, asserting refusals do not reveal whether a record exists
+- [X] T090 [P] [US3] Test the financial-info field allowlist in `tests/field-policy/financial-info.test.ts`, asserting only approved schema fields are returned
 
 ### Implementation for User Story 3
 
-- [ ] T091 [US3] Implement the finance surface opt-in and optional separate finance credential in `src/config/environment.ts` and `src/config/feature-flags.ts` (spec FR-023a, FR-023b)
-- [ ] T092 [US3] Implement the finance service in `src/core/services/finance-service.ts` with stricter interfaces than the HR services
-- [ ] T093 [US3] Implement `jisr_employee_financial_info_get` in `src/core/tools/finance/financial-info-get.ts` with no caching, no body logging, and a strong audit event
-- [ ] T094 [P] [US3] Implement `jisr_employee_monthly_payables_list` in `src/core/tools/finance/monthly-payables-list.ts`
-- [ ] T095 [P] [US3] Implement `jisr_payroll_transactions_list` in `src/core/tools/finance/payroll-transactions-list.ts`, preserving transaction identifiers
-- [ ] T096 [P] [US3] Implement `jisr_gl_transaction_types_list` and `jisr_paygroups_list` in `src/core/tools/finance/`
-- [ ] T097 [P] [US3] Implement `jisr_accounting_journal_get` in `src/core/tools/accounting/journal-get.ts` with a validated journal identifier
-- [ ] T098 [US3] Document the finance opt-in and separate-credential posture in `README.md`
+- [X] T091 [US3] Implement the finance surface opt-in and optional separate finance credential in `src/config/environment.ts` and `src/config/feature-flags.ts` (spec FR-023a, FR-023b)
+- [X] T092 [US3] Implement the finance service in `src/core/services/finance-service.ts` with stricter interfaces than the HR services
+- [X] T093 [US3] Implement `jisr_employee_financial_info_get` in `src/core/tools/finance/financial-info-get.ts` with no caching, no body logging, and a strong audit event
+- [X] T094 [P] [US3] Implement `jisr_employee_monthly_payables_list` in `src/core/tools/finance/monthly-payables-list.ts`
+- [X] T095 [P] [US3] Implement `jisr_payroll_transactions_list` in `src/core/tools/finance/payroll-transactions-list.ts`, preserving transaction identifiers
+- [X] T096 [P] [US3] Implement `jisr_gl_transaction_types_list` and `jisr_paygroups_list` in `src/core/tools/finance/`
+- [X] T097 [P] [US3] Implement `jisr_accounting_journal_get` in `src/core/tools/accounting/journal-get.ts` with a validated journal identifier
+- [X] T098 [US3] Document the finance opt-in and separate-credential posture in `README.md`
 
 **Checkpoint**: All 23 tools implemented; finance provably separated
 

@@ -166,22 +166,22 @@ confirm via the coverage gate that none is unreachable and no undocumented opera
 
 ### Tests for User Story 2
 
-- [ ] T072 [P] [US2] Test pagination to exhaustion in `tests/integration/pagination.test.ts`, asserting no unbounded response and no caller-constructed upstream address (quickstart V7)
-- [ ] T073 [P] [US2] Test page-size and bulk limits in `tests/integration/limits.test.ts` for `PAGE_SIZE_EXCEEDED` and `BULK_LIMIT_EXCEEDED`
-- [ ] T074 [P] [US2] Test Arabic name integrity in `tests/integration/bilingual.test.ts`, asserting `full_name_ar` survives intact and is usable in a follow-up lookup (quickstart V10)
-- [ ] T075 [P] [US2] Test the four non-success states are distinguishable in `tests/contract/result-states.test.ts` (spec FR-036)
-- [ ] T076 [P] [US2] Test ambiguous employee matching returns `AMBIGUOUS_EMPLOYEE_MATCH` in `tests/integration/employee-resolution.test.ts`
+- [X] T072 [P] [US2] Test pagination to exhaustion in `tests/integration/pagination.test.ts`, asserting no unbounded response and no caller-constructed upstream address (quickstart V7)
+- [X] T073 [P] [US2] Test page-size and bulk limits in `tests/integration/limits.test.ts` for `PAGE_SIZE_EXCEEDED` and `BULK_LIMIT_EXCEEDED`
+- [X] T074 [P] [US2] Test Arabic name integrity in `tests/integration/bilingual.test.ts`, asserting `full_name_ar` survives intact and is usable in a follow-up lookup (quickstart V10)
+- [X] T075 [P] [US2] Test the four non-success states are distinguishable in `tests/contract/result-states.test.ts` (spec FR-036)
+- [X] T076 [P] [US2] Test ambiguous employee matching returns `AMBIGUOUS_EMPLOYEE_MATCH` in `tests/integration/employee-resolution.test.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T077 [US2] Implement `jisr_attendance_logs_list` in `src/core/tools/attendance/logs-list.ts`, returning employee code and resolved identifier, refusing ambiguous time zones
-- [ ] T078 [US2] Implement the leave service and `jisr_employee_leave_summary_get` in `src/core/services/leave-service.ts` and `src/core/tools/leave/summary-get.ts`, enforcing the 100-code upstream limit
-- [ ] T079 [US2] Implement the accruals service and `jisr_accrual_transactions_list` in `src/core/services/accruals-service.ts` and `src/core/tools/accruals/transactions-list.ts`, documented fields only
-- [ ] T080 [P] [US2] Implement the lookups service in `src/core/services/lookups-service.ts`
-- [ ] T081 [P] [US2] Implement all six lookup tools in `src/core/tools/lookups/`, each returning `{ id, nameEn, nameAr }`
-- [ ] T082 [P] [US2] Implement `jisr_webhooks_list` in `src/core/tools/webhooks/webhooks-list.ts`, stripping stored authentication secrets (spec FR-025)
-- [ ] T083 [P] [US2] Implement `jisr_audit_events_list` in `src/core/tools/audit/audit-events-list.ts`, encoding the upstream `filter[...]` syntax internally
-- [ ] T084 [US2] Extend `jisr_data_catalog_get` to describe every domain now implemented
+- [X] T077 [US2] Implement `jisr_attendance_logs_list` in `src/core/tools/attendance/logs-list.ts`, returning employee code and resolved identifier, refusing ambiguous time zones
+- [X] T078 [US2] Implement the leave service and `jisr_employee_leave_summary_get` in `src/core/services/leave-service.ts` and `src/core/tools/leave/summary-get.ts`, enforcing the 100-code upstream limit
+- [X] T079 [US2] Implement the accruals service and `jisr_accrual_transactions_list` in `src/core/services/accruals-service.ts` and `src/core/tools/accruals/transactions-list.ts`, documented fields only
+- [X] T080 [P] [US2] Implement the lookups service in `src/core/services/lookups-service.ts`
+- [X] T081 [P] [US2] Implement all six lookup tools in `src/core/tools/lookups/`, each returning `{ id, nameEn, nameAr }`
+- [X] T082 [P] [US2] Implement `jisr_webhooks_list` in `src/core/tools/webhooks/webhooks-list.ts`, stripping stored authentication secrets (spec FR-025)
+- [X] T083 [P] [US2] Implement `jisr_audit_events_list` in `src/core/tools/audit/audit-events-list.ts`, encoding the upstream `filter[...]` syntax internally
+- [X] T084 [US2] Extend `jisr_data_catalog_get` to describe every domain now implemented
 
 **Checkpoint**: All 14 non-financial read tools plus 3 discovery tools operational
 

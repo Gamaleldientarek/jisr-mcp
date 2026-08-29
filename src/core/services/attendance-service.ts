@@ -14,7 +14,10 @@ import { buildEnvelope, type ResultEnvelope } from '../envelope.js';
 import { decodeCursor, encodeCursor, hashFilters } from '../cursor.js';
 import { JisrMcpError } from '../errors.js';
 import { nextPageFrom, toUpstreamParams, validatePageSize } from '../jisr/pagination.js';
-import { attendanceSummaryListSchema } from '../jisr/schemas/attendance.js';
+import {
+  attendanceLogsListSchema,
+  attendanceSummaryListSchema,
+} from '../jisr/schemas/attendance.js';
 import type { ToolContext } from '../tools/registry.js';
 
 const OPERATION = 'getAttendanceSummary';
@@ -131,6 +134,107 @@ export async function getAttendanceSummary(
       organizationId: context.principal.organizationId,
       dataAsOf: response.receivedAt,
       records,
+      pageSize,
+      nextCursor: nextPage === null ? null : encodeCursor(binding, nextPage),
+      warnings: scoped.warnings,
+      isPartial: scoped.warnings.length > 0,
+    }),
+  };
+}
+
+// ---------------------------------------------------------------------------
+
+const LOGS_OPERATION = 'listAttendanceLogs';
+
+export interface AttendanceLogsInput {
+  readonly status?: 'success' | 'failed';
+  readonly from: string;
+  readonly to: string;
+  readonly pageSize?: number;
+  readonly cursor?: string;
+}
+
+export interface NormalizedAttendancePunch {
+  readonly id: string | number | null;
+  readonly punchTime: string | null;
+  readonly employeeCode: string | number | null;
+  readonly terminalSerial: string | null;
+  readonly clockingId: string | number | null;
+}
+
+/**
+ * A timestamp must carry an unambiguous zone.
+ *
+ * Attendance is legally and financially consequential -- late arrival, overtime,
+ * absence. Guessing a zone would silently shift punches across day boundaries,
+ * so an ambiguous value is refused rather than assumed (spec Edge Cases).
+ */
+function assertZoned(value: string, field: string): void {
+  const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/.test(value);
+  if (!zoned) {
+    throw new JisrMcpError(
+      'TIMEZONE_REQUIRED',
+      `${field} has no time zone.`,
+      'Use an ISO-8601 timestamp ending in Z or an explicit offset, for example 2026-08-29T00:00:00+03:00.',
+    );
+  }
+}
+
+export async function listAttendanceLogs(
+  input: AttendanceLogsInput,
+  context: ToolContext,
+): Promise<{ envelope: ResultEnvelope<NormalizedAttendancePunch> }> {
+  authorizeTool('jisr_attendance_logs_list', context);
+
+  assertZoned(input.from, 'from');
+  assertZoned(input.to, 'to');
+  if (input.from > input.to) {
+    throw new JisrMcpError('INVALID_DATE_RANGE', 'The start time is after the end time.');
+  }
+
+  const pageSize = validatePageSize(input.pageSize);
+  const filters = { status: input.status, from: input.from, to: input.to, pageSize };
+  const binding = {
+    organizationId: context.principal.organizationId,
+    operationId: LOGS_OPERATION,
+    filtersHash: hashFilters(filters),
+  };
+  const page = input.cursor === undefined ? 1 : decodeCursor(input.cursor, binding);
+
+  const response = await context.client.request(attendanceLogsListSchema, {
+    operationId: LOGS_OPERATION,
+    query: {
+      ...toUpstreamParams(page, pageSize),
+      status: input.status,
+      from: input.from,
+      to: input.to,
+    },
+  });
+
+  // Punches key on employee code; there is no line-manager reference here, so a
+  // manager's set resolves by code alone and an unmatched row is excluded.
+  const identify = (row: {
+    employee_code?: string | number | null | undefined;
+  }): RecordIdentity => ({
+    employeeId: null,
+    employeeCode: row.employee_code ?? null,
+    lineManagerId: null,
+  });
+  const scoped = scopeToReachable(response.data.punches, context.principal, identify);
+  const nextPage = nextPageFrom(response.pagination);
+
+  return {
+    envelope: buildEnvelope({
+      operation: 'jisr_attendance_logs_list',
+      organizationId: context.principal.organizationId,
+      dataAsOf: response.receivedAt,
+      records: scoped.records.map((row) => ({
+        id: row.id ?? null,
+        punchTime: row.punch_time ?? null,
+        employeeCode: row.employee_code ?? null,
+        terminalSerial: row.terminal_sn ?? null,
+        clockingId: row.clocking_id ?? null,
+      })),
       pageSize,
       nextCursor: nextPage === null ? null : encodeCursor(binding, nextPage),
       warnings: scoped.warnings,

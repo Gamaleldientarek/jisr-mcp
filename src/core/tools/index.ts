@@ -2,16 +2,22 @@
  * Tool registration.
  *
  * One place that knows the whole surface, so the coverage gate, the data
- * catalog, and the adapters all see the same set.
+ * catalog, and both adapters all see the same set.
  */
 
+import { accrualTransactionsTool } from './accruals/transactions-list.js';
+import { attendanceLogsTool } from './attendance/logs-list.js';
 import { attendanceSummaryTool } from './attendance/summary-get.js';
+import { auditEventsTool } from './audit/audit-events-list.js';
 import { capabilitiesTool } from './discovery/capabilities.js';
 import { connectionStatusTool } from './discovery/connection-status.js';
 import { createDataCatalogTool } from './discovery/data-catalog.js';
 import { employeeBasicInfoTool } from './employees/basic-info-get.js';
 import { employeesListTool } from './employees/employees-list.js';
+import { leaveSummaryTool } from './leave/summary-get.js';
+import { lookupTools } from './lookups/index.js';
 import type { ToolRegistry } from './registry.js';
+import { webhooksListTool } from './webhooks/webhooks-list.js';
 
 export function registerReadTools(registry: ToolRegistry): void {
   registry.register(connectionStatusTool);
@@ -19,9 +25,17 @@ export function registerReadTools(registry: ToolRegistry): void {
 
   registry.register(employeesListTool);
   registry.register(employeeBasicInfoTool);
-  registry.register(attendanceSummaryTool);
 
-  // The catalog describes the registry, so it is registered last and given a
-  // reference to it.
+  registry.register(attendanceSummaryTool);
+  registry.register(attendanceLogsTool);
+  registry.register(leaveSummaryTool);
+  registry.register(accrualTransactionsTool);
+
+  for (const tool of lookupTools()) registry.register(tool);
+
+  registry.register(webhooksListTool);
+  registry.register(auditEventsTool);
+
+  // Registered last: the catalog describes the registry it is given.
   registry.register(createDataCatalogTool(registry));
 }

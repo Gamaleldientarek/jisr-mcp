@@ -84,7 +84,8 @@ async function main(): Promise<void> {
   console.log('The live specification differs from the approved snapshot.\n');
   console.log(`  operations live:     ${liveOps.size}`);
   console.log(`  operations snapshot: ${snapshotOps.size}`);
-  if (added.length) console.log(`\n  ADDED upstream:\n${added.map((o) => `    + ${o}`).join('\n')}`);
+  if (added.length)
+    console.log(`\n  ADDED upstream:\n${added.map((o) => `    + ${o}`).join('\n')}`);
   if (removed.length)
     console.log(`\n  REMOVED upstream:\n${removed.map((o) => `    - ${o}`).join('\n')}`);
   if (!added.length && !removed.length) {

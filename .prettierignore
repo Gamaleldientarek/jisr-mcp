@@ -1,6 +1,10 @@
 dist/
 node_modules/
 coverage/
+package-lock.json
+
+# Generated or externally-owned documents Prettier must not reformat
 specs/
 .specify/
-package-lock.json
+.claude/
+JISR_FULL_MCP_IMPLEMENTATION_PLAN.md

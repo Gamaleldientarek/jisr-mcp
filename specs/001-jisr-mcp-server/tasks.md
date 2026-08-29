@@ -40,7 +40,7 @@ beside the controls they exercise.
 - [X] T007 [P] Add `README.md`, `SECURITY.md`, `CONTRIBUTING.md`, and `CHANGELOG.md` skeletons in the repository root (spec FR-041)
 - [X] T008 [P] Add the CI workflow in `.github/workflows/ci.yml` running build, lint, all test projects, the coverage gate, and a secret scan on every pull request (spec FR-043)
 - [X] T009 Implement the specification snapshot refresher in `scripts/snapshot-jisr-spec.ts`, writing to `specs/001-jisr-mcp-server/contracts/`
-- [ ] T010 Install and pin dependencies in `package.json`: `@modelcontextprotocol/server`, `@modelcontextprotocol/node`, `@modelcontextprotocol/sdk`, and `zod`
+- [X] T010 Install and pin dependencies in `package.json`: `@modelcontextprotocol/server`, `@modelcontextprotocol/node`, `@modelcontextprotocol/sdk`, and `zod`
 
 ---
 

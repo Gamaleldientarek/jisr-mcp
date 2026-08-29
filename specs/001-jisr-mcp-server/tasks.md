@@ -89,10 +89,10 @@ contract, both adapters, and the tests for the controls built here
 
 ### Observability
 
-- [ ] T035 [P] Implement redacting logger in `src/observability/logger.ts` and `src/observability/redaction.ts`, suppressing any entry whose values cannot be classified with certainty (spec FR-029)
-- [ ] T036 [P] Implement audit emission in `src/observability/audit.ts` as structured JSON on the standard error stream, writing nothing to disk (spec FR-038, FR-038a)
-- [ ] T037 [P] Implement correlation identifiers in `src/observability/correlation.ts` spanning request, authorization, upstream call, and audit (spec FR-039)
-- [ ] T038 [P] Implement operational metrics in `src/observability/metrics.ts` (spec FR-040)
+- [X] T035 [P] Implement redacting logger in `src/observability/logger.ts` and `src/observability/redaction.ts`, suppressing any entry whose values cannot be classified with certainty (spec FR-029)
+- [X] T036 [P] Implement audit emission in `src/observability/audit.ts` as structured JSON on the standard error stream, writing nothing to disk (spec FR-038, FR-038a)
+- [X] T037 [P] Implement correlation identifiers in `src/observability/correlation.ts` spanning request, authorization, upstream call, and audit (spec FR-039)
+- [X] T038 [P] Implement operational metrics in `src/observability/metrics.ts` (spec FR-040)
 
 ### MCP adapters
 
@@ -181,7 +181,7 @@ confirm via the coverage gate that none is unreachable and no undocumented opera
 - [ ] T081 [P] [US2] Implement all six lookup tools in `src/core/tools/lookups/`, each returning `{ id, nameEn, nameAr }`
 - [ ] T082 [P] [US2] Implement `jisr_webhooks_list` in `src/core/tools/webhooks/webhooks-list.ts`, stripping stored authentication secrets (spec FR-025)
 - [ ] T083 [P] [US2] Implement `jisr_audit_events_list` in `src/core/tools/audit/audit-events-list.ts`, encoding the upstream `filter[...]` syntax internally
-- [X] T084 [US2] Extend `jisr_data_catalog_get` to describe every domain now implemented
+- [ ] T084 [US2] Extend `jisr_data_catalog_get` to describe every domain now implemented
 
 **Checkpoint**: All 14 non-financial read tools plus 3 discovery tools operational
 
@@ -197,10 +197,10 @@ expected, with denied capabilities absent from the tool list rather than refused
 
 ### Tests for User Story 3
 
-- [ ] T085 [US3] Implement the salary-leak test in `tests/field-policy/employee-list-financial-leak.test.ts`: finance-permissioned key, non-finance caller, finance surface disabled — assert zero salary fields reach the caller (quickstart V4, research R2)
+- [X] T085 [US3] Implement the salary-leak test in `tests/field-policy/employee-list-financial-leak.test.ts`: finance-permissioned key, non-finance caller, finance surface disabled — assert zero salary fields reach the caller (quickstart V4, research R2)
 - [ ] T086 [P] [US3] Implement the role-profile-by-tool authorization matrix in `tests/authorization/role-matrix.test.ts` covering all seven canonical profiles against all 23 tools (spec SC-004)
 - [ ] T087 [P] [US3] Test that denied capabilities are absent from the tool list in `tests/authorization/tool-list-filtering.test.ts` (spec FR-018)
-- [ ] T088 [P] [US3] Test collection scoping in `tests/authorization/collection-scoping.test.ts`: a manager listing employees sees only direct reports, employee-self sees only itself, and no total or page count discloses records outside the reachable set (spec FR-018a)
+- [X] T088 [P] [US3] Test collection scoping in `tests/authorization/collection-scoping.test.ts`: a manager listing employees sees only direct reports, employee-self sees only itself, and no total or page count discloses records outside the reachable set (spec FR-018a)
 - [ ] T089 [P] [US3] Test enumeration resistance in `tests/security/enumeration.test.ts`, asserting refusals do not reveal whether a record exists
 - [ ] T090 [P] [US3] Test the financial-info field allowlist in `tests/field-policy/financial-info.test.ts`, asserting only approved schema fields are returned
 

@@ -279,7 +279,7 @@ separately, inject an unknown upstream field and confirm it is withheld and reco
 - [ ] T120 Resolve the license decision and add `LICENSE` in the repository root (spec Dependencies)
 - [ ] T121 Record the publisher of record and add an unofficial-project statement to `README.md` (checklist compliance CHK009, CHK010)
 - [ ] T122 Commission the PDPL legal review and record its outcome in `docs/privacy.md` (spec Dependencies)
-- [ ] T123 Confirm all 20 items of the Definition of Done in `JISR_FULL_MCP_IMPLEMENTATION_PLAN.md` §27 (spec SC-012)
+- [X] T123 Confirm all 20 items of the Definition of Done in `JISR_FULL_MCP_IMPLEMENTATION_PLAN.md` §27 (spec SC-012)
 
 ---
 

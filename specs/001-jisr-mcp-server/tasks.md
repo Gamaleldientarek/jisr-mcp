@@ -71,15 +71,15 @@ contract, both adapters, and the tests for the controls built here
 
 ### Result contract
 
-- [ ] T023 [P] Implement the result envelope in `src/core/envelope.ts` with source, freshness, partial, and pagination fields (spec FR-030, FR-031)
-- [ ] T024 [P] Implement opaque cursors in `src/core/cursor.ts`, binding organization, operation, page, and filter hash with an expiry, refusing any mismatch (spec FR-033)
+- [X] T023 [P] Implement the result envelope in `src/core/envelope.ts` with source, freshness, partial, and pagination fields (spec FR-030, FR-031)
+- [X] T024 [P] Implement opaque cursors in `src/core/cursor.ts`, binding organization, operation, page, and filter hash with an expiry, refusing any mismatch (spec FR-033)
 - [X] T025 [P] Implement the stable error model in `src/core/errors.ts` with retryability and suggested action, exposing no upstream body (spec FR-035)
-- [ ] T026 [P] Implement the human-readable result summary generator in `src/core/summary.ts`, producing the short prose that accompanies every structured result (spec FR-032)
+- [X] T026 [P] Implement the human-readable result summary generator in `src/core/summary.ts`, producing the short prose that accompanies every structured result (spec FR-032)
 
 ### Authorization and data protection
 
-- [ ] T027 Implement the data-classification registry in `src/core/authorization/field-policy.ts`, covering every field in `data-model.md` §3–§5 and rejecting any unclassified field (spec FR-024)
-- [ ] T028 Implement allowlist-based mappers in `src/core/jisr/mappers/`, stripping `basic_salary`, `first_salary_pay_date`, and `last_salary_pay_date` from employee results for non-finance callers (research R2, spec FR-026)
+- [X] T027 Implement the data-classification registry in `src/core/authorization/field-policy.ts`, covering every field in `data-model.md` §3–§5 and rejecting any unclassified field (spec FR-024)
+- [X] T028 Implement allowlist-based mappers in `src/core/jisr/mappers/`, stripping `basic_salary`, `first_salary_pay_date`, and `last_salary_pay_date` from employee results for non-finance callers (research R2, spec FR-026)
 - [ ] T029 [P] Implement the principal and the seven canonical role profiles in `src/core/authorization/principal.ts` and `src/core/authorization/role-profiles.ts`, with the manager profile resolving direct reports only and never deriving an indirect tree (spec FR-019, FR-019a)
 - [ ] T030 Implement four-way capability resolution in `src/core/authorization/capabilities.ts` producing supported, permitted, allowed, enabled, plus reason and suggested action (spec FR-014, FR-016)
 - [ ] T031 Implement per-tool authorization in `src/core/authorization/policies.ts` enforcing both gates independently (spec FR-017)
@@ -181,7 +181,7 @@ confirm via the coverage gate that none is unreachable and no undocumented opera
 - [ ] T081 [P] [US2] Implement all six lookup tools in `src/core/tools/lookups/`, each returning `{ id, nameEn, nameAr }`
 - [ ] T082 [P] [US2] Implement `jisr_webhooks_list` in `src/core/tools/webhooks/webhooks-list.ts`, stripping stored authentication secrets (spec FR-025)
 - [ ] T083 [P] [US2] Implement `jisr_audit_events_list` in `src/core/tools/audit/audit-events-list.ts`, encoding the upstream `filter[...]` syntax internally
-- [ ] T084 [US2] Extend `jisr_data_catalog_get` to describe every domain now implemented
+- [X] T084 [US2] Extend `jisr_data_catalog_get` to describe every domain now implemented
 
 **Checkpoint**: All 14 non-financial read tools plus 3 discovery tools operational
 

@@ -29,6 +29,12 @@ export default tseslint.config(
       // produces false positives on Node globals.
       'no-undef': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
+      // `const { secret: _omitted, ...rest }` is how a field is deliberately
+      // dropped from an object. ignoreRestSiblings keeps that idiom legal.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { ignoreRestSiblings: true, varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-floating-promises': 'error',
     },
   },

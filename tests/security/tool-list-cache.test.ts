@@ -41,6 +41,7 @@ function stubClient(): JisrClient {
     financeCredentials: undefined,
     roleProfile: 'hr_operations',
     featureFlags: createFeatureFlags({ financeSurfaceEnabled: false }),
+    subjectEmployeeId: undefined,
     logLevel: 'error',
   } satisfies AppConfig);
 }

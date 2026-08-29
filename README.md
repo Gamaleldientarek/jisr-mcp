@@ -58,6 +58,13 @@ otherwise AWS. Any other host is rejected at startup.
 `auditor`, `platform_operator`. The profile decides which tools you see and which records they
 return.
 
+`employee_self` and `manager` are defined relative to a person, so they also need
+`JISR_SUBJECT_EMPLOYEE_ID` set to that employee's Jisr UUID. The server refuses to start without
+it rather than returning nothing and letting it look like the person manages nobody.
+
+See [`docs/authorization-matrix.md`](docs/authorization-matrix.md) for exactly which tools each
+profile gets, and which records.
+
 ### Enabling the finance surface
 
 The six financial tools — employee financial information, monthly payables, payroll transactions,

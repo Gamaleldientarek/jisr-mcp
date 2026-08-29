@@ -95,6 +95,55 @@ describe('finance surface configuration', () => {
   });
 });
 
+describe('caller identity for person-scoped profiles', () => {
+  // Regression: before FR-019b, configuring JISR_ROLE_PROFILE=manager started
+  // cleanly and then returned nothing, forever. An empty result is
+  // indistinguishable from "this person manages nobody", so the
+  // misconfiguration hid behind plausible output.
+  it.each(['employee_self', 'manager'])(
+    'refuses to start as %s without a subject employee id',
+    async (profile) => {
+      const error = await failureFor({ ...VALID, JISR_ROLE_PROFILE: profile });
+      expect(error.setting).toBe('JISR_SUBJECT_EMPLOYEE_ID');
+      expect(error.format()).toContain(profile);
+      expect(error.action).toContain('UUID');
+    },
+  );
+
+  it.each(['employee_self', 'manager'])('starts as %s when given one', async (profile) => {
+    const config = await loadConfig({
+      ...VALID,
+      JISR_ROLE_PROFILE: profile,
+      JISR_SUBJECT_EMPLOYEE_ID: '00000000-0000-4000-8000-000000000001',
+    });
+    expect(config.subjectEmployeeId).toBe('00000000-0000-4000-8000-000000000001');
+  });
+
+  it('rejects a non-UUID subject identity', async () => {
+    const error = await failureFor({
+      ...VALID,
+      JISR_ROLE_PROFILE: 'manager',
+      JISR_SUBJECT_EMPLOYEE_ID: '1001',
+    });
+    expect(error.setting).toBe('JISR_SUBJECT_EMPLOYEE_ID');
+  });
+
+  it.each(['hr_operations', 'finance', 'auditor'])(
+    'refuses a subject identity for %s, which is not person-scoped',
+    async (profile) => {
+      // Silently ignoring it would let an operator believe they had narrowed
+      // access when they had not.
+      const error = await failureFor({
+        ...VALID,
+        JISR_ROLE_PROFILE: profile,
+        JISR_SUBJECT_EMPLOYEE_ID: '00000000-0000-4000-8000-000000000001',
+      });
+      expect(error.setting).toBe('JISR_SUBJECT_EMPLOYEE_ID');
+      expect(error.format()).toContain('not scoped to one person');
+    },
+  );
+});
+
 describe('a valid configuration', () => {
   it('loads, and derives an organization id that does not disclose the slug', async () => {
     const config = await loadConfig(VALID);

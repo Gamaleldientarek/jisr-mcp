@@ -131,11 +131,16 @@ Simulate Jisr unreachable, a 429, and token expiry mid-pagination.
 **Pass**: distinct `JISR_TEMPORARILY_UNAVAILABLE` / `JISR_RATE_LIMITED` errors — never an empty
 success; at most one re-authentication, with no refresh loop.
 
+### V13 — One session, four domains (spec SC-010)
+Answer questions spanning at least four Jisr domains in a single session.
+**Pass**: four distinct domains answered, field policy holding across all of them, one access
+token reused throughout, and every answer stating its freshness.
+
 ---
 
 ## Release gate
 
-All twelve scenarios pass, plus the Definition of Done in
+All thirteen scenarios pass, plus the Definition of Done in
 `JISR_FULL_MCP_IMPLEMENTATION_PLAN.md` §27 and the constitution's Principle VII: no completion claim
 without passing tests, a green coverage gate, and Inspector validation on **both** adapters.
 

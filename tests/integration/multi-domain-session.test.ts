@@ -82,6 +82,7 @@ function session(): { registry: ToolRegistry; context: ToolContext } {
     financeCredentials: undefined,
     roleProfile: 'hr_operations',
     featureFlags: createFeatureFlags({ financeSurfaceEnabled: false }),
+    subjectEmployeeId: undefined,
     logLevel: 'error',
   };
 
@@ -175,6 +176,7 @@ describe('one session, four domains', () => {
       financeCredentials: undefined,
       roleProfile: 'hr_operations',
       featureFlags: createFeatureFlags({ financeSurfaceEnabled: false }),
+      subjectEmployeeId: undefined,
       logLevel: 'error',
     };
     const registry = new ToolRegistry();

@@ -79,6 +79,7 @@ const environmentSchema = z.object({
   JISR_API_KEY: z.string().min(1),
   JISR_API_SECRET: z.string().min(1),
   JISR_ROLE_PROFILE: z.enum(ROLE_PROFILES),
+  JISR_SUBJECT_EMPLOYEE_ID: z.string().uuid().optional(),
   JISR_FINANCE_SURFACE: z.enum(['enabled', 'disabled']).default('disabled'),
   JISR_FINANCE_API_KEY: z.string().min(1).optional(),
   JISR_FINANCE_API_SECRET: z.string().min(1).optional(),
@@ -98,6 +99,8 @@ export interface AppConfig {
   readonly credentials: JisrCredentials;
   readonly financeCredentials: JisrCredentials | undefined;
   readonly roleProfile: RoleProfile;
+  /** Which Jisr employee the caller IS. Required for employee_self and manager. */
+  readonly subjectEmployeeId: string | undefined;
   readonly featureFlags: FeatureFlags;
   readonly logLevel: 'error' | 'warn' | 'info' | 'debug';
 }
@@ -111,6 +114,8 @@ const REMEDIES: Readonly<Record<string, string>> = {
   JISR_API_SECRET:
     'the secret is shown once when the key is created. If it was not captured, create a new key.',
   JISR_ROLE_PROFILE: `set it to one of: ${ROLE_PROFILES.join(', ')}.`,
+  JISR_SUBJECT_EMPLOYEE_ID:
+    'set it to the Jisr employee UUID this caller corresponds to. The employee_self and manager profiles are defined relative to a person, so they cannot resolve without it.',
   JISR_FINANCE_SURFACE: `set it to "enabled" or "disabled". Financial tools do not exist unless it is "enabled", even if your Jisr key permits financial access.`,
   LOG_LEVEL: 'set it to one of: error, warn, info, debug.',
 };
@@ -180,6 +185,27 @@ export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<
     );
   }
 
+  // employee_self and manager reachable sets are defined relative to a person.
+  // Without that identity they resolve to nothing -- and a silently empty
+  // result is indistinguishable from "this person manages nobody", which would
+  // hide the misconfiguration behind plausible output (spec FR-019b).
+  const needsSubject =
+    value.JISR_ROLE_PROFILE === 'employee_self' || value.JISR_ROLE_PROFILE === 'manager';
+  if (needsSubject && value.JISR_SUBJECT_EMPLOYEE_ID === undefined) {
+    throw new ConfigurationError(
+      'JISR_SUBJECT_EMPLOYEE_ID',
+      `is required when JISR_ROLE_PROFILE is "${value.JISR_ROLE_PROFILE}"`,
+      REMEDIES['JISR_SUBJECT_EMPLOYEE_ID'] ?? '',
+    );
+  }
+  if (!needsSubject && value.JISR_SUBJECT_EMPLOYEE_ID !== undefined) {
+    throw new ConfigurationError(
+      'JISR_SUBJECT_EMPLOYEE_ID',
+      `is set but JISR_ROLE_PROFILE is "${value.JISR_ROLE_PROFILE}", which is not scoped to one person`,
+      'remove it, or switch the role profile to employee_self or manager.',
+    );
+  }
+
   return {
     organizationId: await deriveOrganizationId(value.JISR_BASE_URL, value.JISR_SLUG),
     baseUrl: value.JISR_BASE_URL,
@@ -194,6 +220,7 @@ export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<
           }
         : undefined,
     roleProfile: value.JISR_ROLE_PROFILE,
+    subjectEmployeeId: value.JISR_SUBJECT_EMPLOYEE_ID,
     featureFlags: createFeatureFlags({ financeSurfaceEnabled: financeEnabled }),
     logLevel: value.LOG_LEVEL,
   };

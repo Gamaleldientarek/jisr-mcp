@@ -33,6 +33,7 @@ function context(returnedEmployee: Record<string, unknown> | null): ToolContext 
     financeCredentials: undefined,
     roleProfile: 'employee_self',
     featureFlags: createFeatureFlags({ financeSurfaceEnabled: false }),
+    subjectEmployeeId: undefined,
     logLevel: 'error',
   };
 

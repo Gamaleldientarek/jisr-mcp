@@ -106,56 +106,166 @@ specs/001-jisr-mcp-server/
 
 ```text
 src/
-├── core/                          # Domain core — imports no MCP SDK type
-│   ├── jisr/
-│   │   ├── client.ts              # Typed request helper, retries, timeouts
-│   │   ├── authentication.ts      # Token acquisition, cache, one-shot re-auth
-│   │   ├── endpoint-manifest.ts   # Generated from the snapshot; coverage gate source
-│   │   ├── pagination.ts          # page/rpp ↔ opaque cursor translation
-│   │   ├── query-encoding.ts      # Bracket-syntax filter encoding
-│   │   ├── schemas/               # Zod schemas per domain, from the snapshot
-│   │   ├── mappers/               # Upstream shape → normalized, allowlist-based
-│   │   └── errors.ts              # Upstream failure → stable error code
-│   ├── authorization/
-│   │   ├── principal.ts           # Caller identity, role profile, scopes
-│   │   ├── role-profiles.ts       # The seven profiles
-│   │   ├── capabilities.ts        # Four-way capability resolution
-│   │   ├── policies.ts            # Per-tool authorization decisions
-│   │   └── field-policy.ts        # Classification-driven field allowlists
-│   ├── services/                  # One per domain, organization context required
-│   ├── envelope.ts                # Stable result envelope
-│   ├── cursor.ts                  # Opaque, bound, expiring cursors
-│   ├── errors.ts                  # Stable error codes
-│   └── tools/                     # 23 tool definitions: schema + handler + annotations
-│       ├── discovery/             # connection status, capabilities, catalog
-│       ├── employees/  attendance/  leave/  accruals/
-│       ├── finance/    accounting/  lookups/
-│       └── webhooks/   audit/
 ├── adapters/
-│   ├── mcp-v2/                    # @modelcontextprotocol/server 2.0.0 — default
-│   └── mcp-v1/                    # @modelcontextprotocol/sdk 1.30.0 — compatibility
+│   ├── mcp-v1/
+│   │   └── index.ts
+│   ├── mcp-v2/
+│   │   └── index.ts
+│   └── shared.ts
+├── bin/
+│   └── jisr-mcp.ts
 ├── config/
-│   ├── environment.ts             # Validated configuration, actionable failures
-│   └── feature-flags.ts           # Finance opt-in and surface narrowing
-├── observability/
-│   ├── logger.ts  metrics.ts  redaction.ts  audit.ts
-└── bin/
-    └── jisr-mcp.ts                # npx entry point, adapter selection
+│   ├── environment.ts
+│   └── feature-flags.ts
+├── core/
+│   ├── authorization/
+│   │   ├── capabilities.ts
+│   │   ├── field-policy.ts
+│   │   ├── policies.ts
+│   │   ├── principal.ts
+│   │   ├── reachability.ts
+│   │   └── role-profiles.ts
+│   ├── jisr/
+│   │   ├── mappers/
+│   │   │   ├── employees.ts
+│   │   │   └── webhooks.ts
+│   │   ├── schemas/
+│   │   │   ├── accruals.ts
+│   │   │   ├── attendance.ts
+│   │   │   ├── audit.ts
+│   │   │   ├── common.ts
+│   │   │   ├── drift.ts
+│   │   │   ├── employees.ts
+│   │   │   ├── finance.ts
+│   │   │   ├── leave.ts
+│   │   │   ├── lookups.ts
+│   │   │   └── webhooks.ts
+│   │   ├── authentication.ts
+│   │   ├── client.ts
+│   │   ├── endpoint-manifest.ts
+│   │   ├── errors.ts
+│   │   ├── pagination.ts
+│   │   └── query-encoding.ts
+│   ├── services/
+│   │   ├── accruals-service.ts
+│   │   ├── attendance-service.ts
+│   │   ├── base-service.ts
+│   │   ├── employees-service.ts
+│   │   ├── finance-service.ts
+│   │   ├── integration-service.ts
+│   │   ├── leave-service.ts
+│   │   └── lookups-service.ts
+│   ├── tools/
+│   │   ├── accounting/
+│   │   ├── accruals/
+│   │   │   └── transactions-list.ts
+│   │   ├── attendance/
+│   │   │   ├── logs-list.ts
+│   │   │   └── summary-get.ts
+│   │   ├── audit/
+│   │   │   └── audit-events-list.ts
+│   │   ├── discovery/
+│   │   │   ├── capabilities.ts
+│   │   │   ├── connection-status.ts
+│   │   │   └── data-catalog.ts
+│   │   ├── employees/
+│   │   │   ├── basic-info-get.ts
+│   │   │   └── employees-list.ts
+│   │   ├── finance/
+│   │   │   └── index.ts
+│   │   ├── leave/
+│   │   │   └── summary-get.ts
+│   │   ├── lookups/
+│   │   │   └── index.ts
+│   │   ├── webhooks/
+│   │   │   └── webhooks-list.ts
+│   │   ├── index.ts
+│   │   └── registry.ts
+│   ├── cursor.ts
+│   ├── envelope.ts
+│   ├── errors.ts
+│   ├── server-instructions.ts
+│   └── summary.ts
+└── observability/
+    ├── audit.ts
+    ├── correlation.ts
+    ├── logger.ts
+    ├── metrics.ts
+    └── redaction.ts
 
 tests/
-├── contract/          # MCP protocol contracts, both adapters
-├── integration/       # Domain connector behaviour against fixtures
+├── authorization/
+│   ├── collection-scoping.test.ts
+│   ├── role-matrix.test.ts
+│   └── tool-list-filtering.test.ts
+├── contract/
+│   ├── adapter-parity.test.ts
+│   ├── annotations.test.ts
+│   ├── capabilities.test.ts
+│   ├── discovery-tools.test.ts
+│   ├── endpoint-coverage.test.ts
+│   └── result-states.test.ts
+├── field-policy/
+│   ├── employee-list-financial-leak.test.ts
+│   ├── financial-info.test.ts
+│   └── webhook-secrets.test.ts
+├── fixtures/
+│   └── jisr/
+│       └── index.ts
+├── integration/
+│   ├── audit-trail.test.ts
+│   ├── authentication.test.ts
+│   ├── bilingual.test.ts
+│   ├── degradation.test.ts
+│   ├── employee-resolution.test.ts
+│   ├── limits.test.ts
+│   ├── multi-domain-session.test.ts
+│   ├── pagination.test.ts
+│   ├── schema-drift.test.ts
+│   ├── startup-failures.test.ts
+│   └── unavailability.test.ts
+├── security/
+│   ├── cursor.test.ts
+│   ├── enumeration.test.ts
+│   ├── no-generic-tool.test.ts
+│   ├── no-secrets.test.ts
+│   ├── prompt-injection.test.ts
+│   ├── redaction.test.ts
+│   └── tool-list-cache.test.ts
 ├── unit/
-├── authorization/     # Role-profile × tool matrix
-├── field-policy/      # Includes the employee-list salary-leak case
-├── security/          # Cursor tampering, injection, enumeration, redaction
-└── fixtures/jisr/     # Derived from specification examples; never real data
+│   └── core-boundary.test.ts
+└── helpers.ts
 
 scripts/
-├── snapshot-jisr-spec.ts       # Refresh the upstream snapshot
-├── verify-endpoint-coverage.ts # Coverage gate — fails the build on divergence
-└── verify-mcp.ts               # Inspector-driven validation
+├── generate-docs.ts
+├── snapshot-jisr-spec.ts
+├── verify-endpoint-coverage.ts
+├── verify-mcp.ts
+└── verify-release.ts
+
+docs/
+├── authorization-matrix.md
+├── client-compatibility.md
+├── definition-of-done.md
+├── endpoint-coverage.md
+├── repository-settings.md
+└── tool-naming.md
+
+.github/
+├── ISSUE_TEMPLATE/
+│   ├── bug_report.md
+│   └── config.yml
+├── workflows/
+│   ├── ci.yml
+│   └── release.yml
+├── CODEOWNERS
+├── pull_request_template.md
+└── release-template.md
 ```
+
+_This tree is the built state as of 2026-08-29, not a proposal. Regenerate the
+generated docs with `npm run docs:generate` after any change to tools or
+profiles._
 
 **Structure Decision**: Single project with a hard internal boundary between `src/core/` and
 `src/adapters/`. The rule that makes the boundary real and testable: **nothing under `src/core/`

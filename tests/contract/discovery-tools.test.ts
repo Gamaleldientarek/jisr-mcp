@@ -30,6 +30,7 @@ function context(profile: RoleProfile, financeSurfaceEnabled = false): ToolConte
     financeCredentials: undefined,
     roleProfile: profile,
     featureFlags: createFeatureFlags({ financeSurfaceEnabled }),
+    subjectEmployeeId: undefined,
     logLevel: 'error',
   };
   return {

@@ -56,10 +56,15 @@ async function main(): Promise<void> {
   const runtime: AdapterRuntime = {
     registry,
     context: {
-      principal: createPrincipal({
-        organizationId: config.organizationId,
-        profile: config.roleProfile,
-      }),
+      principal: createPrincipal(
+        config.subjectEmployeeId === undefined
+          ? { organizationId: config.organizationId, profile: config.roleProfile }
+          : {
+              organizationId: config.organizationId,
+              profile: config.roleProfile,
+              subjectEmployeeId: config.subjectEmployeeId,
+            },
+      ),
       flags: config.featureFlags,
       // Key permissions are probed at connection setup. Until then every domain
       // is 'unknown' rather than assumed permitted (plan > Open Dependencies).

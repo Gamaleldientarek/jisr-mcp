@@ -188,5 +188,6 @@ behaviour it touches, not the release.
 | Whether a capability-discovery endpoint exists | Capability tool fidelity | Derive from connection-time probe results |
 | Complete schemas for accruals, monthly payables, payroll transactions | Full field coverage in three tools | Implement documented fields; treat anything else as drift rather than exposing it |
 | Response schema for `GET /accounting/journals/{id}` | `jisr_accounting_journal_get` (T095) | The snapshot declares the operation but no 200 response schema. Confirmed by parsing the document, not by eye. Extract or obtain it before implementing; do not infer the shape from the POST journal request |
+| Semantics of `line_manager.id` in the employee record | The `manager` role profile (FR-019a, FR-018a) | Jisr does not state whether it is the employee UUID, the numeric employee id, or the employee code. Reachability compares both the UUID and the code and excludes any record matching neither. Confirm with Jisr before relying on the manager profile in production |
 | Webhook signing, retry, ordering, replay guarantees | Nothing in this release | Read-only webhook listing only; deferred with Release 2 |
 | External-aggregator onboarding | The `external_aggregator` auth source | Keep the auth source extensible; do not implement until confirmed |

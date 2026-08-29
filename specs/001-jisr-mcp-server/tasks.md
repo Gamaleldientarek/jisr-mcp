@@ -80,12 +80,12 @@ contract, both adapters, and the tests for the controls built here
 
 - [X] T027 Implement the data-classification registry in `src/core/authorization/field-policy.ts`, covering every field in `data-model.md` §3–§5 and rejecting any unclassified field (spec FR-024)
 - [X] T028 Implement allowlist-based mappers in `src/core/jisr/mappers/`, stripping `basic_salary`, `first_salary_pay_date`, and `last_salary_pay_date` from employee results for non-finance callers (research R2, spec FR-026)
-- [ ] T029 [P] Implement the principal and the seven canonical role profiles in `src/core/authorization/principal.ts` and `src/core/authorization/role-profiles.ts`, with the manager profile resolving direct reports only and never deriving an indirect tree (spec FR-019, FR-019a)
-- [ ] T030 Implement four-way capability resolution in `src/core/authorization/capabilities.ts` producing supported, permitted, allowed, enabled, plus reason and suggested action (spec FR-014, FR-016)
-- [ ] T031 Implement per-tool authorization in `src/core/authorization/policies.ts` enforcing both gates independently (spec FR-017)
-- [ ] T032 Enforce required organization context on every service constructor in `src/core/services/`, with no ambient or default value (spec FR-022)
-- [ ] T033 Implement reachable-set scoping in `src/core/services/`, so every collection is filtered to the caller's reachable records before pagination and no count or pagination field reveals a record outside it (spec FR-018a)
-- [ ] T034 Implement per-tool declared field groups in `src/core/tools/registry.ts`, so every tool declares which classified groups it returns and why, and responses cannot exceed the declaration (spec FR-028)
+- [X] T029 [P] Implement the principal and the seven canonical role profiles in `src/core/authorization/principal.ts` and `src/core/authorization/role-profiles.ts`, with the manager profile resolving direct reports only and never deriving an indirect tree (spec FR-019, FR-019a)
+- [X] T030 Implement four-way capability resolution in `src/core/authorization/capabilities.ts` producing supported, permitted, allowed, enabled, plus reason and suggested action (spec FR-014, FR-016)
+- [X] T031 Implement per-tool authorization in `src/core/authorization/policies.ts` enforcing both gates independently (spec FR-017)
+- [X] T032 Enforce required organization context on every service constructor in `src/core/services/`, with no ambient or default value (spec FR-022)
+- [X] T033 Implement reachable-set scoping in `src/core/services/`, so every collection is filtered to the caller's reachable records before pagination and no count or pagination field reveals a record outside it (spec FR-018a)
+- [X] T034 Implement per-tool declared field groups in `src/core/tools/registry.ts`, so every tool declares which classified groups it returns and why, and responses cannot exceed the declaration (spec FR-028)
 
 ### Observability
 
@@ -96,8 +96,8 @@ contract, both adapters, and the tests for the controls built here
 
 ### MCP adapters
 
-- [ ] T039 Define the SDK-free tool definition shape and registry in `src/core/tools/registry.ts`, carrying schema, handler, annotations, declared field groups, and required authorization
-- [ ] T040 Implement dynamic tool filtering in `src/core/tools/registry.ts` so unauthorized tools are absent from the list, not merely refused (spec FR-018)
+- [X] T039 Define the SDK-free tool definition shape and registry in `src/core/tools/registry.ts`, carrying schema, handler, annotations, declared field groups, and required authorization
+- [X] T040 Implement dynamic tool filtering in `src/core/tools/registry.ts` so unauthorized tools are absent from the list, not merely refused (spec FR-018)
 - [ ] T041 Author the server instructions in `src/core/server-instructions.ts` covering all six enumerated subjects (spec FR-005)
 - [ ] T042 Document the tool naming convention and the cross-release name stability and deprecation policy in `docs/tool-naming.md` (spec FR-009)
 - [ ] T043 Implement the v2 adapter in `src/adapters/mcp-v2/`, including `ttlMs` and `cacheScope` set so a filtered tool list can never be served to another principal (research R5)

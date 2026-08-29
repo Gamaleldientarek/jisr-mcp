@@ -1,5 +1,8 @@
-# Claude Code agent folder — may contain credentials/auth tokens
-.claude/
+# Claude Code agent folder — may contain credentials/auth tokens.
+# Ignore everything except the versioned Spec Kit skills.
+.claude/*
+!.claude/skills/
+.claude/settings.local.json
 
 # macOS / Google Drive
 .DS_Store

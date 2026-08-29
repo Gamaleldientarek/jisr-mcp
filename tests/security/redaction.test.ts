@@ -4,6 +4,10 @@
  * The requirement is absolute: credential values appear ZERO times in any
  * output, log, trace, or artifact. Redaction therefore fails closed -- a line
  * that cannot be made safe is suppressed, not emitted with best effort.
+ *
+ * SECRET-SCAN-EXEMPT: testing redaction requires realistic credential shapes,
+ * and a base64 JWT cannot carry a readable "invented" marker inside it. Every
+ * value below is fabricated. See tests/security/no-secrets.test.ts.
  */
 
 import { describe, expect, it } from 'vitest';

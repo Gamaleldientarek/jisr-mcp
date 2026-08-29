@@ -106,14 +106,14 @@ contract, both adapters, and the tests for the controls built here
 
 ### Foundational tests
 
-- [ ] T046 [P] Create fixtures in `tests/fixtures/jisr/` derived from the snapshot's own examples, containing no real employee or payroll data (spec FR-042)
-- [ ] T047 [P] Test the coverage gate in `tests/contract/endpoint-coverage.test.ts`, asserting it fails on an injected divergence and that no write client method or write code path exists (spec FR-010, FR-012)
+- [X] T046 [P] Create fixtures in `tests/fixtures/jisr/` derived from the snapshot's own examples, containing no real employee or payroll data (spec FR-042)
+- [X] T047 [P] Test the coverage gate in `tests/contract/endpoint-coverage.test.ts`, asserting it fails on an injected divergence and that no write client method or write code path exists (spec FR-010, FR-012)
 - [X] T048 [P] Test that no registered tool accepts a caller-supplied path, URL, or HTTP method in `tests/security/no-generic-tool.test.ts` (spec FR-008)
 - [X] T049 [P] Test that no `@modelcontextprotocol/*` import exists under `src/core/` in `tests/unit/core-boundary.test.ts`
-- [ ] T050 [P] Test authentication behaviour in `tests/integration/authentication.test.ts`: invalid slug, key, and secret; expired token; exactly one retry; no refresh loop
-- [ ] T051 [P] Test cursor binding and expiry in `tests/security/cursor.test.ts` covering tampering, expiry, and operation mismatch
-- [ ] T052 Implement the repository-wide secret-absence assertion in `tests/security/no-secrets.test.ts`, scanning all test output, logs, and artifacts (spec SC-003)
-- [ ] T053 [P] Test that a cached tool list cannot cross principals in `tests/security/tool-list-cache.test.ts`, using two differently-authorized principals (quickstart V9, research R5)
+- [X] T050 [P] Test authentication behaviour in `tests/integration/authentication.test.ts`: invalid slug, key, and secret; expired token; exactly one retry; no refresh loop
+- [X] T051 [P] Test cursor binding and expiry in `tests/security/cursor.test.ts` covering tampering, expiry, and operation mismatch
+- [X] T052 Implement the repository-wide secret-absence assertion in `tests/security/no-secrets.test.ts`, scanning all test output, logs, and artifacts (spec SC-003)
+- [X] T053 [P] Test that a cached tool list cannot cross principals in `tests/security/tool-list-cache.test.ts`, using two differently-authorized principals (quickstart V9, research R5)
 - [X] T054 [P] Test adapter parity in `tests/contract/adapter-parity.test.ts`, asserting identical inputs, outputs, envelopes, error codes, and annotations through v1 and v2 (spec FR-002a, SC-014)
 
 **Checkpoint**: Core, adapters, and the controls built here are implemented **and tested**

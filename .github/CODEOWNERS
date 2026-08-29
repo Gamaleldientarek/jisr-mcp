@@ -1,0 +1,17 @@
+# Every change is reviewed. These paths carry the security properties, so they
+# are named rather than left to a blanket rule.
+
+*                                    @OWNER
+
+# Who sees what.
+/src/core/authorization/             @OWNER
+
+# The mechanism enforcing that no tool reaches an undocumented Jisr operation.
+/src/core/jisr/endpoint-manifest.ts  @OWNER
+/scripts/verify-endpoint-coverage.ts @OWNER
+
+# If redaction or audit are wrong, nothing else can be trusted.
+/src/observability/                  @OWNER
+
+# The governing principles.
+/.specify/memory/constitution.md     @OWNER

@@ -11,24 +11,13 @@ import { createFeatureFlags } from '../../src/config/feature-flags.js';
 import { UNPROBED } from '../../src/core/authorization/capabilities.js';
 import { createPrincipal } from '../../src/core/authorization/principal.js';
 import { scopeToReachable } from '../../src/core/authorization/reachability.js';
-import { JisrMcpError } from '../../src/core/errors.js';
+import { refusalFrom } from '../helpers.js';
 import { TokenCache } from '../../src/core/jisr/authentication.js';
 import { JisrClient } from '../../src/core/jisr/client.js';
 import { getEmployeeBasicInfo } from '../../src/core/services/employees-service.js';
 import type { ToolContext } from '../../src/core/tools/registry.js';
 import type { AppConfig } from '../../src/config/environment.js';
 import { AUTH_SUCCESS } from '../fixtures/jisr/index.js';
-
-/** Runs a call expected to fail, and returns its error narrowed to JisrMcpError. */
-async function refusalFrom(run: () => Promise<unknown>): Promise<JisrMcpError> {
-  try {
-    await run();
-  } catch (error) {
-    if (error instanceof JisrMcpError) return error;
-    throw error;
-  }
-  throw new Error('expected a refusal, but the call succeeded');
-}
 
 const ORG = 'org-enum-000001';
 const SELF = '00000000-0000-4000-8000-000000000001';

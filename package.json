@@ -37,7 +37,8 @@
     "verify:coverage": "tsx scripts/verify-endpoint-coverage.ts",
     "verify:mcp": "tsx scripts/verify-mcp.ts",
     "verify:release": "tsx scripts/verify-release.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "docs:generate": "tsx scripts/generate-docs.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/node": "2.0.0",

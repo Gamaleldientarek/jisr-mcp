@@ -249,30 +249,30 @@ separately, inject an unknown upstream field and confirm it is withheld and reco
 
 ### Cross-cutting tests
 
-- [ ] T105 [P] Test degradation honesty in `tests/integration/degradation.test.ts` for upstream unreachable, 429, and mid-pagination token expiry (quickstart V12)
-- [ ] T106 [P] Test prompt-injection content in employee fields cannot alter behaviour in `tests/security/prompt-injection.test.ts`
-- [ ] T107 [P] Test annotation accuracy across all 23 tools in `tests/contract/annotations.test.ts` (spec FR-037)
-- [ ] T108 Implement the multi-domain session scenario in `tests/integration/multi-domain-session.test.ts`, answering questions across at least four Jisr domains in one session (spec SC-010)
+- [X] T105 [P] Test degradation honesty in `tests/integration/degradation.test.ts` for upstream unreachable, 429, and mid-pagination token expiry (quickstart V12)
+- [X] T106 [P] Test prompt-injection content in employee fields cannot alter behaviour in `tests/security/prompt-injection.test.ts`
+- [X] T107 [P] Test annotation accuracy across all 23 tools in `tests/contract/annotations.test.ts` (spec FR-037)
+- [X] T108 Implement the multi-domain session scenario in `tests/integration/multi-domain-session.test.ts`, answering questions across at least four Jisr domains in one session (spec SC-010)
 
 ### Protocol and client verification
 
-- [ ] T109 Implement Inspector-driven validation in `scripts/verify-mcp.ts` and run it against both adapters (spec Definition of Done)
+- [X] T109 Implement Inspector-driven validation in `scripts/verify-mcp.ts` and run it against both adapters (spec Definition of Done)
 - [ ] T110 Verify against all five named MCP clients and record results in `docs/client-compatibility.md` (spec SC-006)
 
 ### Documentation
 
-- [ ] T111 [P] Write `docs/authorization-matrix.md` from the role-profile matrix
-- [ ] T112 [P] Write `docs/endpoint-coverage.md` from the manifest
-- [ ] T113 [P] Complete `SECURITY.md` with a disclosure contact and response expectation (checklist compliance CHK012)
+- [X] T111 [P] Write `docs/authorization-matrix.md` from the role-profile matrix
+- [X] T112 [P] Write `docs/endpoint-coverage.md` from the manifest
+- [X] T113 [P] Complete `SECURITY.md` with a disclosure contact and response expectation (checklist compliance CHK012)
 
 ### GitHub version control and release pipeline
 
-- [ ] T114 Adopt semantic versioning and a conventional-commit convention, documented in `CONTRIBUTING.md`, with automated `CHANGELOG.md` generation (spec FR-044)
+- [X] T114 Adopt semantic versioning and a conventional-commit convention, documented in `CONTRIBUTING.md`, with automated `CHANGELOG.md` generation (spec FR-044)
 - [ ] T115 Configure default-branch protection on GitHub — no direct pushes, with build, lint, full test suite, coverage gate, and secret scan required to pass before merge — and record the applied settings in `docs/repository-settings.md` so they are reviewable (spec FR-044b)
-- [ ] T116 [P] Add `.github/CODEOWNERS`, issue templates, and a pull request template under `.github/`
-- [ ] T117 Implement the release workflow in `.github/workflows/release.yml`, triggered by a version tag on the default branch, building, testing, publishing to the registry with build provenance, and creating the GitHub Release with generated notes (spec FR-044a)
-- [ ] T118 Add the release notes template in `.github/release-template.md` recording, per release, the supported MCP protocol version(s) and the Jisr specification snapshot the build was verified against (spec FR-044)
-- [ ] T119 Add `scripts/verify-release.ts` asserting that the tag, `package.json` version, `CHANGELOG.md` entry, and documented protocol and snapshot versions agree before a release proceeds
+- [X] T116 [P] Add `.github/CODEOWNERS`, issue templates, and a pull request template under `.github/`
+- [X] T117 Implement the release workflow in `.github/workflows/release.yml`, triggered by a version tag on the default branch, building, testing, publishing to the registry with build provenance, and creating the GitHub Release with generated notes (spec FR-044a)
+- [X] T118 Add the release notes template in `.github/release-template.md` recording, per release, the supported MCP protocol version(s) and the Jisr specification snapshot the build was verified against (spec FR-044)
+- [X] T119 Add `scripts/verify-release.ts` asserting that the tag, `package.json` version, `CHANGELOG.md` entry, and documented protocol and snapshot versions agree before a release proceeds
 
 ### Release gates outside the codebase
 

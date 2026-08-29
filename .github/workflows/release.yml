@@ -1,0 +1,63 @@
+name: Release
+
+# Releases originate from a version tag on the default branch and are published
+# by this workflow, never from a maintainer's machine (spec FR-044a).
+# A package carrying HR data access should not be publishable by hand.
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run verify:coverage
+      # Tag, package version, changelog entry, and the documented protocol and
+      # snapshot versions must all agree before anything is published.
+      - run: npm run verify:release
+      - run: npm run build
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - name: Publish with provenance
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  github-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create the GitHub Release
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --notes-file .github/release-template.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -12,10 +12,11 @@ import type { z } from 'zod';
 import { isJisrMcpError } from '../core/errors.js';
 import { summarize } from '../core/summary.js';
 import type { ResultEnvelope } from '../core/envelope.js';
-import type { AuthorizationContext } from '../core/authorization/policies.js';
+
 import {
   toolListCacheScope,
   TOOL_LIST_TTL_MS,
+  type ToolContext,
   type ToolDefinition,
   type ToolRegistry,
 } from '../core/tools/registry.js';
@@ -32,7 +33,7 @@ export interface McpToolResult {
 
 export interface AdapterRuntime {
   readonly registry: ToolRegistry;
-  readonly context: AuthorizationContext;
+  readonly context: ToolContext;
   readonly audit: AuditSink;
   readonly metrics: Metrics;
 }

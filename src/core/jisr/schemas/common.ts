@@ -34,9 +34,24 @@ export const namedRefSchema = z.object({
   name: z.string().nullable().optional(),
 });
 
-export function collection<T extends z.ZodTypeAny>(key: string, item: T) {
+/**
+ * A Jisr collection payload: `{ <key>: [...], pagination }`.
+ *
+ * The key is generic so callers get a typed field rather than an index
+ * signature -- Jisr names the array differently per domain (`employees`,
+ * `records`, `punches`, `leaves_summary`, `subscriptions`...), and losing that
+ * name would mean casting at every call site.
+ */
+export function collection<K extends string, T extends z.ZodTypeAny>(
+  key: K,
+  item: T,
+): z.ZodObject<
+  { [P in K]: z.ZodArray<T> } & { pagination: z.ZodOptional<typeof paginationSchema> }
+> {
   return z.object({
     [key]: z.array(item),
     pagination: paginationSchema.optional(),
-  });
+  }) as unknown as z.ZodObject<
+    { [P in K]: z.ZodArray<T> } & { pagination: z.ZodOptional<typeof paginationSchema> }
+  >;
 }

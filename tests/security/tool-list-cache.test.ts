@@ -22,11 +22,28 @@ import {
   type ToolDefinition,
 } from '../../src/core/tools/registry.js';
 import { toolListCacheHint, type AdapterRuntime } from '../../src/adapters/shared.js';
+import { JisrClient } from '../../src/core/jisr/client.js';
+import type { AppConfig } from '../../src/config/environment.js';
 import { createAuditSink } from '../../src/observability/audit.js';
 import { Metrics } from '../../src/observability/metrics.js';
 import type { RoleProfile } from '../../src/core/authorization/role-profiles.js';
 
 const ORG = 'org-cache-000001';
+
+/** A client that is never called; these suites exercise registration, not I/O. */
+function stubClient(): JisrClient {
+  return new JisrClient({
+    organizationId: ORG,
+    baseUrl: 'https://apis.jisr.net/api',
+    hostType: 'aws',
+    slug: 'test-org',
+    credentials: { apiKey: 'k', apiSecret: 's' },
+    financeCredentials: undefined,
+    roleProfile: 'hr_operations',
+    featureFlags: createFeatureFlags({ financeSurfaceEnabled: false }),
+    logLevel: 'error',
+  } satisfies AppConfig);
+}
 
 function tool(
   name: string,
@@ -67,7 +84,7 @@ function runtimeFor(profile: RoleProfile, financeSurfaceEnabled: boolean): Adapt
   };
   return {
     registry,
-    context,
+    context: { ...context, client: stubClient(), connection: { hostType: 'aws' as const } },
     audit: createAuditSink({ write: () => true } as unknown as NodeJS.WriteStream),
     metrics: new Metrics(),
   };

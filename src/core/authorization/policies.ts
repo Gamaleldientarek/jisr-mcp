@@ -19,6 +19,41 @@ import {
   type ObservedPermissions,
 } from './capabilities.js';
 import type { Principal } from './principal.js';
+import { ROLE_PROFILES, type RoleProfile } from './role-profiles.js';
+
+/**
+ * Discovery tools have no upstream Jisr operation, so they have no endpoint
+ * manifest entry -- the manifest tracks the documented API surface, and adding
+ * a synthetic row would break the coverage gate's correspondence with the
+ * snapshot.
+ *
+ * They are declared here instead, with their own profile requirements, and
+ * carry no organization records: connection health, capability metadata, and
+ * schema description only (contracts/endpoint-manifest.md).
+ */
+const DISCOVERY_TOOLS: Readonly<Record<string, readonly RoleProfile[]>> = {
+  jisr_connection_status_get: ROLE_PROFILES,
+  jisr_capabilities_get: ROLE_PROFILES,
+  jisr_data_catalog_get: ROLE_PROFILES,
+};
+
+function discoveryCapability(tool: string, principal: Principal): CapabilityRecord | null {
+  const profiles = DISCOVERY_TOOLS[tool];
+  if (profiles === undefined) return null;
+
+  const allowed = profiles.includes(principal.profile);
+  return {
+    domain: 'discovery',
+    tool,
+    supportedBySpecification: true,
+    permittedByJisrKey: true,
+    allowedByPrincipal: allowed,
+    enabledByConfiguration: true,
+    available: allowed,
+    unavailableReason: allowed ? null : 'JISR_PERMISSION_DENIED',
+    suggestedAction: allowed ? null : 'Ask the operator to review the configured role profile.',
+  };
+}
 
 export interface AuthorizationContext {
   readonly principal: Principal;
@@ -33,6 +68,18 @@ export interface AuthorizationContext {
  * and never discloses whether the underlying record exists (spec User Story 3).
  */
 export function authorizeTool(tool: string, context: AuthorizationContext): CapabilityRecord {
+  const discovery = discoveryCapability(tool, context.principal);
+  if (discovery !== null) {
+    if (!discovery.available) {
+      throw new JisrMcpError(
+        discovery.unavailableReason ?? 'JISR_PERMISSION_DENIED',
+        'This operation is not available to you.',
+        discovery.suggestedAction ?? undefined,
+      );
+    }
+    return discovery;
+  }
+
   const entry = findByTool(tool);
   if (entry === undefined) {
     // Unknown tool names are a programming error, not a caller error: the tool

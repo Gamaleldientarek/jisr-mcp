@@ -131,26 +131,26 @@ reading, no additional service installed.
 
 ### Tests for User Story 1
 
-- [ ] T055 [P] [US1] Contract test for the three discovery tools in `tests/contract/discovery-tools.test.ts`
-- [ ] T056 [P] [US1] Test startup failure messages in `tests/integration/startup-failures.test.ts` for missing slug, wrong secret, and unapproved base URL, asserting no stack trace and no credential echo (quickstart V2)
-- [ ] T057 [P] [US1] Test that connection status returns no slug, key identifier, or token in `tests/field-policy/connection-status.test.ts` (spec FR-013)
-- [ ] T058 [P] [US1] Test unavailability explanations in `tests/integration/unavailability.test.ts`, asserting each of the four causes is distinguishable with a suggested action (spec FR-016)
+- [X] T055 [P] [US1] Contract test for the three discovery tools in `tests/contract/discovery-tools.test.ts`
+- [X] T056 [P] [US1] Test startup failure messages in `tests/integration/startup-failures.test.ts` for missing slug, wrong secret, and unapproved base URL, asserting no stack trace and no credential echo (quickstart V2)
+- [X] T057 [P] [US1] Test that connection status returns no slug, key identifier, or token in `tests/field-policy/connection-status.test.ts` (spec FR-013)
+- [X] T058 [P] [US1] Test unavailability explanations in `tests/integration/unavailability.test.ts`, asserting each of the four causes is distinguishable with a suggested action (spec FR-016)
 
 ### Implementation for User Story 1
 
-- [ ] T059 [P] [US1] Implement `jisr_connection_status_get` in `src/core/tools/discovery/connection-status.ts`
-- [ ] T060 [P] [US1] Implement `jisr_capabilities_get` in `src/core/tools/discovery/capabilities.ts`
-- [ ] T061 [P] [US1] Implement `jisr_data_catalog_get` in `src/core/tools/discovery/data-catalog.ts`, including each tool's declared field groups (spec FR-028)
-- [ ] T062 [US1] Implement the employees service in `src/core/services/employees-service.ts`
-- [ ] T063 [US1] Implement `jisr_employees_list` in `src/core/tools/employees/employees-list.ts` with the allowlist mapper applied
-- [ ] T064 [US1] Implement `jisr_employee_basic_info_get` in `src/core/tools/employees/basic-info-get.ts`
-- [ ] T065 [US1] Implement the attendance service in `src/core/services/attendance-service.ts`
-- [ ] T066 [US1] Implement `jisr_attendance_summary_get` in `src/core/tools/attendance/summary-get.ts`, mapping `businiess_trip_days` verbatim from the upstream spelling (data-model §4)
-- [ ] T067 [US1] Write the README quick start in `README.md`: prerequisites, the two-credential posture, configuration, and first query (spec SC-001)
-- [ ] T068 [P] [US1] Document the **Claude Code** installation block in `README.md`, naming its configuration mechanism and both installation scopes (checklist adoption CHK001)
-- [ ] T069 [P] [US1] Document the **Cursor** installation block in `README.md`, covering project-scoped and user-scoped installation (checklist adoption CHK003)
-- [ ] T070 [P] [US1] Document the **Codex** installation block in `README.md`, using its own configuration format rather than the JSON used by other clients (checklist adoption CHK002)
-- [ ] T071 [US1] Document Claude Desktop and MCP Inspector connection in `README.md`, plus how to refresh the tool list on clients that do not accept post-connection changes (spec §Edge Cases, SC-006)
+- [X] T059 [P] [US1] Implement `jisr_connection_status_get` in `src/core/tools/discovery/connection-status.ts`
+- [X] T060 [P] [US1] Implement `jisr_capabilities_get` in `src/core/tools/discovery/capabilities.ts`
+- [X] T061 [P] [US1] Implement `jisr_data_catalog_get` in `src/core/tools/discovery/data-catalog.ts`, including each tool's declared field groups (spec FR-028)
+- [X] T062 [US1] Implement the employees service in `src/core/services/employees-service.ts`
+- [X] T063 [US1] Implement `jisr_employees_list` in `src/core/tools/employees/employees-list.ts` with the allowlist mapper applied
+- [X] T064 [US1] Implement `jisr_employee_basic_info_get` in `src/core/tools/employees/basic-info-get.ts`
+- [X] T065 [US1] Implement the attendance service in `src/core/services/attendance-service.ts`
+- [X] T066 [US1] Implement `jisr_attendance_summary_get` in `src/core/tools/attendance/summary-get.ts`, mapping `businiess_trip_days` verbatim from the upstream spelling (data-model §4)
+- [X] T067 [US1] Write the README quick start in `README.md`: prerequisites, the two-credential posture, configuration, and first query (spec SC-001)
+- [X] T068 [P] [US1] Document the **Claude Code** installation block in `README.md`, naming its configuration mechanism and both installation scopes (checklist adoption CHK001)
+- [X] T069 [P] [US1] Document the **Cursor** installation block in `README.md`, covering project-scoped and user-scoped installation (checklist adoption CHK003)
+- [X] T070 [P] [US1] Document the **Codex** installation block in `README.md`, using its own configuration format rather than the JSON used by other clients (checklist adoption CHK002)
+- [X] T071 [US1] Document Claude Desktop and MCP Inspector connection in `README.md`, plus how to refresh the tool list on clients that do not accept post-connection changes (spec §Edge Cases, SC-006)
 
 **Checkpoint**: A working, installable, single-organization read server — the MVP
 

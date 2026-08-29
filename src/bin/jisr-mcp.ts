@@ -13,9 +13,9 @@ import { createRequire } from 'node:module';
 import { ConfigurationError, loadConfig } from '../config/environment.js';
 import { UNPROBED } from '../core/authorization/capabilities.js';
 import { createPrincipal } from '../core/authorization/principal.js';
-import type { AuthorizationContext } from '../core/authorization/policies.js';
 import { JisrClient } from '../core/jisr/client.js';
-import { ToolRegistry } from '../core/tools/registry.js';
+import { registerReadTools } from '../core/tools/index.js';
+import { ToolRegistry, type ToolContext } from '../core/tools/registry.js';
 import { createAuditSink } from '../observability/audit.js';
 import { createLogger } from '../observability/logger.js';
 import { Metrics } from '../observability/metrics.js';
@@ -46,8 +46,15 @@ async function main(): Promise<void> {
   const config = await loadConfig();
   const logger = createLogger(config.logLevel);
 
+  // Constructed before the runtime so a configuration failure surfaces at
+  // startup rather than on the first tool call.
+  const client = new JisrClient(config);
+
+  const registry = new ToolRegistry();
+  registerReadTools(registry);
+
   const runtime: AdapterRuntime = {
-    registry: new ToolRegistry(),
+    registry,
     context: {
       principal: createPrincipal({
         organizationId: config.organizationId,
@@ -57,14 +64,12 @@ async function main(): Promise<void> {
       // Key permissions are probed at connection setup. Until then every domain
       // is 'unknown' rather than assumed permitted (plan > Open Dependencies).
       observed: UNPROBED,
-    } satisfies AuthorizationContext,
+      client,
+      connection: { hostType: config.hostType },
+    } satisfies ToolContext,
     audit: createAuditSink(),
     metrics: new Metrics(),
   };
-
-  // Constructed here so a credential failure surfaces at startup rather than on
-  // the first tool call.
-  void new JisrClient(config);
 
   logger.info('starting jisr-mcp', {
     version,

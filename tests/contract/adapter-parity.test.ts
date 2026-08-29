@@ -21,10 +21,27 @@ import {
   type ToolDefinition,
 } from '../../src/core/tools/registry.js';
 import { invokeTool, planRegistrations, toolListCacheHint } from '../../src/adapters/shared.js';
+import { JisrClient } from '../../src/core/jisr/client.js';
+import type { AppConfig } from '../../src/config/environment.js';
 import { createAuditSink } from '../../src/observability/audit.js';
 import { Metrics } from '../../src/observability/metrics.js';
 
 const ORG = 'org-parity-000001';
+
+/** A client that is never called; these suites exercise registration, not I/O. */
+function stubClient(): JisrClient {
+  return new JisrClient({
+    organizationId: ORG,
+    baseUrl: 'https://apis.jisr.net/api',
+    hostType: 'aws',
+    slug: 'test-org',
+    credentials: { apiKey: 'k', apiSecret: 's' },
+    financeCredentials: undefined,
+    roleProfile: 'hr_operations',
+    featureFlags: createFeatureFlags({ financeSurfaceEnabled: false }),
+    logLevel: 'error',
+  } satisfies AppConfig);
+}
 
 function silentSink(): NodeJS.WriteStream {
   return { write: () => true } as unknown as NodeJS.WriteStream;
@@ -72,7 +89,7 @@ function runtime() {
   };
   return {
     registry,
-    context,
+    context: { ...context, client: stubClient(), connection: { hostType: 'aws' as const } },
     audit: createAuditSink(silentSink()),
     metrics: new Metrics(),
   };

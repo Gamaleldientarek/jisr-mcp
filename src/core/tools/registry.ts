@@ -11,6 +11,21 @@ import { z } from 'zod';
 import type { Classification } from '../authorization/field-policy.js';
 import { isToolDiscoverable, type AuthorizationContext } from '../authorization/policies.js';
 import type { ResultEnvelope } from '../envelope.js';
+import type { JisrClient } from '../jisr/client.js';
+
+/**
+ * What a tool handler receives.
+ *
+ * Authorization plus the upstream client and connection facts. Deliberately not
+ * a global: a handler can only reach what it is handed, so a tool cannot widen
+ * its own access.
+ */
+export interface ToolContext extends AuthorizationContext {
+  readonly client: JisrClient;
+  readonly connection: {
+    readonly hostType: 'aws' | 'local';
+  };
+}
 
 /**
  * MCP safety annotations.
@@ -66,7 +81,7 @@ export interface ToolDefinition<Input = unknown> {
    */
   readonly declaredFieldGroups: readonly Classification[];
   readonly fieldGroupPurpose: string;
-  readonly handler: (input: Input, context: AuthorizationContext) => Promise<ToolResult>;
+  readonly handler: (input: Input, context: ToolContext) => Promise<ToolResult>;
 }
 
 /** The built schema, for validating input inside the core. */

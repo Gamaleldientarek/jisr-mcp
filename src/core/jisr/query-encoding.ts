@@ -15,8 +15,8 @@ export interface QueryInput {
 
 /** A `field[from]` / `field[to]` pair. */
 export interface RangeFilter {
-  readonly from?: QueryValue;
-  readonly to?: QueryValue;
+  readonly from?: QueryValue | undefined;
+  readonly to?: QueryValue | undefined;
 }
 
 function isRange(value: unknown): value is RangeFilter {

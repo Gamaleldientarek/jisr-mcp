@@ -99,9 +99,10 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 
 - **FR-001**: The server MUST be runnable by an adopter in a local, single-organization deployment using a single documented command, with no build step and no database requirement.
 - **FR-002**: This release MUST deliver the self-hosted single-organization deployment only. The server MUST nonetheless obtain caller authorization, organization context, and credentials through a deployment boundary rather than assuming a single organization, so that a hosted multi-organization deployment can be added later without altering any tool contract, result envelope, error code, or safety annotation.
+- **FR-002a**: Where more than one MCP protocol adapter is shipped, every tool MUST present identical inputs, outputs, result envelope, error codes, and safety annotations through each adapter. Any observable difference between adapters is a defect, not a variation.
 - **FR-003**: The server MUST work with any specification-compliant MCP client without client-specific code paths, and MUST be verified against at least Claude Code, Claude Desktop, Cursor, a ChatGPT/Codex-family client, and the official MCP Inspector.
 - **FR-004**: The project MUST publish a copy-pasteable configuration block for each verified client, and a documented invocation for use from a terminal or script.
-- **FR-005**: The server MUST provide instructions at connection time sufficient for an agent to understand the domain, the identifier conventions, the sensitivity boundaries, and the freshness semantics without reading external documentation.
+- **FR-005**: The server MUST provide instructions at connection time covering, at minimum, these six subjects: the upstream domain and what the server is for; that `employeeId` is a UUID and `employeeCode` an integer and the two are never interchanged; that collections are traversed only by server-issued cursor; that an absent tool means an authorization or capability gate failed rather than a missing feature; that financial data is reachable only through its own tools; and that all data is live rather than stored. Completeness is assessed against this enumerated list.
 - **FR-006**: The server MUST fail startup with a message naming the specific missing or invalid setting and the corrective action, and MUST NOT emit a stack trace or any credential value on a configuration failure.
 
 #### Read surface coverage
@@ -125,6 +126,7 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 - **FR-017**: Every request MUST be authorized against two independent gates: the caller's role and granted scopes, and the connected Jisr key's permissions. Neither MUST be inferred from the other.
 - **FR-018**: The listed tool surface MUST be filtered to what the caller is authorized to use, such that unauthorized capabilities are undiscoverable rather than merely refused on call.
 - **FR-019**: The server MUST define these distinct role profiles: employee self-service reader, manager reader, HR operations, payroll and finance, integration administrator, auditor, and platform operator. In this release the operator selects the active profile by configuration; the profile definitions MUST be the same ones a future identity provider would map onto.
+- **FR-019a**: The manager profile reaches an employee if and only if that employee's `line_manager` resolves to the caller — direct reports only. The server MUST NOT derive, infer, or traverse an indirect reporting tree.
 - **FR-020**: Financial authorization MUST be separate from general HR authorization; holding one MUST NOT confer the other.
 - **FR-021**: Integration administration MUST NOT confer access to employee financial data, and infrastructure or platform access MUST NOT confer access to any organization's HR or financial data.
 - **FR-022**: Every request, stored record, and data-access operation MUST carry explicit organization context even though this release serves one organization, and any identifier or cursor bearing a different organization context MUST be refused. Organization context MUST NOT be ambient or implicit.
@@ -138,8 +140,8 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 - **FR-025**: Authentication secrets MUST never appear in a result, summary, error, log, trace, schema, fixture, or test artifact.
 - **FR-026**: Financial data MUST be reachable only through its dedicated tools under its dedicated authorization, and MUST NOT appear as fields inside general HR results.
 - **FR-027**: Fields appearing in upstream responses that are absent from the approved schema MUST NOT be exposed automatically; their appearance MUST be recorded as drift.
-- **FR-028**: Results MUST return the narrowest data that answers the request rather than complete records by default.
-- **FR-029**: Sensitive values MUST be redacted from logs and traces, and no full employee, financial, payroll, or journal record may be logged.
+- **FR-028**: Every tool MUST declare, in the data catalog, the classified field groups it returns and the purpose each serves. A tool's response MUST NOT contain any field outside its declared groups. Field groups classified `EMPLOYEE_SENSITIVE` or `FINANCIAL_CONFIDENTIAL` MUST NOT be declared by a tool whose stated purpose does not require them.
+- **FR-029**: The redaction mechanism enforcing FR-025 MUST fail closed: where a value cannot be classified or redacted with certainty, the log or trace entry MUST be suppressed rather than emitted. No full employee, financial, payroll, or journal record may be logged under any condition.
 
 #### Result contract
 
@@ -158,6 +160,7 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 #### Auditability and observability
 
 - **FR-038**: Every tool call MUST produce an audit record of identity, organization, tool, authorization decision, and outcome, without sensitive record contents.
+- **FR-038a**: Audit records MUST be emitted as structured JSON on the standard error stream. The server MUST NOT write audit records to disk. Retention, forwarding, and protection of that stream are the operator's responsibility and MUST be documented as such.
 - **FR-039**: A single correlation identifier MUST link a caller's request through authorization, upstream call, and audit record.
 - **FR-040**: The server MUST expose operational signals covering call volume and outcome by tool, authorization denials, sensitive-tool usage, upstream failures and rate limiting, and detected drift.
 
@@ -166,7 +169,9 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 - **FR-041**: The repository MUST be publishable publicly with a license, a README sufficient to reach first successful use, a security disclosure policy, contribution guidance, and a changelog.
 - **FR-042**: No real credential, employee, or payroll data may exist anywhere in the repository or its test fixtures, and an automated secret scan MUST run on every change.
 - **FR-043**: The full automated test suite MUST run on every proposed change before merge.
-- **FR-044**: Releases MUST be versioned, and the supported MCP protocol version and supported Jisr specification snapshot MUST be documented per release.
+- **FR-044**: Releases MUST follow semantic versioning, and each release MUST document the MCP protocol version(s) it supports and the Jisr specification snapshot it was built against.
+- **FR-044a**: Every release MUST originate from a version-control tag on the default branch, be published as a GitHub Release carrying generated notes, and reach the package registry through an automated workflow triggered by that tag — never from a maintainer's local machine. Published packages MUST carry build provenance.
+- **FR-044b**: The default branch MUST be protected: no direct pushes, and the full automated test suite, the endpoint coverage gate, and the secret scan MUST pass before any change can merge.
 - **FR-045**: This release MUST operate against live Jisr data only, requiring no database, queue, or background worker to run. The result envelope MUST nonetheless carry the source and freshness fields defined in FR-030 from the outset, so that a later synchronized store becomes an additive change rather than a breaking one.
 
 ### Key Entities
@@ -199,6 +204,8 @@ An auditor needs to review who accessed what. An operator needs to know when Jis
 - **SC-011**: Every tool call in a replayed session has a corresponding audit record, with 0 records containing sensitive payloads.
 - **SC-012**: 100% of the project's own Definition of Done items are satisfied before the first public release is tagged.
 - **SC-013**: Financial tools are absent from the listed surface in 100% of deployments that have not explicitly enabled them, including deployments whose Jisr key permits financial access.
+- **SC-014**: For identical inputs and authorization, every tool produces identical structured output, error codes, and annotations through every shipped protocol adapter, with 0 divergences.
+- **SC-015**: An operator can answer questions spanning at least 4 distinct Jisr domains in one assistant session with 0 switches to the Jisr web application, verified as a scripted end-to-end scenario.
 
 ## Out of Scope (Deferred)
 
@@ -228,6 +235,7 @@ and the design must not preclude any of them.
 - **Bilingual data is normal.** Employee and lookup records may contain Arabic text; correct handling of Arabic names and localized lookup values is a functional expectation, not an enhancement.
 - **Permissive open-source license.** A permissive license is assumed for public release, allowing commercial use by adopters. The specific license is a publication-time decision, not a design constraint.
 - **Legal review is a release gate, not a design input.** Saudi PDPL obligations are designed for; qualified legal review is required before production use and is tracked as an external dependency.
+- **Parts of Constitution Principle IV are dormant, not satisfied.** The principle requires `organization_id` on every stored record, composite uniqueness constraints, organization context on every repository method, and finance data stored under separate encryption keys with separate retention. This release stores nothing, so those clauses are vacuously true rather than met. They activate the moment any persistence is introduced — including a cache. FR-022's requirement that organization context be explicit on every operation is the live portion of the principle and is met in full.
 - **Analytics and KPI capability is out of scope** for this specification. It sits above this data layer in a later release and must not influence the tool structure or authorization model defined here.
 
 ## Dependencies

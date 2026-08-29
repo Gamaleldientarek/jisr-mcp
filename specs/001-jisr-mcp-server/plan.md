@@ -46,9 +46,12 @@ runs it without a build step
 
 **Project Type**: Single project — an MCP server distributed as a CLI-invocable npm package
 
-**Performance Goals**: Tool latency dominated by the upstream call; the server's own overhead
-budgeted under 50 ms p95 per invocation. Upstream page size capped at Jisr's documented maximum of
-100 records; a per-invocation total-record ceiling bounds every collection tool
+**Performance Goals**: No server-side latency target is set for this release. End-to-end tool
+latency is dominated by the upstream Jisr call, whose rate limits and response times are
+undocumented (see Open Dependencies), so any number here would be invented rather than derived.
+What is bounded and enforced: upstream page size at Jisr's documented maximum of 100 records, and a
+per-invocation total-record ceiling on every collection tool. A latency target becomes meaningful
+once upstream behaviour is characterised against a real tenant
 
 **Constraints**: No secret, token, or credential value in any output, log, trace, or test artifact;
 no write code path present in the build; no generic HTTP, arbitrary-path, or arbitrary-URL tool;
@@ -66,7 +69,7 @@ tools = **23 tools**. One organization per process. Seven role profiles selected
 | **I. Documented Surface Only** (NON-NEGOTIABLE) | Every tool traces to an operation in a dated specification snapshot; no invented endpoint, field, permission, or limit | **PASS** — snapshot committed, 29 operations verified against the plan with zero divergence | **PASS** — endpoint manifest is generated from the snapshot; undocumented items (rate limits, token lifetime, permission mapping) are carried as open dependencies, not filled in |
 | **II. Least Privilege by Construction** | Two independent gates: caller authorization and Jisr key permission | **PASS** — role profile from configuration, key capability probed at connection | **PASS** — both gates are separate modules; neither infers the other; finance requires explicit opt-in beyond key permission |
 | **III. Classify Before You Expose** | Every field classified before it is returned or logged | **PASS** with a named risk: upstream leaks salary into the employee list under a broad key | **PASS** — resolved by an explicit mapper allowlist and a dedicated field-policy test (research R2) |
-| **IV. Tenant Isolation** (NON-NEGOTIABLE) | Explicit organization context on every operation, never ambient | **PASS** — single organization this release, but context is a required parameter throughout | **PASS** — organization context is a constructor argument on every service and is bound into every cursor |
+| **IV. Tenant Isolation** (NON-NEGOTIABLE) | Explicit organization context on every operation, never ambient | **PASS** — single organization this release, but context is a required parameter throughout | **PASS, partly dormant** — organization context is a constructor argument on every service and is bound into every cursor. The principle's storage clauses (record-level `organization_id`, composite uniqueness, separate finance encryption and retention) are vacuously true because nothing is stored, and are recorded as dormant in spec Assumptions so they are not mistaken for satisfied when persistence arrives |
 | **V. Truthful Tool Contracts** | Annotations match behavior; read-only means zero upstream mutation | **PASS** | **PASS** — all 23 tools are `readOnlyHint: true`, and the guarantee is structural: no write code path exists to misannotate. Annotations are hints, so enforcement stays server-side (research R6) |
 | **VI. Read-First Release Order** | Release 1 is read-only; writes absent, not disabled | **PASS** | **PASS** — the 8 upstream write operations are recorded in the manifest as `release: 2` with no tool binding; no write client method exists |
 | **VII. Verified, Not Asserted** (NON-NEGOTIABLE) | No completion claim without passing tests, coverage gate, and Inspector validation | **PASS** | **PASS** — the coverage gate fails the build on manifest/snapshot divergence; Inspector validation against both adapters is a release gate |
@@ -170,7 +173,7 @@ and read-only.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |---|---|---|
-| Two MCP adapters (`mcp-v1`, `mcp-v2`) instead of one | Spec FR-003 and SC-006 commit to working across ≥5 independent MCP clients with no client-specific code. SDK v2 (2026-07-28) is the stable line and the correct target; v1 (2025-11-25) is what part of the client ecosystem still speaks one month after the revision landed | **v2 only** was rejected because it would silently exclude clients that have not migrated, breaking the central adoption promise. **v1 only** was rejected because it starts a public project on a line already in maintenance. The adapter is thin — tool registration and transport wiring — because the core imports no SDK type, so the duplicated surface is small and lint-enforced. The v1 adapter is deleted once the verified client set reports 2026-07-28 support, and that removal is tracked as a release-note item, not left to drift |
+| Two MCP adapters (`mcp-v1`, `mcp-v2`) instead of one | Spec FR-003 and SC-006 commit to working across ≥5 independent MCP clients with no client-specific code. SDK v2 (2026-07-28) is the stable line and the correct target; v1 (2025-11-25) is what part of the client ecosystem still speaks one month after the revision landed | **v2 only** was rejected because it would silently exclude clients that have not migrated, breaking the central adoption promise. **v1 only** was rejected because it starts a public project on a line already in maintenance. The adapter is thin — tool registration and transport wiring — because the core imports no SDK type, so the duplicated surface is small and lint-enforced. Parity between adapters is now a specification requirement (FR-002a) with its own success criterion (SC-014), rather than a plan-level intention. The v1 adapter is deleted once the verified client set reports 2026-07-28 support, and that removal is tracked as a release-note item, not left to drift |
 
 ## Open Dependencies
 

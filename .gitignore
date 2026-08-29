@@ -1,0 +1,32 @@
+# Claude Code agent folder — may contain credentials/auth tokens
+.claude/
+
+# macOS / Google Drive
+.DS_Store
+Icon?
+.Spotlight-V100
+.Trashes
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key

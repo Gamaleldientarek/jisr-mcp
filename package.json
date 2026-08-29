@@ -1,0 +1,60 @@
+{
+  "name": "jisr-mcp",
+  "version": "0.1.0",
+  "description": "MCP server exposing the documented Jisr HR Open API read surface to any MCP client. Unofficial; not affiliated with Jisr.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "jisr-mcp": "./dist/bin/jisr-mcp.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "SECURITY.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "start": "node dist/bin/jisr-mcp.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "snapshot:jisr": "tsx scripts/snapshot-jisr-spec.ts",
+    "verify:coverage": "tsx scripts/verify-endpoint-coverage.ts",
+    "verify:mcp": "tsx scripts/verify-mcp.ts",
+    "verify:release": "tsx scripts/verify-release.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "@modelcontextprotocol/node": "2.0.0",
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "hono": "^4.11.4",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

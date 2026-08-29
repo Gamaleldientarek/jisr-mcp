@@ -31,15 +31,15 @@ beside the controls they exercise.
 
 **Purpose**: Repository scaffold, toolchain, and the guardrails that make later phases enforceable
 
-- [ ] T001 Resolve and record the published package name and registry scope, replacing the `@<scope>/jisr-mcp` placeholder in `specs/001-jisr-mcp-server/quickstart.md` (checklist adoption CHK010)
-- [ ] T002 Initialize the TypeScript project with a `bin` entry and a prepublish build so `npx` runs a prebuilt artifact, in `package.json`, targeting Node ≥20 (spec FR-001)
-- [ ] T003 [P] Configure TypeScript in `tsconfig.json` with `strict`, `noUncheckedIndexedAccess`, and `exactOptionalPropertyTypes`
-- [ ] T004 [P] Configure lint and format in `eslint.config.js`, including the `no-restricted-imports` rule forbidding any `@modelcontextprotocol/*` import under `src/core/`
-- [ ] T005 [P] Configure Vitest in `vitest.config.ts` with separate projects for unit, contract, integration, authorization, field-policy, and security suites
-- [ ] T006 [P] Add `.env.example` in the repository root containing placeholder values only, never a real credential (spec FR-042)
-- [ ] T007 [P] Add `README.md`, `SECURITY.md`, `CONTRIBUTING.md`, and `CHANGELOG.md` skeletons in the repository root (spec FR-041)
-- [ ] T008 [P] Add the CI workflow in `.github/workflows/ci.yml` running build, lint, all test projects, the coverage gate, and a secret scan on every pull request (spec FR-043)
-- [ ] T009 Implement the specification snapshot refresher in `scripts/snapshot-jisr-spec.ts`, writing to `specs/001-jisr-mcp-server/contracts/`
+- [X] T001 Resolve and record the published package name and registry scope, replacing the `@<scope>/jisr-mcp` placeholder in `specs/001-jisr-mcp-server/quickstart.md` (checklist adoption CHK010)
+- [X] T002 Initialize the TypeScript project with a `bin` entry and a prepublish build so `npx` runs a prebuilt artifact, in `package.json`, targeting Node ≥20 (spec FR-001)
+- [X] T003 [P] Configure TypeScript in `tsconfig.json` with `strict`, `noUncheckedIndexedAccess`, and `exactOptionalPropertyTypes`
+- [X] T004 [P] Configure lint and format in `eslint.config.js`, including the `no-restricted-imports` rule forbidding any `@modelcontextprotocol/*` import under `src/core/`
+- [X] T005 [P] Configure Vitest in `vitest.config.ts` with separate projects for unit, contract, integration, authorization, field-policy, and security suites
+- [X] T006 [P] Add `.env.example` in the repository root containing placeholder values only, never a real credential (spec FR-042)
+- [X] T007 [P] Add `README.md`, `SECURITY.md`, `CONTRIBUTING.md`, and `CHANGELOG.md` skeletons in the repository root (spec FR-041)
+- [X] T008 [P] Add the CI workflow in `.github/workflows/ci.yml` running build, lint, all test projects, the coverage gate, and a secret scan on every pull request (spec FR-043)
+- [X] T009 Implement the specification snapshot refresher in `scripts/snapshot-jisr-spec.ts`, writing to `specs/001-jisr-mcp-server/contracts/`
 - [ ] T010 Install and pin dependencies in `package.json`: `@modelcontextprotocol/server`, `@modelcontextprotocol/node`, `@modelcontextprotocol/sdk`, and `zod`
 
 ---

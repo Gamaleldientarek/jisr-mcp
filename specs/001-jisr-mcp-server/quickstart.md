@@ -34,7 +34,7 @@ all. Defence in depth, not a substitute for the field policy.
 ## Run it
 
 ```bash
-npx @<scope>/jisr-mcp            # stdio, no install, no build step
+npx jisr-mcp            # stdio, no install, no build step
 ```
 
 Configuration is environment-supplied:

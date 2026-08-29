@@ -17,6 +17,8 @@ import {
   type Classification,
 } from '../../authorization/field-policy.js';
 import { WARNING_CODES, type Warning } from '../../envelope.js';
+import { SNAPSHOT_VERSION } from '../endpoint-manifest.js';
+import { driftWarning, recordDrift } from '../schemas/drift.js';
 import type { UpstreamEmployee } from '../schemas/employees.js';
 
 export interface LocalisedRef {
@@ -142,12 +144,11 @@ export function mapEmployees(
     });
   }
   if (driftOverall.size > 0) {
-    // Field NAMES only. The value of an unknown field may itself be sensitive
-    // (spec FR-027).
-    warnings.push({
-      code: WARNING_CODES.SCHEMA_DRIFT,
-      message: `Jisr returned ${driftOverall.size} field(s) absent from the approved schema; they were withheld.`,
-    });
+    // Paths are recorded for operators; the caller is told only the count. The
+    // value of an unknown field is the part that might be sensitive, and even a
+    // field NAME can disclose what Jisr now holds (spec FR-027).
+    recordDrift('listEmployees', [...driftOverall], SNAPSHOT_VERSION);
+    warnings.push(driftWarning(driftOverall.size));
   }
 
   return { records, warnings, isPartial: warnings.length > 0 };

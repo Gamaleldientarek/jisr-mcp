@@ -229,15 +229,15 @@ separately, inject an unknown upstream field and confirm it is withheld and reco
 
 ### Tests for User Story 4
 
-- [ ] T099 [P] [US4] Test audit completeness in `tests/integration/audit-trail.test.ts`, asserting one stderr record per call including refusals, and no sensitive payload (spec SC-011)
-- [ ] T100 [P] [US4] Test drift handling in `tests/integration/schema-drift.test.ts` with an injected unknown field, asserting it is withheld, recorded, and marks the result partial (quickstart V8)
-- [ ] T101 [P] [US4] Test that the four capability facts are independently observable in `tests/contract/capabilities.test.ts`
+- [X] T099 [P] [US4] Test audit completeness in `tests/integration/audit-trail.test.ts`, asserting one stderr record per call including refusals, and no sensitive payload (spec SC-011)
+- [X] T100 [P] [US4] Test drift handling in `tests/integration/schema-drift.test.ts` with an injected unknown field, asserting it is withheld, recorded, and marks the result partial (quickstart V8)
+- [X] T101 [P] [US4] Test that the four capability facts are independently observable in `tests/contract/capabilities.test.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T102 [US4] Implement drift detection in `src/core/jisr/schemas/drift.ts`, recording the field path without capturing potentially sensitive values (spec FR-027)
-- [ ] T103 [US4] Wire drift into every mapper in `src/core/jisr/mappers/` so unknown fields set `isPartial` and add a warning
-- [ ] T104 [US4] Complete audit coverage across all 23 tool handlers in `src/core/tools/`, including authorization refusals
+- [X] T102 [US4] Implement drift detection in `src/core/jisr/schemas/drift.ts`, recording the field path without capturing potentially sensitive values (spec FR-027)
+- [X] T103 [US4] Wire drift into every mapper in `src/core/jisr/mappers/` so unknown fields set `isPartial` and add a warning
+- [X] T104 [US4] Complete audit coverage across all 23 tool handlers in `src/core/tools/`, including authorization refusals
 
 **Checkpoint**: Feature complete against the specification
 

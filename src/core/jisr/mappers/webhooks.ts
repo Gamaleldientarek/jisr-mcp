@@ -15,7 +15,9 @@ import {
   WEBHOOK_FIELD_CLASSIFICATIONS,
   type Classification,
 } from '../../authorization/field-policy.js';
-import { WARNING_CODES, type Warning } from '../../envelope.js';
+import type { Warning } from '../../envelope.js';
+import { SNAPSHOT_VERSION } from '../endpoint-manifest.js';
+import { driftWarning, recordDrift } from '../schemas/drift.js';
 import type { z } from 'zod';
 import type { webhookSubscriptionSchema } from '../schemas/webhooks.js';
 
@@ -74,14 +76,8 @@ export function mapWebhooks(
     return out as unknown as NormalizedWebhook;
   });
 
-  const warnings: Warning[] = drift.size
-    ? [
-        {
-          code: WARNING_CODES.SCHEMA_DRIFT,
-          message: `Jisr returned ${drift.size} webhook field(s) absent from the approved schema; they were withheld.`,
-        },
-      ]
-    : [];
+  if (drift.size > 0) recordDrift('listWebhooks', [...drift], SNAPSHOT_VERSION);
+  const warnings: Warning[] = drift.size > 0 ? [driftWarning(drift.size)] : [];
 
   return { records, warnings, isPartial: warnings.length > 0 };
 }

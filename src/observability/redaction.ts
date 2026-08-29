@@ -13,7 +13,11 @@ const SECRET_KEY_PATTERNS = [
   /secret/i,
   /token/i,
   /password/i,
-  /authorization/i,
+  // Anchored: this must catch the `Authorization` HTTP header without also
+  // catching legitimate field names that merely contain the word -- the audit
+  // record's `authorizationDecision` is the field an investigation depends on,
+  // and redacting it would quietly destroy the trail.
+  /^authorization$/i,
   /auth[-_]?data/i,
   /custom[-_]?header/i,
   /^slug$/i,

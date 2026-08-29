@@ -53,6 +53,27 @@ describe('redact', () => {
     expect(out).not.toContain('sk-live-abcdefghijklmnop');
   });
 
+  it('does not redact field names that merely contain a secret-ish word', () => {
+    // Regression: /authorization/i once matched `authorizationDecision`, which
+    // silently blanked the most important field in every audit record.
+    const out = redact({
+      authorizationDecision: 'allow',
+      tokenCount: 12,
+      secretsScanned: 3,
+    }) as Record<string, unknown>;
+
+    expect(out['authorizationDecision']).toBe('allow');
+    // These two SHOULD still be masked -- the rule is narrow, not absent.
+    expect(out['tokenCount']).toBe(REDACTED);
+    expect(out['secretsScanned']).toBe(REDACTED);
+  });
+
+  it('still masks the Authorization header itself', () => {
+    const out = redact({ Authorization: BEARER, authorization: BEARER }) as Record<string, unknown>;
+    expect(out['Authorization']).toBe(REDACTED);
+    expect(out['authorization']).toBe(REDACTED);
+  });
+
   it('leaves ordinary operational values intact', () => {
     const out = redact({ tool: 'jisr_employees_list', count: 12, ok: true }) as Record<
       string,

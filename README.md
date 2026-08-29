@@ -7,8 +7,10 @@ Claude Code, Claude Desktop, Cursor, Codex, and anything else that speaks the pr
 > publicly documented Open API, and never scrapes the web application or calls undocumented
 > endpoints.
 
-> **Status: in development.** Not yet published to npm. The specification, plan and task
-> breakdown driving this build live in [`specs/001-jisr-mcp-server/`](specs/001-jisr-mcp-server/).
+> **Status: in development.** Not yet published to npm. Picking this up? Start with
+> [HANDOFF.md](HANDOFF.md) — current state, what is blocked, and what to do next. The
+> specification, plan and task breakdown live in
+> [`specs/001-jisr-mcp-server/`](specs/001-jisr-mcp-server/).
 
 ## What it does
 

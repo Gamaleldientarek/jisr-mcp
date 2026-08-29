@@ -9,46 +9,46 @@ surface is **undiscoverable**, not merely refused — it does not appear in
 **Legend:** ✅ available · 🔓 available only when the operator has explicitly
 enabled the finance surface · — not available
 
-| Tool | `employee_self` | `manager` | `hr_operations` | `finance` | `integration_admin` | `auditor` | `platform_operator` |
-|---|---|---|---|---|---|---|---|
-| `jisr_accounting_journal_get` | — | — | — | 🔓 | — | — | — |
-| `jisr_accrual_transactions_list` | — | — | ✅ | — | — | — | — |
-| `jisr_attendance_logs_list` | ✅ | ✅ | ✅ | — | — | — | — |
-| `jisr_attendance_summary_get` | ✅ | ✅ | ✅ | — | — | — | — |
-| `jisr_audit_events_list` | — | — | — | — | ✅ | ✅ | — |
-| `jisr_business_units_list` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| `jisr_capabilities_get` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `jisr_connection_status_get` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `jisr_data_catalog_get` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `jisr_departments_list` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| `jisr_employee_basic_info_get` | ✅ | ✅ | ✅ | — | — | — | — |
-| `jisr_employee_financial_info_get` | — | — | — | 🔓 | — | — | — |
-| `jisr_employee_leave_summary_get` | ✅ | ✅ | ✅ | — | — | — | — |
-| `jisr_employee_monthly_payables_list` | — | — | — | 🔓 | — | — | — |
-| `jisr_employees_list` | — | ✅ | ✅ | — | — | — | — |
-| `jisr_employment_types_list` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| `jisr_gl_transaction_types_list` | — | — | — | 🔓 | — | — | — |
-| `jisr_locations_list` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| `jisr_nationalities_list` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| `jisr_outsourcing_companies_list` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| `jisr_paygroups_list` | — | — | — | 🔓 | — | — | — |
-| `jisr_payroll_transactions_list` | — | — | — | 🔓 | — | — | — |
-| `jisr_webhooks_list` | — | — | — | — | ✅ | — | — |
+| Tool                                  | `employee_self` | `manager` | `hr_operations` | `finance` | `integration_admin` | `auditor` | `platform_operator` |
+| ------------------------------------- | --------------- | --------- | --------------- | --------- | ------------------- | --------- | ------------------- |
+| `jisr_accounting_journal_get`         | —               | —         | —               | 🔓        | —                   | —         | —                   |
+| `jisr_accrual_transactions_list`      | —               | —         | ✅              | —         | —                   | —         | —                   |
+| `jisr_attendance_logs_list`           | ✅              | ✅        | ✅              | —         | —                   | —         | —                   |
+| `jisr_attendance_summary_get`         | ✅              | ✅        | ✅              | —         | —                   | —         | —                   |
+| `jisr_audit_events_list`              | —               | —         | —               | —         | ✅                  | ✅        | —                   |
+| `jisr_business_units_list`            | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | —                   |
+| `jisr_capabilities_get`               | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | ✅                  |
+| `jisr_connection_status_get`          | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | ✅                  |
+| `jisr_data_catalog_get`               | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | ✅                  |
+| `jisr_departments_list`               | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | —                   |
+| `jisr_employee_basic_info_get`        | ✅              | ✅        | ✅              | —         | —                   | —         | —                   |
+| `jisr_employee_financial_info_get`    | —               | —         | —               | 🔓        | —                   | —         | —                   |
+| `jisr_employee_leave_summary_get`     | ✅              | ✅        | ✅              | —         | —                   | —         | —                   |
+| `jisr_employee_monthly_payables_list` | —               | —         | —               | 🔓        | —                   | —         | —                   |
+| `jisr_employees_list`                 | —               | ✅        | ✅              | —         | —                   | —         | —                   |
+| `jisr_employment_types_list`          | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | —                   |
+| `jisr_gl_transaction_types_list`      | —               | —         | —               | 🔓        | —                   | —         | —                   |
+| `jisr_locations_list`                 | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | —                   |
+| `jisr_nationalities_list`             | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | —                   |
+| `jisr_outsourcing_companies_list`     | ✅              | ✅        | ✅              | ✅        | ✅                  | ✅        | —                   |
+| `jisr_paygroups_list`                 | —               | —         | —               | 🔓        | —                   | —         | —                   |
+| `jisr_payroll_transactions_list`      | —               | —         | —               | 🔓        | —                   | —         | —                   |
+| `jisr_webhooks_list`                  | —               | —         | —               | —         | ✅                  | —         | —                   |
 
 ## Record reachability
 
 Authorization decides whether a profile may run a tool. Reachability decides
 which **records** that call returns, applied before pagination (spec FR-018a).
 
-| Profile | Reachable records |
-|---|---|
-| `employee_self` | self |
-| `manager` | direct_reports |
-| `hr_operations` | organization |
-| `finance` | organization |
-| `integration_admin` | organization |
-| `auditor` | organization |
-| `platform_operator` | none |
+| Profile             | Reachable records |
+| ------------------- | ----------------- |
+| `employee_self`     | self              |
+| `manager`           | direct_reports    |
+| `hr_operations`     | organization      |
+| `finance`           | organization      |
+| `integration_admin` | organization      |
+| `auditor`           | organization      |
+| `platform_operator` | none              |
 
 `direct_reports` means an employee whose `line_manager` resolves to the
 caller. No indirect reporting tree is derived: Jisr exposes a single-level

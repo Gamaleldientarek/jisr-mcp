@@ -10,50 +10,50 @@ Against Jisr OpenAPI snapshot **2026-08-29**.
 
 ## Release 1 — implemented reads (20)
 
-| Method | Path | Tool | Sensitivity |
-|---|---|---|---|
-| `GET` | `/openapi/v1/employees` | `jisr_employees_list` | employee personal |
-| `GET` | `/openapi/v1/employees/basic_info` | `jisr_employee_basic_info_get` | employee personal |
-| `GET` | `/openapi/v1/employees/financial_info` | `jisr_employee_financial_info_get` | financial confidential |
-| `GET` | `/openapi/v1/attendance/summary` | `jisr_attendance_summary_get` | internal operational |
-| `GET` | `/openapi/v1/attendance_logs` | `jisr_attendance_logs_list` | internal operational |
-| `GET` | `/openapi/v1/employee_leaves/summary` | `jisr_employee_leave_summary_get` | internal operational |
-| `GET` | `/openapi/v1/accrual_transactions` | `jisr_accrual_transactions_list` | internal operational |
-| `GET` | `/openapi/v1/employee_monthly_payables` | `jisr_employee_monthly_payables_list` | financial confidential |
-| `GET` | `/openapi/v1/payroll_transactions` | `jisr_payroll_transactions_list` | financial confidential |
-| `GET` | `/openapi/v1/gl_transaction_types` | `jisr_gl_transaction_types_list` | financial confidential |
-| `GET` | `/openapi/v1/paygroups` | `jisr_paygroups_list` | financial confidential |
-| `GET` | `/openapi/v1/accounting/journals/{id}` | `jisr_accounting_journal_get` | financial confidential |
-| `GET` | `/openapi/v1/audit_events` | `jisr_audit_events_list` | internal operational |
-| `GET` | `/openapi/v1/webhooks` | `jisr_webhooks_list` | internal operational |
-| `GET` | `/openapi/v1/lookups/departments` | `jisr_departments_list` | public reference |
-| `GET` | `/openapi/v1/lookups/employment_types` | `jisr_employment_types_list` | public reference |
-| `GET` | `/openapi/v1/lookups/business_units` | `jisr_business_units_list` | public reference |
-| `GET` | `/openapi/v1/lookups/locations` | `jisr_locations_list` | public reference |
-| `GET` | `/openapi/v1/lookups/nationalities` | `jisr_nationalities_list` | public reference |
-| `GET` | `/openapi/v1/lookups/outsourcing_companies` | `jisr_outsourcing_companies_list` | public reference |
+| Method | Path                                        | Tool                                  | Sensitivity            |
+| ------ | ------------------------------------------- | ------------------------------------- | ---------------------- |
+| `GET`  | `/openapi/v1/employees`                     | `jisr_employees_list`                 | employee personal      |
+| `GET`  | `/openapi/v1/employees/basic_info`          | `jisr_employee_basic_info_get`        | employee personal      |
+| `GET`  | `/openapi/v1/employees/financial_info`      | `jisr_employee_financial_info_get`    | financial confidential |
+| `GET`  | `/openapi/v1/attendance/summary`            | `jisr_attendance_summary_get`         | internal operational   |
+| `GET`  | `/openapi/v1/attendance_logs`               | `jisr_attendance_logs_list`           | internal operational   |
+| `GET`  | `/openapi/v1/employee_leaves/summary`       | `jisr_employee_leave_summary_get`     | internal operational   |
+| `GET`  | `/openapi/v1/accrual_transactions`          | `jisr_accrual_transactions_list`      | internal operational   |
+| `GET`  | `/openapi/v1/employee_monthly_payables`     | `jisr_employee_monthly_payables_list` | financial confidential |
+| `GET`  | `/openapi/v1/payroll_transactions`          | `jisr_payroll_transactions_list`      | financial confidential |
+| `GET`  | `/openapi/v1/gl_transaction_types`          | `jisr_gl_transaction_types_list`      | financial confidential |
+| `GET`  | `/openapi/v1/paygroups`                     | `jisr_paygroups_list`                 | financial confidential |
+| `GET`  | `/openapi/v1/accounting/journals/{id}`      | `jisr_accounting_journal_get`         | financial confidential |
+| `GET`  | `/openapi/v1/audit_events`                  | `jisr_audit_events_list`              | internal operational   |
+| `GET`  | `/openapi/v1/webhooks`                      | `jisr_webhooks_list`                  | internal operational   |
+| `GET`  | `/openapi/v1/lookups/departments`           | `jisr_departments_list`               | public reference       |
+| `GET`  | `/openapi/v1/lookups/employment_types`      | `jisr_employment_types_list`          | public reference       |
+| `GET`  | `/openapi/v1/lookups/business_units`        | `jisr_business_units_list`            | public reference       |
+| `GET`  | `/openapi/v1/lookups/locations`             | `jisr_locations_list`                 | public reference       |
+| `GET`  | `/openapi/v1/lookups/nationalities`         | `jisr_nationalities_list`             | public reference       |
+| `GET`  | `/openapi/v1/lookups/outsourcing_companies` | `jisr_outsourcing_companies_list`     | public reference       |
 
 ## Handled internally (1)
 
 Never exposed as a tool: doing so would put credentials in a tool contract.
 
-| Method | Path | Tool | Sensitivity |
-|---|---|---|---|
-| `POST` | `/openapi/v1/auth` | — | internal operational |
+| Method | Path               | Tool | Sensitivity          |
+| ------ | ------------------ | ---- | -------------------- |
+| `POST` | `/openapi/v1/auth` | —    | internal operational |
 
 ## Release 2 — known and unbound (8)
 
-Recorded so the coverage gate can assert these are *unimplemented* rather than
-*missed*. This release has no write surface: no tool, no client method, no code
+Recorded so the coverage gate can assert these are _unimplemented_ rather than
+_missed_. This release has no write surface: no tool, no client method, no code
 path (spec FR-012).
 
-| Method | Path | Tool | Sensitivity |
-|---|---|---|---|
-| `POST` | `/openapi/v1/employees` | — | internal operational |
-| `POST` | `/openapi/v1/attendance_logs` | — | internal operational |
-| `POST` | `/openapi/v1/accounting/journals` | — | internal operational |
-| `POST` | `/openapi/v1/webhooks` | — | internal operational |
-| `PUT` | `/openapi/v1/webhooks/{id}` | — | internal operational |
-| `DELETE` | `/openapi/v1/webhooks/{id}` | — | internal operational |
-| `POST` | `/openapi/v1/webhooks/{id}/test` | — | internal operational |
-| `DELETE` | `/openapi/v1/payroll_transactions/{id}` | — | internal operational |
+| Method   | Path                                    | Tool | Sensitivity          |
+| -------- | --------------------------------------- | ---- | -------------------- |
+| `POST`   | `/openapi/v1/employees`                 | —    | internal operational |
+| `POST`   | `/openapi/v1/attendance_logs`           | —    | internal operational |
+| `POST`   | `/openapi/v1/accounting/journals`       | —    | internal operational |
+| `POST`   | `/openapi/v1/webhooks`                  | —    | internal operational |
+| `PUT`    | `/openapi/v1/webhooks/{id}`             | —    | internal operational |
+| `DELETE` | `/openapi/v1/webhooks/{id}`             | —    | internal operational |
+| `POST`   | `/openapi/v1/webhooks/{id}/test`        | —    | internal operational |
+| `DELETE` | `/openapi/v1/payroll_transactions/{id}` | —    | internal operational |

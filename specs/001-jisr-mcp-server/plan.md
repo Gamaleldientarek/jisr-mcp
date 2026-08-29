@@ -187,5 +187,6 @@ behaviour it touches, not the release.
 | Permission-to-endpoint mapping | Precise capability reporting | Probe on connection and record observed permissions; report what was observed, never inferred |
 | Whether a capability-discovery endpoint exists | Capability tool fidelity | Derive from connection-time probe results |
 | Complete schemas for accruals, monthly payables, payroll transactions | Full field coverage in three tools | Implement documented fields; treat anything else as drift rather than exposing it |
+| Response schema for `GET /accounting/journals/{id}` | `jisr_accounting_journal_get` (T095) | The snapshot declares the operation but no 200 response schema. Confirmed by parsing the document, not by eye. Extract or obtain it before implementing; do not infer the shape from the POST journal request |
 | Webhook signing, retry, ordering, replay guarantees | Nothing in this release | Read-only webhook listing only; deferred with Release 2 |
 | External-aggregator onboarding | The `external_aggregator` auth source | Keep the auth source extensible; do not implement until confirmed |

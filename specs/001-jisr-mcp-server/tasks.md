@@ -60,8 +60,8 @@ contract, both adapters, and the tests for the controls built here
 
 - [X] T013 Generate the endpoint manifest in `src/core/jisr/endpoint-manifest.ts` from the committed snapshot, covering all 29 operations with release bindings and canonical role profiles per `contracts/endpoint-manifest.md`
 - [X] T014 Implement the coverage gate in `scripts/verify-endpoint-coverage.ts`, asserting all six gate conditions and failing the build on divergence (spec FR-010)
-- [ ] T015 [P] Define Zod schemas for employees and attendance in `src/core/jisr/schemas/employees.ts` and `src/core/jisr/schemas/attendance.ts`, from the snapshot
-- [ ] T016 [P] Define Zod schemas for leave, accruals, finance, lookups, webhooks, and audit in `src/core/jisr/schemas/`, from the snapshot
+- [X] T015 [P] Define Zod schemas for employees and attendance in `src/core/jisr/schemas/employees.ts` and `src/core/jisr/schemas/attendance.ts`, from the snapshot
+- [X] T016 [P] Define Zod schemas for leave, accruals, finance, lookups, webhooks, and audit in `src/core/jisr/schemas/`, from the snapshot
 - [X] T017 Implement approved-host validation in `src/core/jisr/client.ts` accepting only the two documented base URLs (spec FR-006)
 - [X] T018 Implement the typed request helper in `src/core/jisr/client.ts` with timeouts, bounded retries, and required headers
 - [X] T019 Implement authentication in `src/core/jisr/authentication.ts` with a token cache keyed by organization and credential identity, never by connection, and at most one re-authentication per rejection with no refresh loop (research R4, R7)

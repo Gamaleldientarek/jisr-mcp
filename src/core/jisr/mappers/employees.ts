@@ -17,6 +17,7 @@ import {
   type Classification,
 } from '../../authorization/field-policy.js';
 import { WARNING_CODES, type Warning } from '../../envelope.js';
+import { refIdentity } from '../schemas/common.js';
 import { SNAPSHOT_VERSION } from '../endpoint-manifest.js';
 import { driftWarning, recordDrift } from '../schemas/drift.js';
 import type { UpstreamEmployee } from '../schemas/employees.js';
@@ -124,14 +125,9 @@ export function mapEmployees(
       if (REF_FIELDS.has(field)) {
         out[key] = localised(value);
       } else if (field === 'line_manager') {
-        const manager = value as Record<string, unknown> | null;
-        out[key] =
-          manager === null || manager === undefined
-            ? null
-            : {
-                id: (manager['id'] as number | string | null | undefined) ?? null,
-                name: (manager['name'] as string | null | undefined) ?? null,
-              };
+        // Two upstream dialects: { id, name } from basic_info, { guid,
+        // full_name } from the list. Normalized to one shape either way.
+        out[key] = value === null || value === undefined ? null : refIdentity(value);
       } else {
         out[key] = value;
       }

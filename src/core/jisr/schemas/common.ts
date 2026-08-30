@@ -38,7 +38,28 @@ export const localisedRefSchema = z.object({
 export const namedRefSchema = z.looseObject({
   id: z.union([z.string(), z.number()]).nullable().optional(),
   name: z.string().nullable().optional(),
+  // The employee LIST returns the same reference as { guid, full_name } while
+  // basic_info returns { id, name }. Same UUID, two dialects -- verified live
+  // against the same employee on 2026-08-31. Both are accepted and normalized.
+  guid: z.string().nullable().optional(),
+  full_name: z.string().nullable().optional(),
 });
+
+/** One identifier and one display name, whichever dialect arrived. */
+export function refIdentity(ref: unknown): { id: string | number | null; name: string | null } {
+  if (typeof ref !== 'object' || ref === null) return { id: null, name: null };
+  const r = ref as Record<string, unknown>;
+  return {
+    id:
+      (r['id'] as string | number | null | undefined) ??
+      (r['guid'] as string | null | undefined) ??
+      null,
+    name:
+      (r['name'] as string | null | undefined) ??
+      (r['full_name'] as string | null | undefined) ??
+      null,
+  };
+}
 
 /**
  * A Jisr collection payload: `{ <key>: [...], pagination }`.

@@ -23,6 +23,7 @@ import { decodeCursor, encodeCursor, hashFilters } from '../cursor.js';
 import { JisrMcpError } from '../errors.js';
 import { mapEmployees, type NormalizedEmployee } from '../jisr/mappers/employees.js';
 import { nextPageFrom, toUpstreamParams, validatePageSize } from '../jisr/pagination.js';
+import { refIdentity } from '../jisr/schemas/common.js';
 import { employeeBasicInfoSchema, employeesListSchema } from '../jisr/schemas/employees.js';
 import type { UpstreamEmployee } from '../jisr/schemas/employees.js';
 import type { ToolContext } from '../tools/registry.js';
@@ -44,9 +45,11 @@ export interface EmployeesListInput {
 /** How a record identifies itself for reachability (spec FR-018a). */
 function identify(record: UpstreamEmployee): RecordIdentity {
   return {
-    employeeId: record.employee_id ?? null,
+    // Live Jisr sends the UUID as `id`; the documentation says `employee_id`.
+    employeeId: record.id ?? record.employee_id ?? null,
     employeeCode: record.code ?? null,
-    lineManagerId: record.line_manager?.id ?? null,
+    // The list sends { guid }, basic_info sends { id }. Either works.
+    lineManagerId: refIdentity(record.line_manager).id,
   };
 }
 

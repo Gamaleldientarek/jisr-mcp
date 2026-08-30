@@ -124,27 +124,40 @@ not enabled the finance surface cannot use the accruals tool at all unless the
 caller already holds a paygroup identifier. Accruals was classified as an
 HR-operations tool; it carries a hard dependency on a finance one.
 
-## R2c. `line_manager.id` is the employee UUID -- and the list does not populate it
+## R2c. `line_manager` comes in two dialects, and the earlier null finding was wrong
 
-**Verified against the live AZMX tenant, 2026-08-30.** Closes the open question
-that was gating the manager role profile.
+**Corrected 2026-08-31.** R2c originally reported that `GET /employees` returns
+`line_manager.id` as null on every record. That conclusion was an artifact of
+this project's own schema, not of Jisr's response.
 
-`line_manager` is `{ id, name }` where `id` is a **UUID string** matching the
-employee `id` field -- not the numeric employee code, and not the numeric type the
-OpenAPI document declares.
+Fetching the SAME employee through both endpoints shows the truth:
 
-**But `GET /employees` returns `line_manager.id` as null.** Across 100 sampled
-employees, zero had it populated. `GET /employees/basic_info` returns it fully.
+| Endpoint | line_manager shape |
+|---|---|
+| `/employees/basic_info` | `{ id, name }` |
+| `/employees` (list) | `{ guid, full_name }` |
 
-So reachability scoping for the `manager` profile **cannot work on the employee
-list**: no record carries the manager reference to match against. The scoping
-fails closed, which is correct, so a manager currently receives an empty list
-rather than the wrong data. It is safe, and useless.
+Same UUID in both. The schema read only `id`, found nothing on the list, and
+reported null -- which silently emptied every manager's reachable set. Both
+dialects are now accepted and normalized, and the manager profile is verified
+working live: a manager with 4 direct reports sees exactly 5 records of 100,
+with the scope warning raised.
 
-Resolving this needs either a per-employee `basic_info` fetch (an N+1 against an
-organization of 186 people) or confirmation from Jisr that a parameter exists to
-populate the field on the list. **Do not enable the manager profile in production
-until this is settled.**
+**Resolved with it:** `line_manager.id`/`guid` is the employee UUID. The open
+question gating the manager profile is closed, and the profile is usable in
+production.
+
+**The wider lesson.** The two employee endpoints return materially different
+shapes for the same entity: `location` is `{ id, name_ar, name_en }` on the list
+but `{ address_ar, address_en, id, is_deleted }` on basic_info; `avatar` is a
+string on one and null on the other; the address block mixes value types row by
+row (`building_number` is a number for some employees, a string for others).
+Every upstream schema must be treated as endpoint-specific, not entity-specific.
+
+**And a narrowing of R2a:** `basic_info` does NOT return the salary fields --
+the finance permission is honoured there. The permission defect is confined to
+the LIST endpoint, which also returns the `bank` object (`account_title`, `iban`,
+`name` -- confirmed banking details).
 
 ## R3. MCP protocol version and SDK line
 

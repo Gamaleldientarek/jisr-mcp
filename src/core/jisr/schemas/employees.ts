@@ -13,20 +13,16 @@
 import { z } from 'zod';
 import { collection, localisedRefSchema, namedRefSchema, paginationSchema } from './common.js';
 
-export const employeeAddressSchema = z.object({
-  address_en: z.string().nullable().optional(),
-  address_ar: z.string().nullable().optional(),
-  building_number: z.string().nullable().optional(),
-  street_name: z.string().nullable().optional(),
-  district: z.string().nullable().optional(),
-  home_city: z.string().nullable().optional(),
-  home_postal_code: z.string().nullable().optional(),
-  home_country: z.string().nullable().optional(),
-  home_po_box: z.string().nullable().optional(),
-  saudi_city: z.string().nullable().optional(),
-  saudi_postal_code: z.string().nullable().optional(),
-  saudi_country: z.string().nullable().optional(),
-});
+/**
+ * The home address block.
+ *
+ * Deliberately untyped beyond "an object": live data mixes types field by field
+ * (building_number arrives as a number for some employees and a string for
+ * others, verified 2026-08-31). The block is EMPLOYEE_SENSITIVE and withheld
+ * from every caller, so strict typing here buys nothing and a single oddly
+ * typed field would fail the whole page.
+ */
+export const employeeAddressSchema = z.record(z.string(), z.unknown());
 
 /**
  * Deliberately LOOSE.

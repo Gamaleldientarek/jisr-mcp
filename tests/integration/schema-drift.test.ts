@@ -68,6 +68,33 @@ describe('the schema must let unknown fields through to be seen', () => {
   });
 });
 
+describe('the two line_manager dialects', () => {
+  // Verified live 2026-08-31 by fetching the SAME employee through both
+  // endpoints: basic_info returns { id, name }, the list returns
+  // { guid, full_name }. Same UUID, two dialects. Reading only `id` made the
+  // list's manager reference invisible, which silently emptied every manager's
+  // reachable set.
+  it('normalizes the basic_info dialect { id, name }', () => {
+    const parsed = employeeSchema.parse({
+      id: '00000000-0000-4000-8000-000000000001',
+      line_manager: { id: 'b2199670-0000-4000-8000-000000000009', name: 'A Manager' },
+    });
+    const record = mapEmployees([parsed], allowed).records[0];
+    expect(record?.lineManager?.id).toBe('b2199670-0000-4000-8000-000000000009');
+    expect(record?.lineManager?.name).toBe('A Manager');
+  });
+
+  it('normalizes the list dialect { guid, full_name }', () => {
+    const parsed = employeeSchema.parse({
+      id: '00000000-0000-4000-8000-000000000001',
+      line_manager: { guid: 'b2199670-0000-4000-8000-000000000009', full_name: 'A Manager' },
+    });
+    const record = mapEmployees([parsed], allowed).records[0];
+    expect(record?.lineManager?.id).toBe('b2199670-0000-4000-8000-000000000009');
+    expect(record?.lineManager?.name).toBe('A Manager');
+  });
+});
+
 describe('the employee identifier', () => {
   // Live Jisr returns the UUID as `id`. The documentation calls it
   // `employee_id`. Mapping only the documented name left employeeId null on

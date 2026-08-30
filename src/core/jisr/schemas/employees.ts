@@ -28,8 +28,23 @@ export const employeeAddressSchema = z.object({
   saudi_country: z.string().nullable().optional(),
 });
 
-export const employeeSchema = z.object({
-  // Identity
+/**
+ * Deliberately LOOSE.
+ *
+ * A strict z.object() silently strips unknown keys, which would defeat drift
+ * detection entirely: an undeclared field would vanish at the schema boundary
+ * and never reach the mapper that records it. Verified against live Jisr, which
+ * returns `bank` -- banking details -- that this schema does not declare.
+ *
+ * Safety still comes from the mapper's allowlist, not from Zod. Loose parsing
+ * only ensures the unknown field is SEEN so it can be recorded (spec FR-027).
+ */
+export const employeeSchema = z.looseObject({
+  // Identity.
+  // Live Jisr returns the UUID as `id`, not `employee_id` -- verified against
+  // the AZMX tenant on 2026-08-30. Both are accepted: the documented name and
+  // the one actually returned.
+  id: z.string().nullable().optional(),
   employee_id: z.string().nullable().optional(),
   code: z.union([z.number(), z.string()]).nullable().optional(),
 
@@ -47,6 +62,8 @@ export const employeeSchema = z.object({
   is_active: z.boolean().nullable().optional(),
   is_invited: z.boolean().nullable().optional(),
   joining_date: z.string().nullable().optional(),
+  terminate_date: z.string().nullable().optional(),
+  delete_date: z.string().nullable().optional(),
   created_at: z.string().nullable().optional(),
   updated_at: z.string().nullable().optional(),
   last_active_time: z.string().nullable().optional(),
@@ -68,7 +85,10 @@ export const employeeSchema = z.object({
   document_number: z.string().nullable().optional(),
   address: employeeAddressSchema.nullable().optional(),
 
-  // Financial-confidential, conditional upstream (research R2)
+  // Financial-confidential, conditional upstream (research R2).
+  // `bank` is undocumented but returned live: banking details, treated as
+  // financial-confidential and never mapped outward.
+  bank: z.unknown().optional(),
   basic_salary: z.union([z.number(), z.string()]).nullable().optional(),
   first_salary_pay_date: z.string().nullable().optional(),
   last_salary_pay_date: z.string().nullable().optional(),

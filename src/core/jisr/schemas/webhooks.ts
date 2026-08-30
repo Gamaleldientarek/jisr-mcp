@@ -22,7 +22,8 @@ export const webhookActionSchema = z.object({
   created_at: z.string().nullable().optional(),
 });
 
-export const webhookSubscriptionSchema = z.object({
+/** Loose for the same reason as the employee schema: drift must be seen to be recorded. */
+export const webhookSubscriptionSchema = z.looseObject({
   id: z.number().nullable().optional(),
   name: z.string().nullable().optional(),
   description: z.string().nullable().optional(),

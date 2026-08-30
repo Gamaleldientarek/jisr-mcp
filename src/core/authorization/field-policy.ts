@@ -28,12 +28,17 @@ export type Classification =
  * schema are kept in step by a test, not by discipline.
  */
 export const EMPLOYEE_FIELD_CLASSIFICATIONS: Readonly<Record<string, Classification>> = {
+  // Live Jisr returns the UUID as `id`; the documentation calls it
+  // `employee_id`. Both are classified so whichever arrives is handled.
+  id: 'internal_operational',
   employee_id: 'internal_operational',
   code: 'internal_operational',
   status: 'internal_operational',
   is_active: 'internal_operational',
   is_invited: 'internal_operational',
   joining_date: 'internal_operational',
+  terminate_date: 'internal_operational',
+  delete_date: 'internal_operational',
   created_at: 'internal_operational',
   updated_at: 'internal_operational',
   last_active_time: 'internal_operational',
@@ -59,6 +64,8 @@ export const EMPLOYEE_FIELD_CLASSIFICATIONS: Readonly<Record<string, Classificat
   document_number: 'employee_sensitive',
   address: 'employee_sensitive',
 
+  // Undocumented upstream, observed live: banking details.
+  bank: 'financial_confidential',
   basic_salary: 'financial_confidential',
   first_salary_pay_date: 'financial_confidential',
   last_salary_pay_date: 'financial_confidential',

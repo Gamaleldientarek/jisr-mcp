@@ -63,6 +63,9 @@ function localised(value: unknown): LocalisedRef | null {
 
 /** Upstream field -> normalized key. Only listed fields can ever be emitted. */
 const FIELD_MAP: Readonly<Record<string, keyof NormalizedEmployee>> = {
+  // Live Jisr sends `id`; the documentation says `employee_id`. Both map to the
+  // same normalized field, so a caller sees one stable identifier either way.
+  id: 'employeeId',
   employee_id: 'employeeId',
   code: 'employeeCode',
   full_name_en: 'fullNameEn',

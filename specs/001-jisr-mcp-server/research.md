@@ -67,6 +67,39 @@ and filtering at the edge — rejected, it means sensitive values transit more l
 
 ---
 
+## R2a. The finance permission does not strip fields from the employee list
+
+**Observed against the live AZMX tenant, 2026-08-30.**
+
+Jisr's specification states, of `GET /openapi/v1/employees`:
+
+> These fields will be omitted if the API key does not have the required
+> permission.
+
+**They are not omitted.** With the financial permission excluded from the key,
+the employee list still returns `basic_salary`, `first_salary_pay_date`,
+`last_salary_pay_date`, and an undocumented `bank` object.
+
+This is not a case of the permission system failing generally. Excluding
+attendance from the same key produces a clean `403 Not authorized` on
+`/attendance/summary`, so exclusions do take effect at the endpoint level. The
+employee list simply does not honour the documented field-level behaviour.
+
+**Consequence, and it is the important one.** R2 treated the allowlist mapper as
+defence in depth over a permission the organization controls. It is not. It is
+the **only** thing keeping salary and banking details out of an ordinary employee
+listing. A passthrough mapper trusting the key's permission would be leaking
+payroll to every caller right now.
+
+Nothing in the design changes — the allowlist was already built this way — but
+the risk it carries is higher than R2 assumed, and it should never be relaxed on
+the grounds that "the key does not have finance permission anyway".
+
+**Caveats worth checking before reporting to Jisr:** permission changes may
+propagate with a delay, and the exact checkbox semantics are not documented.
+Re-verify before raising it. If it holds, it is a Jisr defect worth reporting —
+any integrator following their documentation would assume those fields are gone.
+
 ## R3. MCP protocol version and SDK line
 
 **Decision**: Build the domain core independent of any MCP SDK, and ship **`@modelcontextprotocol/server` v2.0.0**

@@ -1888,6 +1888,8 @@ Exit criteria:
 
 Record verified answers here. Do not invent them.
 
+- **Why does the employee list still return `basic_salary`, `first_salary_pay_date`, `last_salary_pay_date` and `bank` when the API key's financial permission is excluded?** The documentation says these fields are omitted without the permission. Observed live on 2026-08-30 that they are not, while excluding attendance on the same key correctly produces 403. Re-verify for propagation delay before raising with Jisr.
+- What is the undocumented `bank` object on the employee record, and what does it contain?
 - Is Open API access enabled for the target Jisr subscription?
 - Is a sandbox or test tenant available?
 - What are the current rate limits per organization and endpoint?

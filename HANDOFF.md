@@ -83,13 +83,19 @@ That clears three Definition-of-Done items and the whole five-client checklist.
 
 ## Things you would otherwise rediscover the hard way
 
-**The employee list leaks salary.** Jisr returns `basic_salary`,
-`first_salary_pay_date` and `last_salary_pay_date` inside the _ordinary_ employee
-list whenever the connected API key holds finance permission — governed by the
-**key**, not the caller. The mapper is an allowlist for exactly this reason.
+**The employee list leaks salary, and the Jisr permission does not stop it.**
+Jisr returns `basic_salary`, `first_salary_pay_date`, `last_salary_pay_date` and
+an undocumented `bank` object inside the _ordinary_ employee list. Their
+documentation says these are omitted when the key lacks financial permission.
+**Verified live on 2026-08-30: they are not.** Excluding attendance on the same
+key does correctly produce a 403, so exclusions work in general — the employee
+list just does not honour the field-level rule.
+
+The mapper's allowlist is therefore the **only** thing keeping payroll and
+banking details out of an ordinary listing, not a second line of defence.
 `tests/field-policy/employee-list-financial-leak.test.ts` is the most important
 test in the repo; it was mutation-checked (bypassing the finance gate fails 12 of
-18 assertions).
+18 assertions). Never relax it on the grounds that the key lacks the permission.
 
 **Webhook subscriptions carry third-party secrets.** `auth_data` and
 `custom_header` commonly hold a bearer token for a _downstream_ system. Classified

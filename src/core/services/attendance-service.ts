@@ -147,7 +147,11 @@ export async function getAttendanceSummary(
 const LOGS_OPERATION = 'listAttendanceLogs';
 
 export interface AttendanceLogsInput {
-  readonly status?: 'success' | 'failed';
+  /**
+   * REQUIRED by Jisr, despite the specification marking it optional.
+   * Verified live: omitting it returns 400 "Parameter status is required".
+   */
+  readonly status: 'success' | 'failed';
   readonly from: string;
   readonly to: string;
   readonly pageSize?: number;

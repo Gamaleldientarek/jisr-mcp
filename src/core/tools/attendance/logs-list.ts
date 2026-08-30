@@ -6,7 +6,7 @@ import { DEFAULT_PAGE_SIZE, UPSTREAM_MAX_PAGE_SIZE } from '../../jisr/pagination
 import { READ_ONLY_ANNOTATIONS, type ToolDefinition } from '../registry.js';
 
 export const attendanceLogsTool: ToolDefinition<{
-  status?: 'success' | 'failed';
+  status: 'success' | 'failed';
   from: string;
   to: string;
   pageSize?: number;
@@ -17,7 +17,10 @@ export const attendanceLogsTool: ToolDefinition<{
   description:
     'Lists individual attendance punches (clock-ins and clock-outs) in a time range, successful or failed. Timestamps must carry an explicit time zone.',
   inputShape: {
-    status: z.enum(['success', 'failed']).optional(),
+    // Required by Jisr even though its specification marks it optional.
+    status: z
+      .enum(['success', 'failed'])
+      .describe('Required by Jisr. Whether to return successful or failed punches.'),
     from: z.string().describe('ISO-8601 start, with a zone: 2026-08-29T00:00:00Z'),
     to: z.string().describe('ISO-8601 end, with a zone: 2026-08-29T23:59:59Z'),
     pageSize: z

@@ -8,7 +8,7 @@ import { READ_ONLY_ANNOTATIONS, type ToolDefinition } from '../registry.js';
 
 export const leaveSummaryTool: ToolDefinition<{
   employeeCodes: number[];
-  leaveType?: string;
+  leaveType: string;
   pageSize?: number;
 }> = {
   name: 'jisr_employee_leave_summary_get',
@@ -20,7 +20,8 @@ export const leaveSummaryTool: ToolDefinition<{
       .min(1)
       .max(MAX_RECORDS_PER_INVOCATION)
       .describe('Employee codes (integers), as returned by jisr_employees_list.'),
-    leaveType: z.string().optional().describe('For example: annual'),
+    // Required by Jisr even though its specification marks it optional.
+    leaveType: z.string().describe('Required by Jisr. For example: annual'),
     pageSize: z.number().int().min(1).max(UPSTREAM_MAX_PAGE_SIZE).optional(),
   },
   annotations: READ_ONLY_ANNOTATIONS,

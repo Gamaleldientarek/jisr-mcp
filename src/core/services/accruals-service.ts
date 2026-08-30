@@ -16,9 +16,21 @@ import type { ToolContext } from '../tools/registry.js';
 
 const OPERATION = 'listAccrualTransactions';
 
+/**
+ * All three of these are REQUIRED by Jisr, despite its OpenAPI document marking
+ * every query parameter optional. Verified live 2026-08-30 -- omitting any one
+ * returns a 400 naming it.
+ *
+ * NOTE THE DEPENDENCY: `paygroupId` can only be obtained from
+ * `jisr_paygroups_list`, which is a FINANCE tool. An organization that has not
+ * enabled the finance surface cannot call this tool at all unless the caller
+ * already holds a paygroup identifier from elsewhere.
+ */
 export interface AccrualsInput {
-  readonly accrualType?: string;
-  readonly payPeriod?: string;
+  readonly accrualType: 'vacations' | 'end_of_service' | 'tickets_provision';
+  readonly paygroupId: string;
+  /** First day of a confirmed month, e.g. 2026-08-01. */
+  readonly payPeriod: string;
   readonly pageSize?: number;
   readonly cursor?: string;
 }
@@ -41,7 +53,12 @@ export async function listAccrualTransactions(
   authorizeTool('jisr_accrual_transactions_list', context);
 
   const pageSize = validatePageSize(input.pageSize);
-  const filters = { accrualType: input.accrualType, payPeriod: input.payPeriod, pageSize };
+  const filters = {
+    accrualType: input.accrualType,
+    paygroupId: input.paygroupId,
+    payPeriod: input.payPeriod,
+    pageSize,
+  };
   const binding = {
     organizationId: context.principal.organizationId,
     operationId: OPERATION,
@@ -54,6 +71,7 @@ export async function listAccrualTransactions(
     query: {
       ...toUpstreamParams(page, pageSize),
       accrual_type: input.accrualType,
+      paygroup_id: input.paygroupId,
       pay_period: input.payPeriod,
     },
   });

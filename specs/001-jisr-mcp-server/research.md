@@ -100,6 +100,52 @@ propagate with a delay, and the exact checkbox semantics are not documented.
 Re-verify before raising it. If it holds, it is a Jisr defect worth reporting —
 any integrator following their documentation would assume those fields are gone.
 
+## R2b. The Jisr OpenAPI document understates required parameters
+
+**Verified against the live AZMX tenant, 2026-08-30.**
+
+The specification marks every query parameter on these operations `required:
+false`. Jisr rejects the call with a 400 naming the parameter when it is absent.
+
+| Operation | Actually required | Upstream message |
+|---|---|---|
+| `/attendance_logs` | `status` | `Parameter status is required` |
+| `/employee_leaves/summary` | `leave_type` | `Parameter leave_type is required` |
+| `/accrual_transactions` | `accrual_type`, `paygroup_id`, `pay_period` | `Parameter accrual_type is required`, then `Parameter paygroup_id cannot be blank` |
+
+The prose descriptions inside the same document DO mark these "Yes" for required,
+and name the valid `accrual_type` values (`vacations`, `end_of_service`,
+`tickets_provision`). The machine-readable schema and the human-readable
+description disagree, and **the description is the accurate one**.
+
+**A structural consequence.** `accrual_transactions` requires a `paygroup_id`,
+obtainable only from `/paygroups` -- a FINANCE endpoint. An organization that has
+not enabled the finance surface cannot use the accruals tool at all unless the
+caller already holds a paygroup identifier. Accruals was classified as an
+HR-operations tool; it carries a hard dependency on a finance one.
+
+## R2c. `line_manager.id` is the employee UUID -- and the list does not populate it
+
+**Verified against the live AZMX tenant, 2026-08-30.** Closes the open question
+that was gating the manager role profile.
+
+`line_manager` is `{ id, name }` where `id` is a **UUID string** matching the
+employee `id` field -- not the numeric employee code, and not the numeric type the
+OpenAPI document declares.
+
+**But `GET /employees` returns `line_manager.id` as null.** Across 100 sampled
+employees, zero had it populated. `GET /employees/basic_info` returns it fully.
+
+So reachability scoping for the `manager` profile **cannot work on the employee
+list**: no record carries the manager reference to match against. The scoping
+fails closed, which is correct, so a manager currently receives an empty list
+rather than the wrong data. It is safe, and useless.
+
+Resolving this needs either a per-employee `basic_info` fetch (an N+1 against an
+organization of 186 people) or confirmation from Jisr that a parameter exists to
+populate the field on the list. **Do not enable the manager profile in production
+until this is settled.**
+
 ## R3. MCP protocol version and SDK line
 
 **Decision**: Build the domain core independent of any MCP SDK, and ship **`@modelcontextprotocol/server` v2.0.0**

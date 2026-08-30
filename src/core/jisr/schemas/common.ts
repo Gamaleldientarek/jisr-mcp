@@ -28,9 +28,15 @@ export const localisedRefSchema = z.object({
   name_ar: z.string().nullable().optional(),
 });
 
-/** A nested reference that carries only a display name. */
-export const namedRefSchema = z.object({
-  id: z.number().nullable().optional(),
+/**
+ * A nested reference carrying only a display name.
+ *
+ * `id` accepts both string and number: `line_manager.id` is a UUID STRING
+ * (verified live 2026-08-30), while other named references use numeric ids. The
+ * OpenAPI document types them all as numbers.
+ */
+export const namedRefSchema = z.looseObject({
+  id: z.union([z.string(), z.number()]).nullable().optional(),
   name: z.string().nullable().optional(),
 });
 

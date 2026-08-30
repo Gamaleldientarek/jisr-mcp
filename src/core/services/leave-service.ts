@@ -19,7 +19,11 @@ const OPERATION = 'getLeaveSummary';
 
 export interface LeaveSummaryInput {
   readonly employeeCodes: readonly number[];
-  readonly leaveType?: string;
+  /**
+   * REQUIRED by Jisr, despite the specification marking it optional.
+   * Verified live: omitting it returns 400 "Parameter leave_type is required".
+   */
+  readonly leaveType: string;
   readonly pageSize?: number;
 }
 

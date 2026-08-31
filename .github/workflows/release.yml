@@ -2,7 +2,12 @@ name: Release
 
 # Releases originate from a version tag on the default branch and are published
 # by this workflow, never from a maintainer's machine (spec FR-044a).
-# A package carrying HR data access should not be publishable by hand.
+#
+# Two stages, deliberately decoupled:
+#   - GitHub Release: every version tag.
+#   - npm publish: only when NPM_TOKEN is configured AND package.json has
+#     dropped private:true -- both are explicit acts, so a tag alone can never
+#     ship a package by accident.
 on:
   push:
     tags: ['v*.*.*']
@@ -29,12 +34,17 @@ jobs:
       - run: npm test
       - run: npm run verify:coverage
       # Tag, package version, changelog entry, and the documented protocol and
-      # snapshot versions must all agree before anything is published.
-      - run: npm run verify:release
+      # snapshot versions must all agree before anything is released.
+      - name: Verify release consistency
+        run: npm run verify:release
+        env:
+          RELEASE_TARGET: ${{ secrets.NPM_TOKEN != '' && 'npm' || 'github' }}
       - run: npm run build
 
-  publish:
+  publish-npm:
     needs: verify
+    # Explicit opt-in: configuring NPM_TOKEN is the act that enables this stage.
+    if: ${{ secrets.NPM_TOKEN != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,13 +61,16 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   github-release:
-    needs: publish
+    needs: [verify, publish-npm]
+    # Runs whether npm publishing happened or was skipped -- but never after a
+    # failure.
+    if: ${{ always() && needs.verify.result == 'success' && contains(fromJSON('["success","skipped"]'), needs.publish-npm.result) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Create the GitHub Release
-        run: gh release create "$GITHUB_REF_NAME" --generate-notes --notes-file .github/release-template.md
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --notes-file .github/release-template.md
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

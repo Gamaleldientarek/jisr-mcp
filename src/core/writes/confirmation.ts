@@ -39,6 +39,13 @@ interface ReferencePayload extends ConfirmationBinding {
 /** Consumed nonces. Single-use is enforced here, not by expiry. */
 const consumed = new Set<string>();
 
+/**
+ * The exact payload each outstanding reference will submit, keyed by nonce.
+ * Stored at prepare so commit takes ONLY the reference -- the caller cannot
+ * vary the payload between preview and submission even by one byte.
+ */
+const pending = new Map<string, { payload: unknown; expiresAt: number }>();
+
 function sign(body: string): string {
   return createHmac('sha256', SIGNING_KEY).update(body).digest('base64url');
 }
@@ -49,7 +56,10 @@ export function hashTarget(target: unknown): string {
   return createHash('sha256').update(canonical).digest('base64url').slice(0, 22);
 }
 
-export function issueReference(binding: ConfirmationBinding): {
+export function issueReference(
+  binding: ConfirmationBinding,
+  pendingPayload?: unknown,
+): {
   reference: string;
   expiresAt: string;
 } {
@@ -58,6 +68,12 @@ export function issueReference(binding: ConfirmationBinding): {
     nonce: randomBytes(12).toString('base64url'),
     expiresAt: Date.now() + CONFIRMATION_TTL_MS,
   };
+  // Sweep expired stashes so abandoned prepares cannot accumulate.
+  const now = Date.now();
+  for (const [nonce, entry] of pending) if (now > entry.expiresAt) pending.delete(nonce);
+  if (pendingPayload !== undefined) {
+    pending.set(payload.nonce, { payload: pendingPayload, expiresAt: payload.expiresAt });
+  }
   const body = Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url');
   return {
     reference: `${body}.${sign(body)}`,
@@ -69,7 +85,7 @@ export function issueReference(binding: ConfirmationBinding): {
  * Validates and CONSUMES a reference. Order matters: signature first, so a
  * forged reference is rejected before any claim inside it is read.
  */
-export function consumeReference(reference: string, expected: ConfirmationBinding): void {
+export function consumeReference(reference: string, expected: ConfirmationBinding): unknown {
   const separator = reference.lastIndexOf('.');
   if (separator <= 0) {
     throw new JisrMcpError(
@@ -143,9 +159,13 @@ export function consumeReference(reference: string, expected: ConfirmationBindin
     );
   }
   consumed.add(payload.nonce);
+  const stashed = pending.get(payload.nonce);
+  pending.delete(payload.nonce);
+  return stashed?.payload;
 }
 
 /** Test hook: clear consumption state between cases. */
 export function resetConsumedReferences(): void {
   consumed.clear();
+  pending.clear();
 }

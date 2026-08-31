@@ -22,10 +22,8 @@ export interface PunchSubmission {
   readonly emp_code: string | number;
 }
 
-export const punchCreateResponseSchema = z.looseObject({
-  // Documented success shape: { success: true, message: null, data: null }
-  noop: z.never().optional(),
-});
+/** Documented success shape: { success: true, message: null, data: null }. */
+export const punchCreateResponseSchema = z.union([z.null(), z.looseObject({})]);
 
 export const employeeCreateResponseSchema = z.looseObject({
   /**
@@ -54,6 +52,5 @@ export interface EmployeeSubmission {
   readonly end_date?: string;
 }
 
-export const payrollDeleteResponseSchema = z.looseObject({
-  noop: z.never().optional(),
-});
+/** Deletion acknowledgment; `data` may be null or a bare object. */
+export const payrollDeleteResponseSchema = z.union([z.null(), z.looseObject({})]);

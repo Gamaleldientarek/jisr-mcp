@@ -55,6 +55,9 @@ export const ERROR_CODES = [
   'WRITE_OUTCOME_UNKNOWN',
   'DESTRUCTIVE_ACTION_DISABLED',
   'BACKDATING_WINDOW_EXCEEDED',
+  // A write without a stated reason is refused; the reason is part of the
+  // audit contract, not decoration (feature 002 spec FR-013).
+  'REASON_REQUIRED',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];

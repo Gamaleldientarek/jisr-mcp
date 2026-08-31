@@ -14,7 +14,7 @@ import { ConfigurationError, loadConfig } from '../config/environment.js';
 import { UNPROBED } from '../core/authorization/capabilities.js';
 import { createPrincipal } from '../core/authorization/principal.js';
 import { JisrClient } from '../core/jisr/client.js';
-import { registerReadTools } from '../core/tools/index.js';
+import { registerReadTools, registerWriteTools } from '../core/tools/index.js';
 import { ToolRegistry, type ToolContext } from '../core/tools/registry.js';
 import { createAuditSink } from '../observability/audit.js';
 import { createLogger } from '../observability/logger.js';
@@ -52,6 +52,7 @@ async function main(): Promise<void> {
 
   const registry = new ToolRegistry();
   registerReadTools(registry);
+  registerWriteTools(registry);
 
   const runtime: AdapterRuntime = {
     registry,

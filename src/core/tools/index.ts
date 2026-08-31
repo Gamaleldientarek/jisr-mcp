@@ -7,6 +7,7 @@
 
 import { accrualTransactionsTool } from './accruals/transactions-list.js';
 import { attendanceLogsTool } from './attendance/logs-list.js';
+import { punchCreateCommitTool, punchCreatePrepareTool } from './attendance/punch-create.js';
 import { attendanceSummaryTool } from './attendance/summary-get.js';
 import { auditEventsTool } from './audit/audit-events-list.js';
 import { capabilitiesTool } from './discovery/capabilities.js';
@@ -41,4 +42,15 @@ export function registerReadTools(registry: ToolRegistry): void {
 
   // Registered last: the catalog describes the registry it is given.
   registry.register(createDataCatalogTool(registry));
+}
+
+/**
+ * Write tool pairs (feature 002). Registered unconditionally; discoverability
+ * and callability are gated per caller by the authorization write gates, so a
+ * disabled domain flag removes both halves from tools/list for every profile
+ * (contracts > Undiscoverability).
+ */
+export function registerWriteTools(registry: ToolRegistry): void {
+  registry.register(punchCreatePrepareTool);
+  registry.register(punchCreateCommitTool);
 }

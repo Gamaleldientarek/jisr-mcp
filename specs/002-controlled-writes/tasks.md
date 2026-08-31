@@ -36,12 +36,12 @@ description: "Task list for controlled writes -- Release 2"
 
 ## Phase 3: US1 — attendance punch creation (P1) 🎯 MVP
 
-- [ ] T015 [P] [US1] Test the full prepare/commit round trip against a stubbed upstream in `tests/integration/punch-create.test.ts`: no-reference, invented-reference, and valid-reference paths; the commit result MUST be asserted as the stubbed RE-READ state, deliberately different from the submitted payload (SC-004); an array of punches refuses at the schema — no batch (quickstart W2)
-- [ ] T016 [P] [US1] Test the backdating window in `tests/integration/punch-backdating.test.ts`: previous-month OK, older refuses `BACKDATING_WINDOW_EXCEEDED`, zone-less refuses `TIMEZONE_REQUIRED` (spec FR-013a)
-- [ ] T017 [US1] Implement the attendance write service in `src/core/services/attendance-write-service.ts`: validation, window check, reason, submit, re-read (spec FR-013)
-- [ ] T018 [US1] Implement `jisr_attendance_punch_create_prepare` and `_commit` in `src/core/tools/attendance/punch-create.ts` per `contracts/write-tool-contracts.md`
-- [ ] T019 [US1] Register the pair gated on `hr_operations` + `JISR_WRITE_ATTENDANCE` in `src/core/tools/index.ts` and `src/core/authorization/policies.ts` (spec FR-003)
-- [ ] T020 [P] [US1] Test dormancy AND the enabled-state matrix in `tests/authorization/write-dormancy.test.ts`: with flags at default, zero write tools listed for every profile (SC-002); with all flags enabled, every profile except `hr_operations` still finds punch and employee tools undiscoverable and uncallable (spec FR-003)
+- [X] T015 [P] [US1] Test the full prepare/commit round trip against a stubbed upstream in `tests/integration/punch-create.test.ts`: no-reference, invented-reference, and valid-reference paths; the commit result MUST be asserted as the stubbed RE-READ state, deliberately different from the submitted payload (SC-004); an array of punches refuses at the schema — no batch (quickstart W2)
+- [X] T016 [P] [US1] Test the backdating window in `tests/integration/punch-backdating.test.ts`: previous-month OK, older refuses `BACKDATING_WINDOW_EXCEEDED`, zone-less refuses `TIMEZONE_REQUIRED` (spec FR-013a)
+- [X] T017 [US1] Implement the attendance write service in `src/core/services/attendance-write-service.ts`: validation, window check, reason, submit, re-read (spec FR-013)
+- [X] T018 [US1] Implement `jisr_attendance_punch_create_prepare` and `_commit` in `src/core/tools/attendance/punch-create.ts` per `contracts/write-tool-contracts.md`
+- [X] T019 [US1] Register the pair gated on `hr_operations` + `JISR_WRITE_ATTENDANCE` in `src/core/tools/index.ts` and `src/core/authorization/policies.ts` (spec FR-003)
+- [X] T020 [P] [US1] Test dormancy AND the enabled-state matrix in `tests/authorization/write-dormancy.test.ts`: with flags at default, zero write tools listed for every profile (SC-002); with all flags enabled, every profile except `hr_operations` still finds punch and employee tools undiscoverable and uncallable (spec FR-003)
 
 ## Phase 4: US2 — employee creation (P2)
 

@@ -36,16 +36,16 @@ description: "Task list for controlled writes -- Release 2"
 
 ## Phase 3: US1 — attendance punch creation (P1) 🎯 MVP
 
-- [ ] T015 [P] [US1] Test the full prepare/commit round trip against a stubbed upstream in `tests/integration/punch-create.test.ts`: no-reference, invented-reference, valid-reference paths (quickstart W2)
+- [ ] T015 [P] [US1] Test the full prepare/commit round trip against a stubbed upstream in `tests/integration/punch-create.test.ts`: no-reference, invented-reference, and valid-reference paths; the commit result MUST be asserted as the stubbed RE-READ state, deliberately different from the submitted payload (SC-004); an array of punches refuses at the schema — no batch (quickstart W2)
 - [ ] T016 [P] [US1] Test the backdating window in `tests/integration/punch-backdating.test.ts`: previous-month OK, older refuses `BACKDATING_WINDOW_EXCEEDED`, zone-less refuses `TIMEZONE_REQUIRED` (spec FR-013a)
 - [ ] T017 [US1] Implement the attendance write service in `src/core/services/attendance-write-service.ts`: validation, window check, reason, submit, re-read (spec FR-013)
 - [ ] T018 [US1] Implement `jisr_attendance_punch_create_prepare` and `_commit` in `src/core/tools/attendance/punch-create.ts` per `contracts/write-tool-contracts.md`
 - [ ] T019 [US1] Register the pair gated on `hr_operations` + `JISR_WRITE_ATTENDANCE` in `src/core/tools/index.ts` and `src/core/authorization/policies.ts` (spec FR-003)
-- [ ] T020 [P] [US1] Test dormancy in `tests/authorization/write-dormancy.test.ts`: with flags at default, zero write tools listed for every profile (SC-002)
+- [ ] T020 [P] [US1] Test dormancy AND the enabled-state matrix in `tests/authorization/write-dormancy.test.ts`: with flags at default, zero write tools listed for every profile (SC-002); with all flags enabled, every profile except `hr_operations` still finds punch and employee tools undiscoverable and uncallable (spec FR-003)
 
 ## Phase 4: US2 — employee creation (P2)
 
-- [ ] T021 [P] [US2] Test lookup resolution and name rules in `tests/integration/employee-create.test.ts`: unknown departmentId refuses at prepare; single-part name refuses (spec FR-014)
+- [ ] T021 [P] [US2] Test lookup resolution and name rules in `tests/integration/employee-create.test.ts`: unknown departmentId refuses at prepare; single-part name refuses; out-of-enum `gender`/`contractType` values refuse at prepare (spec FR-006, FR-014)
 - [ ] T022 [P] [US2] Test duplicate warning in `tests/integration/employee-duplicates.test.ts`: matching code or exact name → warning; commit without `acknowledgeDuplicates` refuses (spec FR-015)
 - [ ] T023 [US2] Implement the employee write service in `src/core/services/employees-write-service.ts`: live lookup resolution, enum exactness, duplicate pre-read, submit, mandatory re-read handling `id: null` (research W1)
 - [ ] T024 [US2] Implement `jisr_employee_create_prepare` and `_commit` in `src/core/tools/employees/employee-create.ts`
@@ -53,20 +53,20 @@ description: "Task list for controlled writes -- Release 2"
 
 ## Phase 5: US3 — payroll deletion, dormant (P3)
 
-- [ ] T026 [P] [US3] Test target re-validation in `tests/integration/payroll-delete.test.ts`: target changed → `WRITE_TARGET_CHANGED`; vanished → `RECORD_NOT_FOUND`; reason required (quickstart W6)
+- [ ] T026 [P] [US3] Test target re-validation in `tests/integration/payroll-delete.test.ts`: target changed → `WRITE_TARGET_CHANGED`; vanished → `RECORD_NOT_FOUND`; reason required; any multi-target form refuses at the schema (spec FR-018) (quickstart W6)
 - [ ] T027 [P] [US3] Test four-gate dormancy in `tests/authorization/payroll-delete-gates.test.ts`: absent for all profiles at default; enabled requires finance profile + finance surface + key + flag together (SC-006)
 - [ ] T028 [US3] Implement the deletion service in `src/core/services/payroll-delete-service.ts`: prepare re-read, target hash, reason, single-target only (spec FR-016..019)
 - [ ] T029 [US3] Implement `jisr_payroll_transaction_delete_prepare` and `_commit` (destructive-annotated) in `src/core/tools/finance/payroll-delete.ts`
 
 ## Phase 6: Polish & release gates
 
-- [ ] T030 [P] Extend adapter parity to the six write tools in `tests/contract/adapter-parity.test.ts` (feature 001 FR-002a)
-- [ ] T031 Implement the v2 MRTR combined-flow sugar in `src/adapters/mcp-v2/index.ts`, reference still server-issued (research W2)
+- [ ] T030 [P] Extend adapter parity to the six write tools in `tests/contract/adapter-parity.test.ts` — identical surface on both adapters; MRTR deliberately absent (feature 001 FR-002a, analysis I1)
+- [ ] T031 [P] Test write-audit completeness in `tests/integration/write-audit-trail.test.ts`: one record per prepare, commit, refusal, and ambiguous outcome in a replayed session; reasons present on deletions; zero sensitive payloads (SC-007, quickstart W8)
 - [ ] T032 Extend `scripts/e2e-protocol-test.py` with a write round trip over real stdio against a stubbed upstream
 - [ ] T033 [P] Extend `tests/security/prompt-injection.test.ts`: injected record content cannot compose a valid confirmation (SC-003)
 - [ ] T034 [P] Update README, `docs/tool-naming.md`, and regenerate the authorization matrix for the six write tools via `npm run docs:generate`
 - [ ] T035 Create `docs/write-contract-verification.md` with one empty evidence section per tool and the window procedure from research W6 (spec FR-012, SC-009)
-- [ ] T036 **LIVE WINDOW (human present)**: widen the key, verify punch and employee creation per quickstart W9, record evidence, narrow the key — no write tool enabled anywhere before its section is filled (SC-009)
+- [ ] T036 **LIVE WINDOW (human present)**: widen the key, verify punch and employee creation per quickstart W9, record evidence including a timed end-to-end punch correction conversation (SC-008 target: under 3 minutes), narrow the key — no write tool enabled anywhere before its section is filled (SC-009)
 - [ ] T037 Update `CHANGELOG.md`, tag v0.2.0 after T036 evidence lands, and record decisions in the baseline plan's Decision Log
 
 ## Dependencies

@@ -41,15 +41,14 @@ an already-deleted id: undocumented; the prepare re-read handles it either way.
 ## W2. Confirmation flow: MRTR on v2, tool-pair on v1
 
 **Decision**: expose every consequential write as an explicit `*_prepare` / `*_commit` tool pair on
-both adapters. On the v2 adapter (2026-07-28), additionally return `inputRequired` from a single
-combined tool where the client supports multi-round-trip requests, so conversational clients get a
-native confirmation prompt.
+both adapters — and **nothing else**. MRTR (`inputRequired`) is deferred entirely: a v2-only
+combined tool would be a surface the v1 adapter lacks, colliding with feature 001's FR-002a parity
+requirement, which is a tested spec requirement, not a preference. MRTR arrives only in a future
+feature that amends FR-002a deliberately (analysis I1, 2026-08-31).
 
 **Rationale**: the installed `@modelcontextprotocol/server` 2.0.0 exports the full MRTR surface
 (`inputRequired`, `InputRequiredResult`, `acceptedContent`) — verified. The v1 SDK's `McpServer`
-exposes no elicitation surface, so the tool pair is the portable floor. Making the pair the
-canonical contract keeps adapter parity (FR-002a from feature 001) intact: MRTR becomes sugar, not
-a divergence. The server-issued reference is the security boundary in both shapes.
+exposes no elicitation surface, so the tool pair is the portable floor. The pair is the whole contract; the server-issued reference is the security boundary.
 
 ## W3. Confirmation reference storage
 

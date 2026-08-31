@@ -9,8 +9,6 @@ are write-annotated; payroll deletion commit is destructive-annotated.
 Every `*_prepare` returns `{ preview, confirmationReference, expiresAt }` and every `*_commit`
 takes `{ confirmationReference }` (plus acknowledgments where the preview carried warnings) and
 returns the post-write state re-read from Jisr, in the standard envelope, `source: live_jisr`.
-On the v2 adapter, a combined tool may drive the same flow via MRTR `inputRequired`; the reference
-remains server-issued in that shape too.
 
 ## `jisr_attendance_punch_create_prepare` / `_commit`
 

@@ -22,10 +22,9 @@ verified in a controlled window (FR-012), and the documentation is already known
 
 **Language/Version**: unchanged — TypeScript 5.x on Node ≥20
 
-**Primary Dependencies**: unchanged. The v2 adapter additionally uses the SDK's MRTR surface
-(`inputRequired` / `acceptedContent`, verified present in `@modelcontextprotocol/server` 2.0.0);
-the v1 adapter has no elicitation surface, so the `*_prepare`/`*_commit` tool pair is the canonical
-contract on both, with MRTR as v2 sugar (research W2)
+**Primary Dependencies**: unchanged. The `*_prepare`/`*_commit` tool pair is the whole
+confirmation contract on both adapters; MRTR is deferred to a future feature that amends FR-002a
+deliberately — a v2-only flow would break the tested parity requirement (research W2, analysis I1)
 
 **Storage**: still none. Confirmation references live in-process — HMAC-signed like cursors,
 5-minute TTL, single-use; a restart invalidates them, which is correct (research W3)
@@ -92,7 +91,6 @@ src/core/
 
 src/config/environment.ts      # + three write-domain flags
 src/core/tools/registry.ts     # manifest-driven annotation allowlist
-src/adapters/mcp-v2/           # + MRTR combined-tool sugar
 tests/                         # + write suites incl. e2e-write-protocol
 docs/write-contract-verification.md   # live-window evidence, one section per tool
 ```
@@ -105,7 +103,7 @@ manifest stays the single authority on what may mutate.
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |---|---|---|
 | Registry accepts non-read-only tools | Release 2 exists | Keeping the blanket refusal and registering writes elsewhere would create a second registry and break the one-surface guarantees (catalog, capabilities, parity). The allowlist keys off the manifest, so the structural property — no unmanifested write — survives |
-| Prepare/commit pairs double the tool count for writes | The server-issued reference is the security boundary; one-shot writes would need the model to be trusted | MRTR-only was rejected: the v1 adapter has no elicitation surface, and parity (FR-002a) is a spec requirement |
+| Prepare/commit pairs double the tool count for writes | The server-issued reference is the security boundary; one-shot writes would need the model to be trusted | MRTR-only was rejected (v1 has no elicitation surface), and even MRTR-as-sugar was cut: any v2-only flow breaks the tested FR-002a parity requirement |
 
 ## Open Dependencies
 

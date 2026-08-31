@@ -41,11 +41,13 @@ describe('no tool accepts a name', () => {
     expect(schema?.safeParse('bab6cd98-7246-4cfc-a576-19bc00391792').success).toBe(true);
   });
 
-  it('takes integer codes for the leave summary, so a UUID cannot be passed by mistake', () => {
+  it('takes employee codes for the leave summary in either real-world shape', () => {
+    // Jisr's docs say integers; the live AZMX tenant uses "AZMX117". Both work.
     const tool = registry().get('jisr_employee_leave_summary_get');
     const schema = tool?.inputShape['employeeCodes'];
-    expect(schema?.safeParse(['bab6cd98-7246-4cfc-a576-19bc00391792']).success).toBe(false);
     expect(schema?.safeParse([1001, 1002]).success).toBe(true);
+    expect(schema?.safeParse(['AZMX117']).success).toBe(true);
+    expect(schema?.safeParse([]).success).toBe(false);
   });
 });
 

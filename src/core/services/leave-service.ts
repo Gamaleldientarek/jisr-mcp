@@ -18,7 +18,12 @@ import type { ToolContext } from '../tools/registry.js';
 const OPERATION = 'getLeaveSummary';
 
 export interface LeaveSummaryInput {
-  readonly employeeCodes: readonly number[];
+  /**
+   * Employee codes. Jisr's documentation says "Array of Integers" with the
+   * example [1, 2, 3]; the live AZMX tenant uses alphanumeric codes such as
+   * "AZMX117". Strings and numbers are both accepted and passed through as-is.
+   */
+  readonly employeeCodes: readonly (string | number)[];
   /**
    * REQUIRED by Jisr, despite the specification marking it optional.
    * Verified live: omitting it returns 400 "Parameter leave_type is required".

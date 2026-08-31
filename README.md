@@ -235,6 +235,10 @@ npm run verify:coverage   # implemented surface vs the approved Jisr spec snapsh
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+## License and publisher
 
-Not yet chosen. The repository is not public until a license is in place.
+MIT — see [LICENSE](LICENSE).
+
+Published and maintained by [Gamal Eldien](https://github.com/Gamaleldientarek) as an independent,
+unofficial project. Not affiliated with, endorsed by, or supported by Jisr; built against Jisr's
+publicly documented Open API only.

@@ -60,13 +60,17 @@ async function main(): Promise<void> {
     'the release template does not name both supported MCP protocol revisions',
   );
 
-  // A package published while private:true or unlicensed is a mistake that is
-  // hard to undo once the name is taken.
-  require_(pkg.private !== true, 'package.json still has private: true');
+  // Two release targets share this gate. A GitHub release ships no package, so
+  // private:true is fine there -- it is what PREVENTS an accidental npm publish.
+  // For an npm release it is a blocker. Default is the strict target.
+  const target = process.env['RELEASE_TARGET'] ?? 'npm';
   require_(
     pkg.license !== undefined && pkg.license !== 'UNLICENSED',
-    'package.json has no license; the repository must not be published without one',
+    'package.json has no license; nothing may be released without one',
   );
+  if (target === 'npm') {
+    require_(pkg.private !== true, 'package.json still has private: true');
+  }
 
   if (problems.length > 0) {
     console.error('Release verification FAILED:');
@@ -74,7 +78,9 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  console.log('Release verification passed for ' + pkg.name + '@' + pkg.version);
+  console.log(
+    'Release verification passed for ' + pkg.name + '@' + pkg.version + ' (target: ' + target + ')',
+  );
   console.log('  Jisr snapshot: ' + SNAPSHOT_VERSION);
   console.log('  MCP protocols: 2026-07-28, 2025-11-25');
 }

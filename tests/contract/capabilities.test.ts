@@ -79,9 +79,30 @@ describe('coverage', () => {
   it('describes every bound tool for every profile', () => {
     for (const profile of ROLE_PROFILES) {
       const capabilities = resolve(profile);
-      // 20 upstream read operations are bound to tools.
-      expect(capabilities).toHaveLength(20);
-      expect(new Set(capabilities.map((c) => c.tool)).size).toBe(20);
+      // 20 read operations plus the 3 feature 002 write commits.
+      expect(capabilities).toHaveLength(23);
+      expect(new Set(capabilities.map((c) => c.tool)).size).toBe(23);
+    }
+  });
+
+  it('reports every write commit as configuration-disabled by default', () => {
+    const writeTools = [
+      'jisr_attendance_punch_create_commit',
+      'jisr_employee_create_commit',
+      'jisr_payroll_transaction_delete_commit',
+    ];
+    for (const profile of ROLE_PROFILES) {
+      const capabilities = resolve(profile);
+      for (const tool of writeTools) {
+        const record = capabilities.find((c) => c.tool === tool);
+        expect(record?.enabledByConfiguration).toBe(false);
+        expect(record?.available).toBe(false);
+        expect(record?.unavailableReason).toBe(
+          tool === 'jisr_payroll_transaction_delete_commit'
+            ? 'DESTRUCTIVE_ACTION_DISABLED'
+            : 'WRITE_NOT_ENABLED',
+        );
+      }
     }
   });
 

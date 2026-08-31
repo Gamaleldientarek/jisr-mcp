@@ -49,6 +49,15 @@ function permittedByKey(entry: ManifestEntry, observed: ObservedPermissions): bo
 
 function configurationEnables(entry: ManifestEntry, flags: FeatureFlags): boolean {
   if (flags.disabledDomains.has(entry.domain)) return false;
+  if (entry.readOrWrite === 'write') {
+    // Writes ship absent; each domain is a separate operator opt-in, and the
+    // destructive path additionally requires the finance surface (feature 002).
+    if (entry.operationId === 'createAttendanceLogs') return flags.writeAttendance;
+    if (entry.operationId === 'createEmployee') return flags.writeEmployees;
+    if (entry.operationId === 'deletePayrollTransaction')
+      return flags.writePayrollDelete && flags.financeSurfaceEnabled;
+    return false;
+  }
   // The finance surface requires an explicit operator opt-in on top of key
   // permission (spec FR-023a).
   if (entry.sensitivity === 'financial_confidential') return flags.financeSurfaceEnabled;
@@ -73,11 +82,23 @@ export function resolveCapability(
   let suggestedAction: string | null = null;
 
   if (!enabled) {
-    unavailableReason = 'TOOL_NOT_ENABLED';
-    suggestedAction =
-      entry.sensitivity === 'financial_confidential'
-        ? 'The operator must enable the finance surface explicitly. Key permission alone is not sufficient.'
-        : 'The operator has disabled this domain in configuration.';
+    if (entry.readOrWrite === 'write') {
+      unavailableReason =
+        entry.operationId === 'deletePayrollTransaction'
+          ? 'DESTRUCTIVE_ACTION_DISABLED'
+          : 'WRITE_NOT_ENABLED';
+      suggestedAction =
+        entry.operationId === 'deletePayrollTransaction'
+          ? 'The operator must enable JISR_WRITE_PAYROLL_DELETE and the finance surface together. It ships off.'
+          : 'The operator must enable this write domain explicitly. Writes are absent by default.';
+      // fallthrough skipped below via early return shape
+    } else {
+      unavailableReason = 'TOOL_NOT_ENABLED';
+      suggestedAction =
+        entry.sensitivity === 'financial_confidential'
+          ? 'The operator must enable the finance surface explicitly. Key permission alone is not sufficient.'
+          : 'The operator has disabled this domain in configuration.';
+    }
   } else if (!allowed) {
     unavailableReason =
       entry.sensitivity === 'financial_confidential'

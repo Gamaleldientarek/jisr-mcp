@@ -47,6 +47,8 @@ export interface RequestOptions {
   readonly pathParams?: Readonly<Record<string, string>>;
   /** Use the separate finance credential where one is configured. */
   readonly useFinanceCredentials?: boolean;
+  /** JSON request body, for bound write operations only. */
+  readonly body?: unknown;
   readonly signal?: AbortSignal;
 }
 
@@ -107,9 +109,11 @@ export class JisrClient {
         `No manifest entry for operationId "${operationId}". Every upstream call must be declared in the endpoint manifest (Constitution Principle I).`,
       );
     }
-    if (entry.readOrWrite === 'write') {
+    if (entry.readOrWrite === 'write' && entry.implementedTool === null) {
+      // Unbound writes stay structurally unreachable. Bound writes (feature
+      // 002: three operations, pinned by the coverage gate) may proceed.
       throw new Error(
-        `operationId "${operationId}" is a write operation. This release exposes no write surface (spec FR-012).`,
+        `operationId "${operationId}" is an unbound write operation and cannot be reached (spec FR-012).`,
       );
     }
     return entry;
@@ -136,14 +140,17 @@ export class JisrClient {
 
     const send = async (token: string): Promise<Response> => {
       const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+      const headers: Record<string, string> = {
+        Slug: this.#config.slug,
+        'Access-Token': token,
+        'api-version': '1',
+        Accept: 'application/json',
+      };
+      if (options.body !== undefined) headers['Content-Type'] = 'application/json';
       return this.#fetch(url, {
         method: entry.method,
-        headers: {
-          Slug: this.#config.slug,
-          'Access-Token': token,
-          'api-version': '1',
-          Accept: 'application/json',
-        },
+        headers,
+        ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
         signal: options.signal ?? timeout,
       });
     };

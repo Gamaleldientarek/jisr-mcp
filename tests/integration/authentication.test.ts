@@ -171,12 +171,12 @@ describe('client operation binding', () => {
     ).rejects.toThrow(/No manifest entry/);
   });
 
-  it('refuses a write operationId even though the manifest declares it', async () => {
+  it('refuses an unbound write operationId even though the manifest declares it', async () => {
     const { fetch } = stubFetch([{ body: AUTH_SUCCESS }]);
     const client = new JisrClient(config(), new TokenCache(), fetch);
     await expect(
-      client.request(departmentsSchema, { operationId: 'createEmployee' }),
-    ).rejects.toThrow(/is a write operation/);
+      client.request(departmentsSchema, { operationId: 'createWebhook' }),
+    ).rejects.toThrow(/is an unbound write operation/);
   });
 
   it('maps a 429 to a distinct retryable error rather than an empty result', async () => {

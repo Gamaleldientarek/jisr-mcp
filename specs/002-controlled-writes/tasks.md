@@ -23,16 +23,16 @@ description: "Task list for controlled writes -- Release 2"
 
 **⚠️ Blocks all user stories**
 
-- [ ] T005 Implement confirmation references in `src/core/writes/confirmation.ts`: HMAC per-process key, bound to organization+caller+operation+targetHash, 5-minute TTL, single-use (spec FR-004, FR-005)
-- [ ] T006 [P] Implement the duplicate guard in `src/core/writes/duplicate-guard.ts`: payload-hash window of 10 minutes per organization+operation → `DUPLICATE_WRITE_SUSPECTED` (spec FR-007)
-- [ ] T007 [P] Implement shared preview shapes in `src/core/writes/preview.ts`, field-policy filtered (spec FR-004)
-- [ ] T008 Change the registry's read-only guard into a manifest-driven annotation allowlist in `src/core/tools/registry.ts`: write/destructive registration allowed only when the manifest binds the tool as such (plan Complexity 1)
-- [ ] T009 Lift the client's write refusal for exactly the bound operations in `src/core/jisr/client.ts`, keeping the refusal for unbound ones
-- [ ] T010 Implement ambiguous-outcome handling in `src/core/writes/outcome.ts`: timeout/unparseable after submit → `WRITE_OUTCOME_UNKNOWN` naming the resolving read tool; no automatic retry anywhere (spec FR-009)
-- [ ] T011 Extend audit records with phase, referencePrefix, targetIds, reason, and the ambiguous outcome in `src/observability/audit.ts` (spec FR-010)
-- [ ] T012 [P] Test references in `tests/security/confirmation.test.ts`: forged, expired (+5m01s), consumed, cross-caller, cross-organization, cross-target — all refuse distinctly (SC-003, SC-005)
-- [ ] T013 [P] Test the registry allowlist in `tests/contract/write-annotations.test.ts`: an unmanifested write tool cannot register; prepare tools are read-only-annotated, commits write, deletion destructive (spec FR-011)
-- [ ] T014 [P] Test the duplicate guard and ambiguity handling in `tests/integration/write-guards.test.ts` (quickstart W3, W7)
+- [X] T005 Implement confirmation references in `src/core/writes/confirmation.ts`: HMAC per-process key, bound to organization+caller+operation+targetHash, 5-minute TTL, single-use (spec FR-004, FR-005)
+- [X] T006 [P] Implement the duplicate guard in `src/core/writes/duplicate-guard.ts`: payload-hash window of 10 minutes per organization+operation → `DUPLICATE_WRITE_SUSPECTED` (spec FR-007)
+- [X] T007 [P] Implement shared preview shapes in `src/core/writes/preview.ts`, field-policy filtered (spec FR-004)
+- [X] T008 Change the registry's read-only guard into a manifest-driven annotation allowlist in `src/core/tools/registry.ts`: write/destructive registration allowed only when the manifest binds the tool as such (plan Complexity 1)
+- [X] T009 Lift the client's write refusal for exactly the bound operations in `src/core/jisr/client.ts`, keeping the refusal for unbound ones
+- [X] T010 Implement ambiguous-outcome handling in `src/core/writes/outcome.ts`: timeout/unparseable after submit → `WRITE_OUTCOME_UNKNOWN` naming the resolving read tool; no automatic retry anywhere (spec FR-009)
+- [X] T011 Extend audit records with phase, referencePrefix, targetIds, reason, and the ambiguous outcome in `src/observability/audit.ts` (spec FR-010)
+- [X] T012 [P] Test references in `tests/security/confirmation.test.ts`: forged, expired (+5m01s), consumed, cross-caller, cross-organization, cross-target — all refuse distinctly (SC-003, SC-005)
+- [X] T013 [P] Test the registry allowlist in `tests/contract/write-annotations.test.ts`: an unmanifested write tool cannot register; prepare tools are read-only-annotated, commits write, deletion destructive (spec FR-011)
+- [X] T014 [P] Test the duplicate guard and ambiguity handling in `tests/integration/write-guards.test.ts` (quickstart W3, W7)
 
 ## Phase 3: US1 — attendance punch creation (P1) 🎯 MVP
 

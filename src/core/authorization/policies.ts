@@ -37,6 +37,98 @@ const DISCOVERY_TOOLS: Readonly<Record<string, readonly RoleProfile[]>> = {
   jisr_data_catalog_get: ROLE_PROFILES,
 };
 
+/**
+ * Write-tool gates (feature 002, spec FR-001..003).
+ *
+ * Commit tools are manifest-bound; prepare tools reach no upstream write, so
+ * like discovery tools they are declared here. BOTH halves carry the same
+ * gates: profile, domain flag, and for the deletion path the finance surface
+ * as well. A missing gate makes the pair undiscoverable, not refused.
+ */
+interface WriteGate {
+  readonly profiles: readonly RoleProfile[];
+  readonly flag: 'writeAttendance' | 'writeEmployees' | 'writePayrollDelete';
+  readonly requiresFinanceSurface: boolean;
+  readonly domain: string;
+}
+
+const WRITE_TOOL_GATES: Readonly<Record<string, WriteGate>> = {
+  jisr_attendance_punch_create_prepare: {
+    profiles: ['hr_operations'],
+    flag: 'writeAttendance',
+    requiresFinanceSurface: false,
+    domain: 'attendance_logs',
+  },
+  jisr_attendance_punch_create_commit: {
+    profiles: ['hr_operations'],
+    flag: 'writeAttendance',
+    requiresFinanceSurface: false,
+    domain: 'attendance_logs',
+  },
+  jisr_employee_create_prepare: {
+    profiles: ['hr_operations'],
+    flag: 'writeEmployees',
+    requiresFinanceSurface: false,
+    domain: 'employees',
+  },
+  jisr_employee_create_commit: {
+    profiles: ['hr_operations'],
+    flag: 'writeEmployees',
+    requiresFinanceSurface: false,
+    domain: 'employees',
+  },
+  jisr_payroll_transaction_delete_prepare: {
+    profiles: ['finance'],
+    flag: 'writePayrollDelete',
+    requiresFinanceSurface: true,
+    domain: 'finance',
+  },
+  jisr_payroll_transaction_delete_commit: {
+    profiles: ['finance'],
+    flag: 'writePayrollDelete',
+    requiresFinanceSurface: true,
+    domain: 'finance',
+  },
+};
+
+function writeCapability(tool: string, context: AuthorizationContext): CapabilityRecord | null {
+  const gate = WRITE_TOOL_GATES[tool];
+  if (gate === undefined) return null;
+
+  const enabled =
+    context.flags[gate.flag] &&
+    (!gate.requiresFinanceSurface || context.flags.financeSurfaceEnabled);
+  const allowed = gate.profiles.includes(context.principal.profile);
+
+  let unavailableReason: CapabilityRecord['unavailableReason'] = null;
+  let suggestedAction: string | null = null;
+  if (!enabled) {
+    unavailableReason =
+      gate.flag === 'writePayrollDelete' ? 'DESTRUCTIVE_ACTION_DISABLED' : 'WRITE_NOT_ENABLED';
+    suggestedAction =
+      gate.flag === 'writePayrollDelete'
+        ? 'The operator must enable JISR_WRITE_PAYROLL_DELETE and the finance surface together. It ships off.'
+        : 'The operator must enable this write domain explicitly. Writes are absent by default.';
+  } else if (!allowed) {
+    unavailableReason = 'JISR_PERMISSION_DENIED';
+    suggestedAction = `This write requires the ${gate.profiles.join(' or ')} profile.`;
+  }
+
+  return {
+    domain: gate.domain,
+    tool,
+    supportedBySpecification: true,
+    permittedByJisrKey: context.observed.probed
+      ? !context.observed.deniedDomains.has(gate.domain)
+      : 'unknown',
+    allowedByPrincipal: allowed,
+    enabledByConfiguration: enabled,
+    available: unavailableReason === null,
+    unavailableReason,
+    suggestedAction,
+  };
+}
+
 function discoveryCapability(tool: string, principal: Principal): CapabilityRecord | null {
   const profiles = DISCOVERY_TOOLS[tool];
   if (profiles === undefined) return null;
@@ -68,6 +160,18 @@ export interface AuthorizationContext {
  * and never discloses whether the underlying record exists (spec User Story 3).
  */
 export function authorizeTool(tool: string, context: AuthorizationContext): CapabilityRecord {
+  const write = writeCapability(tool, context);
+  if (write !== null) {
+    if (!write.available) {
+      throw new JisrMcpError(
+        write.unavailableReason ?? 'WRITE_NOT_ENABLED',
+        'This operation is not available to you.',
+        write.suggestedAction ?? undefined,
+      );
+    }
+    return write;
+  }
+
   const discovery = discoveryCapability(tool, context.principal);
   if (discovery !== null) {
     if (!discovery.available) {

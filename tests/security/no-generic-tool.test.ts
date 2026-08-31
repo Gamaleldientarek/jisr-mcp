@@ -18,19 +18,24 @@ import { ENDPOINT_MANIFEST } from '../../src/core/jisr/endpoint-manifest.js';
 const CORE = new URL('../../src/core/', import.meta.url).pathname;
 
 describe('endpoint manifest', () => {
-  it('binds no tool to a write operation', async () => {
+  it('binds only the pinned feature 002 write operations', async () => {
     await Promise.resolve();
-    const boundWrites = ENDPOINT_MANIFEST.filter(
-      (entry) => entry.readOrWrite === 'write' && entry.implementedTool !== null,
-    );
-    expect(boundWrites).toEqual([]);
+    const bound: Record<string, string> = {
+      createAttendanceLogs: 'jisr_attendance_punch_create_commit',
+      createEmployee: 'jisr_employee_create_commit',
+      deletePayrollTransaction: 'jisr_payroll_transaction_delete_commit',
+    };
+    for (const entry of ENDPOINT_MANIFEST.filter((e) => e.readOrWrite === 'write')) {
+      expect(entry.implementedTool).toBe(bound[entry.operationId] ?? null);
+    }
   });
 
-  it('records the eight release 2 operations as known and unbound', async () => {
+  it('records the eight release 2 operations as known, five still unbound', async () => {
     await Promise.resolve();
     const releaseTwo = ENDPOINT_MANIFEST.filter((entry) => entry.release === 2);
     expect(releaseTwo).toHaveLength(8);
-    for (const entry of releaseTwo) expect(entry.implementedTool).toBeNull();
+    const stillUnbound = releaseTwo.filter((entry) => entry.implementedTool === null);
+    expect(stillUnbound).toHaveLength(5);
   });
 
   it('contains no path that is not a documented Jisr openapi path', async () => {
@@ -56,11 +61,11 @@ describe('the client exposes no arbitrary-request escape hatch', () => {
     expect(source).toContain('No manifest entry for operationId');
   });
 
-  it('rejects a write operationId at the client boundary', async () => {
+  it('rejects an unbound write operationId at the client boundary', async () => {
     const source = await readFile(join(CORE, 'jisr/client.ts'), 'utf8');
-    // Structural, not conventional: even if a write entry were bound in the
-    // manifest, the client refuses it (spec FR-012).
-    expect(source).toContain('is a write operation');
+    // Structural, not conventional: a write entry the manifest does not bind
+    // to a tool cannot be reached, whatever any caller passes (spec FR-012).
+    expect(source).toContain('is an unbound write operation');
   });
 
   it('builds every request path from the manifest entry, not from caller input', async () => {

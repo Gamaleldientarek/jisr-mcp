@@ -10,6 +10,7 @@
 import { z } from 'zod';
 import type { Classification } from '../authorization/field-policy.js';
 import { isToolDiscoverable, type AuthorizationContext } from '../authorization/policies.js';
+import { boundWriteEntries } from '../jisr/endpoint-manifest.js';
 import type { ResultEnvelope } from '../envelope.js';
 import type { JisrClient } from '../jisr/client.js';
 
@@ -55,6 +56,13 @@ export const READ_ONLY_ANNOTATIONS: ToolAnnotations = {
 export interface ToolResult {
   readonly structuredContent: ResultEnvelope<unknown> | Record<string, unknown>;
   readonly summary: string;
+  /** Write tools attach audit context here; merged into the audit record. */
+  readonly writeAudit?: {
+    readonly phase: 'prepare' | 'commit';
+    readonly referencePrefix?: string;
+    readonly targetIds?: readonly string[];
+    readonly reason?: string;
+  };
 }
 
 export interface ToolDefinition<Input = unknown> {
@@ -97,11 +105,22 @@ export class ToolRegistry {
       throw new Error(`Tool "${definition.name}" is already registered.`);
     }
     if (!definition.annotations.readOnlyHint) {
-      // This release has no write surface. A tool claiming otherwise is a bug
-      // caught at startup rather than at call time (spec FR-012).
-      throw new Error(
-        `Tool "${definition.name}" is not read-only. This release exposes no write surface.`,
-      );
+      // A non-read-only tool may register ONLY if the endpoint manifest binds
+      // it as a write. The Release 1 structural property survives: an
+      // unmanifested write cannot exist (feature 002, plan Complexity 1).
+      const entry = boundWriteEntries().find((e) => e.implementedTool === definition.name);
+      if (entry === undefined) {
+        throw new Error(
+          `Tool "${definition.name}" is not read-only and is not a manifest-bound write. No unmanifested write may exist (Constitution Principle I).`,
+        );
+      }
+      const destructive = definition.annotations.destructiveHint;
+      const shouldBeDestructive = entry.operationId === 'deletePayrollTransaction';
+      if (destructive !== shouldBeDestructive) {
+        throw new Error(
+          `Tool "${definition.name}" destructive annotation (${String(destructive)}) does not match the manifest operation.`,
+        );
+      }
     }
     this.#tools.set(definition.name, definition);
   }

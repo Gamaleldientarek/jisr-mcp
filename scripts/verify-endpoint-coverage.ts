@@ -88,11 +88,18 @@ async function main(): Promise<void> {
       );
     }
 
-    // 3. Every release 2 operation has no tool. Absent, not disabled.
+    // 3. Feature 002 binds exactly three write operations to commit tools;
+    // every other release 2 operation stays absent, not disabled.
     if (entry.release === 2) {
+      const allowedWriteTools: Record<string, string> = {
+        'POST /openapi/v1/attendance_logs': 'jisr_attendance_punch_create_commit',
+        'POST /openapi/v1/employees': 'jisr_employee_create_commit',
+        'DELETE /openapi/v1/payroll_transactions/{id}': 'jisr_payroll_transaction_delete_commit',
+      };
+      const expected = allowedWriteTools[label] ?? null;
       require_(
-        entry.implementedTool === null,
-        `release 2 operation "${label}" is bound to "${entry.implementedTool}" -- this release exposes no write surface`,
+        entry.implementedTool === expected,
+        `release 2 operation "${label}" is bound to "${entry.implementedTool}", expected ${expected === null ? 'no tool' : `"${expected}"`}`,
       );
     }
 
@@ -132,8 +139,11 @@ async function main(): Promise<void> {
   console.log(`Endpoint coverage gate PASSED against snapshot ${SNAPSHOT_VERSION}.`);
   console.log(`  ${snapshotSet.size} documented operations, all present exactly once`);
   console.log(`  ${reads} release 1 reads, all bound to a tool`);
+  const boundWrites = ENDPOINT_MANIFEST.filter(
+    (e) => e.release === 2 && e.implementedTool !== null,
+  ).length;
   console.log(
-    `  ${ENDPOINT_MANIFEST.filter((e) => e.release === 2).length} release 2 operations, none bound`,
+    `  ${ENDPOINT_MANIFEST.filter((e) => e.release === 2).length} release 2 operations, ${boundWrites} bound (feature 002), rest deliberately absent`,
   );
 }
 

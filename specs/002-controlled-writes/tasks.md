@@ -14,10 +14,10 @@ description: "Task list for controlled writes -- Release 2"
 
 ## Phase 1: Setup
 
-- [ ] T001 Add the three write-domain flags (`JISR_WRITE_ATTENDANCE`, `JISR_WRITE_EMPLOYEES`, `JISR_WRITE_PAYROLL_DELETE`, all defaulting disabled) with actionable failures in `src/config/environment.ts` and `src/config/feature-flags.ts` (spec FR-001, FR-002)
-- [ ] T002 Define the write request/response schemas from the snapshot prose in `src/core/jisr/schemas/writes.ts`, accepting both string and integer `emp_code` (research W1)
-- [ ] T003 Add the eight write error codes from `data-model.md` §6 to `src/core/errors.ts`, using the names the baseline plan reserved
-- [ ] T004 [P] Bind the three write operations to their tools in `src/core/jisr/endpoint-manifest.ts` (journals and webhooks stay unbound) and extend `scripts/verify-endpoint-coverage.ts` to assert exactly these three writes are bound (spec FR-020)
+- [X] T001 Add the three write-domain flags (`JISR_WRITE_ATTENDANCE`, `JISR_WRITE_EMPLOYEES`, `JISR_WRITE_PAYROLL_DELETE`, all defaulting disabled) with actionable failures in `src/config/environment.ts` and `src/config/feature-flags.ts` (spec FR-001, FR-002)
+- [X] T002 Define the write request/response schemas from the snapshot prose in `src/core/jisr/schemas/writes.ts`, accepting both string and integer `emp_code` (research W1)
+- [X] T003 Add the eight write error codes from `data-model.md` §6 to `src/core/errors.ts`, using the names the baseline plan reserved
+- [X] T004 [P] Bind the three write operations to their tools in `src/core/jisr/endpoint-manifest.ts` (journals and webhooks stay unbound) and extend `scripts/verify-endpoint-coverage.ts` to assert exactly these three writes are bound (spec FR-020)
 
 ## Phase 2: Foundational — shared write machinery
 

@@ -258,18 +258,55 @@ export const ENDPOINT_MANIFEST: readonly ManifestEntry[] = [
     release: 1,
   })),
 
-  // --- Release 2: known, deliberately unbound. Present so the coverage gate
-  // can assert they are unimplemented rather than missed (spec FR-012).
+  // --- Release 2, feature 002: three writes are BOUND, each to its commit
+  // tool -- the half that reaches the operation. Prepare tools touch no
+  // upstream write and are declared in authorization/policies.ts.
+  {
+    domain: 'attendance_logs',
+    operationId: 'createAttendanceLogs',
+    method: 'POST',
+    path: '/openapi/v1/attendance_logs',
+    readOrWrite: 'write',
+    sensitivity: 'internal_operational',
+    requiredJisrPermission: null,
+    requiredProfiles: ['hr_operations'],
+    implementedTool: 'jisr_attendance_punch_create_commit',
+    release: 2,
+  },
+  {
+    domain: 'employees',
+    operationId: 'createEmployee',
+    method: 'POST',
+    path: '/openapi/v1/employees',
+    readOrWrite: 'write',
+    sensitivity: 'employee_personal',
+    requiredJisrPermission: null,
+    requiredProfiles: ['hr_operations'],
+    implementedTool: 'jisr_employee_create_commit',
+    release: 2,
+  },
+  {
+    domain: 'finance',
+    operationId: 'deletePayrollTransaction',
+    method: 'DELETE',
+    path: '/openapi/v1/payroll_transactions/{id}',
+    readOrWrite: 'write',
+    sensitivity: 'financial_confidential',
+    requiredJisrPermission: null,
+    requiredProfiles: ['finance'],
+    implementedTool: 'jisr_payroll_transaction_delete_commit',
+    release: 2,
+  },
+
+  // --- Release 2, still deliberately unbound: journals and webhooks are
+  // deferred per the feature 002 scope decision (2026-08-31).
   ...(
     [
-      ['employees', 'createEmployee', 'POST', '/openapi/v1/employees'],
-      ['attendance_logs', 'createAttendanceLogs', 'POST', '/openapi/v1/attendance_logs'],
       ['accounting', 'createAccountingJournals', 'POST', '/openapi/v1/accounting/journals'],
       ['webhooks', 'createWebhook', 'POST', '/openapi/v1/webhooks'],
       ['webhooks', 'updateWebhook', 'PUT', '/openapi/v1/webhooks/{id}'],
       ['webhooks', 'deleteWebhook', 'DELETE', '/openapi/v1/webhooks/{id}'],
       ['webhooks', 'testWebhook', 'POST', '/openapi/v1/webhooks/{id}/test'],
-      ['finance', 'deletePayrollTransaction', 'DELETE', '/openapi/v1/payroll_transactions/{id}'],
     ] as const
   ).map<ManifestEntry>(([domain, operationId, method, path]) => ({
     domain,
@@ -288,6 +325,11 @@ export const ENDPOINT_MANIFEST: readonly ManifestEntry[] = [
 /** `METHOD /path` for every operation, the form the coverage gate compares. */
 export function manifestOperationKeys(): readonly string[] {
   return ENDPOINT_MANIFEST.map((entry) => `${entry.method} ${entry.path}`).sort();
+}
+
+/** The write operations feature 002 binds. The coverage gate pins this set. */
+export function boundWriteEntries(): readonly ManifestEntry[] {
+  return ENDPOINT_MANIFEST.filter((e) => e.readOrWrite === 'write' && e.implementedTool !== null);
 }
 
 export function release1ReadEntries(): readonly ManifestEntry[] {

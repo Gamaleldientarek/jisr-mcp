@@ -81,6 +81,9 @@ const environmentSchema = z.object({
   JISR_ROLE_PROFILE: z.enum(ROLE_PROFILES),
   JISR_SUBJECT_EMPLOYEE_ID: z.string().uuid().optional(),
   JISR_FINANCE_SURFACE: z.enum(['enabled', 'disabled']).default('disabled'),
+  JISR_WRITE_ATTENDANCE: z.enum(['enabled', 'disabled']).default('disabled'),
+  JISR_WRITE_EMPLOYEES: z.enum(['enabled', 'disabled']).default('disabled'),
+  JISR_WRITE_PAYROLL_DELETE: z.enum(['enabled', 'disabled']).default('disabled'),
   JISR_FINANCE_API_KEY: z.string().min(1).optional(),
   JISR_FINANCE_API_SECRET: z.string().min(1).optional(),
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
@@ -117,6 +120,12 @@ const REMEDIES: Readonly<Record<string, string>> = {
   JISR_SUBJECT_EMPLOYEE_ID:
     'set it to the Jisr employee UUID this caller corresponds to. The employee_self and manager profiles are defined relative to a person, so they cannot resolve without it.',
   JISR_FINANCE_SURFACE: `set it to "enabled" or "disabled". Financial tools do not exist unless it is "enabled", even if your Jisr key permits financial access.`,
+  JISR_WRITE_ATTENDANCE:
+    'set it to "enabled" or "disabled". Punch-creation tools do not exist unless enabled.',
+  JISR_WRITE_EMPLOYEES:
+    'set it to "enabled" or "disabled". Employee-creation tools do not exist unless enabled.',
+  JISR_WRITE_PAYROLL_DELETE:
+    'set it to "enabled" or "disabled". The destructive payroll-deletion path stays absent unless enabled, and additionally requires the finance surface.',
   LOG_LEVEL: 'set it to one of: error, warn, info, debug.',
 };
 
@@ -206,6 +215,14 @@ export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<
     );
   }
 
+  if (value.JISR_WRITE_PAYROLL_DELETE === 'enabled' && !financeEnabled) {
+    throw new ConfigurationError(
+      'JISR_WRITE_PAYROLL_DELETE',
+      'is enabled but the finance surface is disabled',
+      'enable JISR_FINANCE_SURFACE as well, or disable the deletion path. Deletion sits behind BOTH.',
+    );
+  }
+
   return {
     organizationId: await deriveOrganizationId(value.JISR_BASE_URL, value.JISR_SLUG),
     baseUrl: value.JISR_BASE_URL,
@@ -221,7 +238,12 @@ export async function loadConfig(env: NodeJS.ProcessEnv = process.env): Promise<
         : undefined,
     roleProfile: value.JISR_ROLE_PROFILE,
     subjectEmployeeId: value.JISR_SUBJECT_EMPLOYEE_ID,
-    featureFlags: createFeatureFlags({ financeSurfaceEnabled: financeEnabled }),
+    featureFlags: createFeatureFlags({
+      financeSurfaceEnabled: financeEnabled,
+      writeAttendance: value.JISR_WRITE_ATTENDANCE === 'enabled',
+      writeEmployees: value.JISR_WRITE_EMPLOYEES === 'enabled',
+      writePayrollDelete: value.JISR_WRITE_PAYROLL_DELETE === 'enabled',
+    }),
     logLevel: value.LOG_LEVEL,
   };
 }

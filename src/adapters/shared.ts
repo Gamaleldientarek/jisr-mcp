@@ -84,6 +84,7 @@ export async function invokeTool(
         errorCode: null,
         durationMs: elapsedMs(correlation),
         sensitive,
+        ...(result.writeAudit ?? {}),
       }),
     );
     runtime.metrics.recordToolCall(toolName, 'allowed', elapsedMs(correlation), sensitive);

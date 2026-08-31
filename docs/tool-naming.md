@@ -14,7 +14,11 @@ jisr_<domain>_<action>
   manifest: `employees`, `attendance`, `leave`, `accruals`, `finance`,
   `accounting`, `lookups`, `webhooks`, `audit`, plus `connection`,
   `capabilities` and `data_catalog` for discovery.
-- **`<action>`** — `list` for a collection, `get` for a single record.
+- **`<action>`** — `list` for a collection, `get` for a single record. Write
+  pairs (feature 002) use `<verb>_prepare` and `<verb>_commit`: prepare
+  validates and previews without writing and returns a single-use confirmation
+  reference; commit takes that reference and performs exactly the previewed
+  write. The two are one consent flow and always ship together.
 
 Singular and plural follow the shape of the result, not the domain:
 `jisr_employees_list` returns many, `jisr_employee_basic_info_get` returns one.

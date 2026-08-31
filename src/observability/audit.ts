@@ -31,6 +31,13 @@ export interface AuditRecord {
   readonly durationMs: number;
   /** True when the call touched financial or employee-sensitive data. */
   readonly sensitive: boolean;
+
+  // --- Write extensions (feature 002, spec FR-010). Absent on reads. ---
+  readonly phase?: 'prepare' | 'commit';
+  /** First 8 characters only -- enough to correlate, never enough to replay. */
+  readonly referencePrefix?: string;
+  readonly targetIds?: readonly string[];
+  readonly reason?: string;
 }
 
 export interface AuditSink {

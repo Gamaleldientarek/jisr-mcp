@@ -126,10 +126,14 @@ describe('the read-only claim is structural', () => {
     expect(naming.sort()).toEqual(['jisr/authentication.ts', 'jisr/endpoint-manifest.ts']);
   });
 
-  it('binds no tool to a write operation in the manifest', () => {
+  it('binds exactly the feature 002 writes in the manifest, nothing more', () => {
     const bound = ENDPOINT_MANIFEST.filter(
       (e) => e.readOrWrite === 'write' && e.implementedTool !== null,
     );
-    expect(bound).toEqual([]);
+    expect(Object.fromEntries(bound.map((e) => [e.operationId, e.implementedTool]))).toEqual({
+      createAttendanceLogs: 'jisr_attendance_punch_create_commit',
+      createEmployee: 'jisr_employee_create_commit',
+      deletePayrollTransaction: 'jisr_payroll_transaction_delete_commit',
+    });
   });
 });

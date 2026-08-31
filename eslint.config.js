@@ -5,7 +5,17 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'specs/**', '.specify/**', '.claude/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      'specs/**',
+      '.specify/**',
+      '.claude/**',
+      // Injected via NODE_OPTIONS into the e2e write test's server process;
+      // plain JS by design, outside the TS project service.
+      'scripts/e2e-write-stub.mjs',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

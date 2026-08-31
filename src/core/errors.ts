@@ -45,6 +45,19 @@ export const ERROR_CODES = [
 
   // Surface
   'TOOL_NOT_ENABLED',
+
+  // Writes (names reserved by the baseline plan §19)
+  'WRITE_NOT_ENABLED',
+  'WRITE_CONFIRMATION_REQUIRED',
+  'WRITE_PREPARATION_EXPIRED',
+  'WRITE_TARGET_CHANGED',
+  'DUPLICATE_WRITE_SUSPECTED',
+  'WRITE_OUTCOME_UNKNOWN',
+  'DESTRUCTIVE_ACTION_DISABLED',
+  'BACKDATING_WINDOW_EXCEEDED',
+  // A write without a stated reason is refused; the reason is part of the
+  // audit contract, not decoration (feature 002 spec FR-013).
+  'REASON_REQUIRED',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -57,6 +70,8 @@ export interface ErrorPayload {
 }
 
 /** Codes a caller may usefully retry. Everything else is a definite answer. */
+// WRITE_OUTCOME_UNKNOWN is deliberately NOT retryable: the write may have
+// landed, and a retry is a possible double-write. Verify via reads first.
 const RETRYABLE: ReadonlySet<ErrorCode> = new Set<ErrorCode>([
   'JISR_RATE_LIMITED',
   'JISR_TEMPORARILY_UNAVAILABLE',

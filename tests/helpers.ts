@@ -12,7 +12,7 @@ import { JisrMcpError } from '../src/core/errors.js';
  * call unexpectedly succeeds, so a test that stops exercising its failure path
  * fails loudly instead of silently.
  */
-export async function refusalFrom(run: () => Promise<unknown>): Promise<JisrMcpError> {
+export async function refusalFrom(run: () => unknown): Promise<JisrMcpError> {
   try {
     await run();
   } catch (error) {

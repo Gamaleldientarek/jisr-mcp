@@ -90,12 +90,19 @@ describe('the gate detects divergence', () => {
     expect(snapshot.has('GET /openapi/v1/invented_endpoint')).toBe(false);
   });
 
-  it('would fail if a release 2 operation were bound to a tool', () => {
+  it('would fail if a release 2 operation were bound outside the allowlist', () => {
     const releaseTwo = ENDPOINT_MANIFEST.filter((e) => e.release === 2);
     expect(releaseTwo).toHaveLength(8);
-    // The gate's rule: release 2 implies no tool. Assert the invariant holds
-    // now, and that the set it applies to is non-empty so it cannot pass
-    // vacuously.
-    for (const entry of releaseTwo) expect(entry.implementedTool).toBeNull();
+    // The gate's rule since feature 002: a release 2 operation may be bound
+    // ONLY to its pinned tool. Assert against the same pinned map so the set
+    // this applies to is non-empty and cannot pass vacuously.
+    const allowed: Record<string, string> = {
+      createAttendanceLogs: 'jisr_attendance_punch_create_commit',
+      createEmployee: 'jisr_employee_create_commit',
+      deletePayrollTransaction: 'jisr_payroll_transaction_delete_commit',
+    };
+    for (const entry of releaseTwo) {
+      expect(entry.implementedTool).toBe(allowed[entry.operationId] ?? null);
+    }
   });
 });

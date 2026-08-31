@@ -17,6 +17,14 @@ Governed by the project constitution, whose Principle VI (Read-First Release Ord
 satisfies the precondition of: Release 1 shipped first, and each write arrives individually, with its
 own authorization review, confirmation flow, audit trail, and test coverage.
 
+## Clarifications
+
+### Session 2026-08-31
+
+- Q: Which role profiles may perform this feature's writes (punch creation, employee creation)? → A: `hr_operations` only; every other profile remains read-only in this feature.
+- Q: How far back may a punch be created? → A: Within the current or immediately previous calendar month; older dates are refused.
+- Q: Confirmation reference validity window? → A: 5 minutes from issue.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Correct a missed attendance punch (Priority: P1)
@@ -45,6 +53,8 @@ verify through the Release 1 read tools that the punch exists in Jisr exactly as
    returned — not what was submitted.
 3. **Given** a punch time without an explicit time zone, **When** the request is made, **Then** it
    is refused before any preview, naming the problem.
+3a. **Given** a punch dated before the previous calendar month, **When** prepare is attempted,
+   **Then** it refuses at prepare, stating the permitted window.
 4. **Given** a confirmation reference invented by the model rather than issued by the server,
    **When** commit is attempted, **Then** it is refused.
 5. **Given** the same confirmed request submitted twice, **When** the duplicate arrives, **Then**
@@ -147,13 +157,16 @@ the tools are undiscoverable to every profile.
   employee creation.
 - **FR-003**: Every write MUST pass the same two independent gates as reads — caller profile and
   Jisr key permission — plus the domain's write-surface opt-in. No gate may be inferred from
-  another.
+  another. In this feature the only write-authorized profile is `hr_operations` for punch and
+  employee creation, and `finance` for the dormant deletion path; every other profile — manager
+  included — remains read-only, and write tools are undiscoverable to them.
 - **FR-004**: Every consequential write MUST use two steps: a prepare that validates fully, shows
   the caller exactly what will change, and issues a short-lived server-bound confirmation
   reference; and a commit that accepts only that reference. A confirmation string composed by the
   model MUST never be accepted.
 - **FR-005**: Confirmation references MUST be bound to organization, caller, operation, and target;
-  MUST expire; and MUST be single-use.
+  MUST expire **5 minutes** after issue; and MUST be single-use. An expired reference refuses with a
+  distinct outcome telling the caller to prepare again, which re-validates everything.
 - **FR-006**: Input validation MUST be strict and complete at prepare: unknown fields rejected,
   lookup references resolved against live Jisr, time zones explicit, and domain rules (such as
   balanced journals) enforced before Jisr is contacted.
@@ -177,6 +190,10 @@ the tools are undiscoverable to every profile.
 
 - **FR-013**: Punch creation MUST require employee identification, an explicit-zone timestamp, and
   a stated reason, recorded in the audit trail.
+- **FR-013a**: A punch MUST be dated within the current or immediately previous calendar month,
+  evaluated in the organization's time context at prepare. Older dates refuse at prepare with the
+  window stated — closed pay periods are immutable through this tool, and corrections beyond the
+  window belong in Jisr itself.
 
 ### Employee creation
 

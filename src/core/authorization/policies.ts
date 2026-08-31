@@ -99,6 +99,9 @@ function writeCapability(tool: string, context: AuthorizationContext): Capabilit
     context.flags[gate.flag] &&
     (!gate.requiresFinanceSurface || context.flags.financeSurfaceEnabled);
   const allowed = gate.profiles.includes(context.principal.profile);
+  const permitted = context.observed.probed
+    ? !context.observed.deniedDomains.has(gate.domain)
+    : 'unknown';
 
   let unavailableReason: CapabilityRecord['unavailableReason'] = null;
   let suggestedAction: string | null = null;
@@ -112,15 +115,17 @@ function writeCapability(tool: string, context: AuthorizationContext): Capabilit
   } else if (!allowed) {
     unavailableReason = 'JISR_PERMISSION_DENIED';
     suggestedAction = `This write requires the ${gate.profiles.join(' or ')} profile.`;
+  } else if (permitted === false) {
+    unavailableReason = 'JISR_CAPABILITY_NOT_ENABLED';
+    suggestedAction =
+      'The connected Jisr API key does not permit this domain. Ask a Jisr administrator to review the key permissions.';
   }
 
   return {
     domain: gate.domain,
     tool,
     supportedBySpecification: true,
-    permittedByJisrKey: context.observed.probed
-      ? !context.observed.deniedDomains.has(gate.domain)
-      : 'unknown',
+    permittedByJisrKey: permitted,
     allowedByPrincipal: allowed,
     enabledByConfiguration: enabled,
     available: unavailableReason === null,

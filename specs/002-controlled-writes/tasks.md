@@ -53,10 +53,10 @@ description: "Task list for controlled writes -- Release 2"
 
 ## Phase 5: US3 — payroll deletion, dormant (P3)
 
-- [ ] T026 [P] [US3] Test target re-validation in `tests/integration/payroll-delete.test.ts`: target changed → `WRITE_TARGET_CHANGED`; vanished → `RECORD_NOT_FOUND`; reason required; any multi-target form refuses at the schema (spec FR-018) (quickstart W6)
-- [ ] T027 [P] [US3] Test four-gate dormancy in `tests/authorization/payroll-delete-gates.test.ts`: absent for all profiles at default; enabled requires finance profile + finance surface + key + flag together (SC-006)
-- [ ] T028 [US3] Implement the deletion service in `src/core/services/payroll-delete-service.ts`: prepare re-read, target hash, reason, single-target only (spec FR-016..019)
-- [ ] T029 [US3] Implement `jisr_payroll_transaction_delete_prepare` and `_commit` (destructive-annotated) in `src/core/tools/finance/payroll-delete.ts`
+- [X] T026 [P] [US3] Test target re-validation in `tests/integration/payroll-delete.test.ts`: target changed → `WRITE_TARGET_CHANGED`; vanished → `RECORD_NOT_FOUND`; reason required; any multi-target form refuses at the schema (spec FR-018) (quickstart W6)
+- [X] T027 [P] [US3] Test four-gate dormancy in `tests/authorization/payroll-delete-gates.test.ts`: absent for all profiles at default; enabled requires finance profile + finance surface + key + flag together (SC-006)
+- [X] T028 [US3] Implement the deletion service in `src/core/services/payroll-delete-service.ts`: prepare re-read, target hash, reason, single-target only (spec FR-016..019)
+- [X] T029 [US3] Implement `jisr_payroll_transaction_delete_prepare` and `_commit` (destructive-annotated) in `src/core/tools/finance/payroll-delete.ts`
 
 ## Phase 6: Polish & release gates
 

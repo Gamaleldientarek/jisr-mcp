@@ -20,6 +20,7 @@ import {
 } from './employees/employee-create.js';
 import { employeesListTool } from './employees/employees-list.js';
 import { financeTools } from './finance/index.js';
+import { payrollDeleteCommitTool, payrollDeletePrepareTool } from './finance/payroll-delete.js';
 import { leaveSummaryTool } from './leave/summary-get.js';
 import { lookupTools } from './lookups/index.js';
 import type { ToolRegistry } from './registry.js';
@@ -59,4 +60,6 @@ export function registerWriteTools(registry: ToolRegistry): void {
   registry.register(punchCreateCommitTool);
   registry.register(employeeCreatePrepareTool);
   registry.register(employeeCreateCommitTool);
+  registry.register(payrollDeletePrepareTool);
+  registry.register(payrollDeleteCommitTool);
 }

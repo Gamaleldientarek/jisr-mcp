@@ -17,6 +17,18 @@ permissions:
   id-token: write
 
 jobs:
+  # The secrets context is not available in a job-level `if` -- referencing it
+  # there invalidates the whole workflow, silently, at parse time. So the token
+  # check runs as a STEP (where secrets are available) and gates downstream
+  # jobs through `needs`, which is available.
+  npm-configured:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.probe.outputs.enabled }}
+    steps:
+      - id: probe
+        run: echo "enabled=${{ secrets.NPM_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+
   verify:
     runs-on: ubuntu-latest
     steps:
@@ -38,13 +50,13 @@ jobs:
       - name: Verify release consistency
         run: npm run verify:release
         env:
-          RELEASE_TARGET: ${{ secrets.NPM_TOKEN != '' && 'npm' || 'github' }}
+          RELEASE_TARGET: ${{ secrets.NPM_TOKEN != '' && 'npm' || 'github' }} # step env: secrets OK here
       - run: npm run build
 
   publish-npm:
-    needs: verify
+    needs: [verify, npm-configured]
     # Explicit opt-in: configuring NPM_TOKEN is the act that enables this stage.
-    if: ${{ secrets.NPM_TOKEN != '' }}
+    if: ${{ needs.npm-configured.outputs.enabled == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

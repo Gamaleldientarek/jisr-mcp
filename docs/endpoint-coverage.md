@@ -6,7 +6,8 @@ Against Jisr OpenAPI snapshot **2026-08-29**.
 `npm run verify:coverage` fails the build if this diverges.
 
 **29** documented operations: 20 reads implemented,
-8 writes deliberately unbound, 1 handled internally.
+3 of 8 release 2 writes bound
+behind explicit flags (feature 002), the rest deliberately unbound, 1 handled internally.
 
 ## Release 1 — implemented reads (20)
 
@@ -41,19 +42,20 @@ Never exposed as a tool: doing so would put credentials in a tool contract.
 | ------ | ------------------ | ---- | -------------------- |
 | `POST` | `/openapi/v1/auth` | —    | internal operational |
 
-## Release 2 — known and unbound (8)
+## Release 2 — writes (8; bound entries require their domain flag)
 
-Recorded so the coverage gate can assert these are _unimplemented_ rather than
-_missed_. This release has no write surface: no tool, no client method, no code
-path (spec FR-012).
+Recorded so the coverage gate can assert exactly which writes exist and which
+are _unimplemented_ rather than _missed_. Feature 002 binds three of these to
+prepare/commit tool pairs, each dormant behind its own operator flag; the rest
+have no tool, no client method, no code path (spec FR-012).
 
-| Method   | Path                                    | Tool | Sensitivity          |
-| -------- | --------------------------------------- | ---- | -------------------- |
-| `POST`   | `/openapi/v1/employees`                 | —    | internal operational |
-| `POST`   | `/openapi/v1/attendance_logs`           | —    | internal operational |
-| `POST`   | `/openapi/v1/accounting/journals`       | —    | internal operational |
-| `POST`   | `/openapi/v1/webhooks`                  | —    | internal operational |
-| `PUT`    | `/openapi/v1/webhooks/{id}`             | —    | internal operational |
-| `DELETE` | `/openapi/v1/webhooks/{id}`             | —    | internal operational |
-| `POST`   | `/openapi/v1/webhooks/{id}/test`        | —    | internal operational |
-| `DELETE` | `/openapi/v1/payroll_transactions/{id}` | —    | internal operational |
+| Method   | Path                                    | Tool                                     | Sensitivity            |
+| -------- | --------------------------------------- | ---------------------------------------- | ---------------------- |
+| `POST`   | `/openapi/v1/attendance_logs`           | `jisr_attendance_punch_create_commit`    | internal operational   |
+| `POST`   | `/openapi/v1/employees`                 | `jisr_employee_create_commit`            | employee personal      |
+| `DELETE` | `/openapi/v1/payroll_transactions/{id}` | `jisr_payroll_transaction_delete_commit` | financial confidential |
+| `POST`   | `/openapi/v1/accounting/journals`       | —                                        | internal operational   |
+| `POST`   | `/openapi/v1/webhooks`                  | —                                        | internal operational   |
+| `PUT`    | `/openapi/v1/webhooks/{id}`             | —                                        | internal operational   |
+| `DELETE` | `/openapi/v1/webhooks/{id}`             | —                                        | internal operational   |
+| `POST`   | `/openapi/v1/webhooks/{id}/test`        | —                                        | internal operational   |

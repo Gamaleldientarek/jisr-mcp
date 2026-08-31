@@ -21,6 +21,8 @@ import {
   type ToolDefinition,
 } from '../../src/core/tools/registry.js';
 import { invokeTool, planRegistrations, toolListCacheHint } from '../../src/adapters/shared.js';
+import { registerReadTools, registerWriteTools } from '../../src/core/tools/index.js';
+import type { RoleProfile } from '../../src/core/authorization/role-profiles.js';
 import { JisrClient } from '../../src/core/jisr/client.js';
 import type { AppConfig } from '../../src/config/environment.js';
 import { createAuditSink } from '../../src/observability/audit.js';
@@ -168,5 +170,106 @@ describe('tools/list caching', () => {
       toolListCacheHint(financeOn).scopeKey,
     ]);
     expect(keys.size).toBe(3);
+  });
+});
+
+describe('write tool parity (feature 002)', () => {
+  const WRITE_TOOLS = [
+    'jisr_attendance_punch_create_prepare',
+    'jisr_attendance_punch_create_commit',
+    'jisr_employee_create_prepare',
+    'jisr_employee_create_commit',
+    'jisr_payroll_transaction_delete_prepare',
+    'jisr_payroll_transaction_delete_commit',
+  ] as const;
+
+  function writeRuntime(profile: RoleProfile, allFlagsOn: boolean) {
+    const registry = new ToolRegistry();
+    registerReadTools(registry);
+    registerWriteTools(registry);
+    const flags = createFeatureFlags(
+      allFlagsOn
+        ? {
+            financeSurfaceEnabled: true,
+            writeAttendance: true,
+            writeEmployees: true,
+            writePayrollDelete: true,
+          }
+        : { financeSurfaceEnabled: false },
+    );
+    return {
+      registry,
+      context: {
+        principal: createPrincipal({ organizationId: ORG, profile }),
+        flags,
+        observed: UNPROBED,
+        client: stubClient(),
+        connection: { hostType: 'aws' as const },
+      },
+      audit: createAuditSink(silentSink()),
+      metrics: new Metrics(),
+    };
+  }
+
+  it('plans no write tool at default flags -- absence has parity too', () => {
+    for (const profile of ['hr_operations', 'finance'] as const) {
+      const names = planRegistrations(writeRuntime(profile, false)).map((p) => p.definition.name);
+      expect(names.filter((n) => (WRITE_TOOLS as readonly string[]).includes(n))).toEqual([]);
+    }
+  });
+
+  it('plans the hr pairs for hr_operations with honest annotations', () => {
+    const plans = planRegistrations(writeRuntime('hr_operations', true));
+    const byName = new Map(plans.map((p) => [p.definition.name, p]));
+
+    for (const name of ['jisr_attendance_punch_create_prepare', 'jisr_employee_create_prepare']) {
+      expect(byName.get(name)?.config.annotations.readOnlyHint).toBe(true);
+      expect(byName.get(name)?.config.annotations.destructiveHint).toBe(false);
+    }
+    for (const name of ['jisr_attendance_punch_create_commit', 'jisr_employee_create_commit']) {
+      expect(byName.get(name)?.config.annotations.readOnlyHint).toBe(false);
+      expect(byName.get(name)?.config.annotations.destructiveHint).toBe(false);
+    }
+    // The deletion pair needs the finance profile; hr_operations never sees it.
+    expect(byName.has('jisr_payroll_transaction_delete_prepare')).toBe(false);
+    expect(byName.has('jisr_payroll_transaction_delete_commit')).toBe(false);
+  });
+
+  it('plans the destructive deletion pair only for finance', () => {
+    const plans = planRegistrations(writeRuntime('finance', true));
+    const byName = new Map(plans.map((p) => [p.definition.name, p]));
+    expect(
+      byName.get('jisr_payroll_transaction_delete_prepare')?.config.annotations.readOnlyHint,
+    ).toBe(true);
+    expect(
+      byName.get('jisr_payroll_transaction_delete_commit')?.config.annotations.destructiveHint,
+    ).toBe(true);
+  });
+
+  it('carries no MRTR or elicitation surface on any write plan (analysis I1)', () => {
+    const plans = planRegistrations(writeRuntime('hr_operations', true));
+    for (const plan of plans) {
+      if (!(WRITE_TOOLS as readonly string[]).includes(plan.definition.name)) continue;
+      // The whole config shape is pinned: a future MRTR/inputRequired field
+      // cannot appear on one adapter without failing here first.
+      expect(Object.keys(plan.config).sort()).toEqual([
+        '_meta',
+        'annotations',
+        'description',
+        'inputSchema',
+        'title',
+      ]);
+      expect(Object.keys(plan.config._meta).sort()).toEqual([
+        'jisr/declaredFieldGroups',
+        'jisr/fieldGroupPurpose',
+      ]);
+    }
+  });
+
+  it('both adapters construct from the write-bearing plan', async () => {
+    const v2 = await import('../../src/adapters/mcp-v2/index.js');
+    const v1 = await import('../../src/adapters/mcp-v1/index.js');
+    expect(v2.createServer(writeRuntime('hr_operations', true), '0.2.0')).toBeDefined();
+    expect(v1.createServer(writeRuntime('hr_operations', true), '0.2.0')).toBeDefined();
   });
 });

@@ -14,12 +14,31 @@ Claude Code, Claude Desktop, Cursor, Codex, and anything else that speaks the pr
 
 ## What it does
 
-Release 1 is **read-only** and covers all 20 documented Jisr read operations — employees,
-attendance, leave, accruals, payroll and finance, accounting journals, all six lookups, webhooks and
-audit events — plus three discovery tools, as 23 purpose-built tools.
+Covers all 20 documented Jisr read operations — employees, attendance, leave, accruals, payroll
+and finance, accounting journals, all six lookups, webhooks and audit events — plus three discovery
+tools, as 23 purpose-built read tools. Feature 002 adds **three controlled writes** as
+prepare/commit tool pairs (six tools), every one disabled by default.
 
 There is no generic HTTP tool and no way to reach an operation outside the documented surface. It
 runs against live Jisr data: **no database, no queue, no background workers.**
+
+### Controlled writes (disabled by default)
+
+Every write is a **prepare/commit pair**: `*_prepare` validates and previews without touching
+Jisr and returns a single-use confirmation reference (5-minute validity); `*_commit` takes only
+that reference and performs exactly the previewed write, then reports the state **re-read from
+Jisr** — never an echo of what was sent. A write domain that is not explicitly enabled is
+**absent**: its tools do not appear in `tools/list` for any profile.
+
+| Pair                                | Flag                                | Profile         | Notes                                                                                         |
+| ----------------------------------- | ----------------------------------- | --------------- | --------------------------------------------------------------------------------------------- |
+| `jisr_attendance_punch_create_*`    | `JISR_WRITE_ATTENDANCE=enabled`     | `hr_operations` | Single punch; current or previous calendar month only; reason required                        |
+| `jisr_employee_create_*`            | `JISR_WRITE_EMPLOYEES=enabled`      | `hr_operations` | Live lookup resolution; duplicate warning must be acknowledged                                |
+| `jisr_payroll_transaction_delete_*` | `JISR_WRITE_PAYROLL_DELETE=enabled` | `finance`       | **Destructive and dormant**; also requires the finance surface; target re-validated at commit |
+
+Do not enable any write flag before its section in
+[`docs/write-contract-verification.md`](docs/write-contract-verification.md) carries live
+verification evidence.
 
 ## Prerequisites
 

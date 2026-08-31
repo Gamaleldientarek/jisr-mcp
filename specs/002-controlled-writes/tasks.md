@@ -60,12 +60,12 @@ description: "Task list for controlled writes -- Release 2"
 
 ## Phase 6: Polish & release gates
 
-- [ ] T030 [P] Extend adapter parity to the six write tools in `tests/contract/adapter-parity.test.ts` — identical surface on both adapters; MRTR deliberately absent (feature 001 FR-002a, analysis I1)
-- [ ] T031 [P] Test write-audit completeness in `tests/integration/write-audit-trail.test.ts`: one record per prepare, commit, refusal, and ambiguous outcome in a replayed session; reasons present on deletions; zero sensitive payloads (SC-007, quickstart W8)
-- [ ] T032 Extend `scripts/e2e-protocol-test.py` with a write round trip over real stdio against a stubbed upstream
-- [ ] T033 [P] Extend `tests/security/prompt-injection.test.ts`: injected record content cannot compose a valid confirmation (SC-003)
-- [ ] T034 [P] Update README, `docs/tool-naming.md`, and regenerate the authorization matrix for the six write tools via `npm run docs:generate`
-- [ ] T035 Create `docs/write-contract-verification.md` with one empty evidence section per tool and the window procedure from research W6 (spec FR-012, SC-009)
+- [X] T030 [P] Extend adapter parity to the six write tools in `tests/contract/adapter-parity.test.ts` — identical surface on both adapters; MRTR deliberately absent (feature 001 FR-002a, analysis I1)
+- [X] T031 [P] Test write-audit completeness in `tests/integration/write-audit-trail.test.ts`: one record per prepare, commit, refusal, and ambiguous outcome in a replayed session; reasons present on deletions; zero sensitive payloads (SC-007, quickstart W8)
+- [X] T032 Extend `scripts/e2e-protocol-test.py` with a write round trip over real stdio against a stubbed upstream
+- [X] T033 [P] Extend `tests/security/prompt-injection.test.ts`: injected record content cannot compose a valid confirmation (SC-003)
+- [X] T034 [P] Update README, `docs/tool-naming.md`, and regenerate the authorization matrix for the six write tools via `npm run docs:generate`
+- [X] T035 Create `docs/write-contract-verification.md` with one empty evidence section per tool and the window procedure from research W6 (spec FR-012, SC-009)
 - [ ] T036 **LIVE WINDOW (human present)**: widen the key, verify punch and employee creation per quickstart W9, record evidence including a timed end-to-end punch correction conversation (SC-008 target: under 3 minutes), narrow the key — no write tool enabled anywhere before its section is filled (SC-009)
 - [ ] T037 Update `CHANGELOG.md`, tag v0.2.0 after T036 evidence lands, and record decisions in the baseline plan's Decision Log
 

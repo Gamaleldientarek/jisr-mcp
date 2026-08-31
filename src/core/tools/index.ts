@@ -14,6 +14,10 @@ import { capabilitiesTool } from './discovery/capabilities.js';
 import { connectionStatusTool } from './discovery/connection-status.js';
 import { createDataCatalogTool } from './discovery/data-catalog.js';
 import { employeeBasicInfoTool } from './employees/basic-info-get.js';
+import {
+  employeeCreateCommitTool,
+  employeeCreatePrepareTool,
+} from './employees/employee-create.js';
 import { employeesListTool } from './employees/employees-list.js';
 import { financeTools } from './finance/index.js';
 import { leaveSummaryTool } from './leave/summary-get.js';
@@ -53,4 +57,6 @@ export function registerReadTools(registry: ToolRegistry): void {
 export function registerWriteTools(registry: ToolRegistry): void {
   registry.register(punchCreatePrepareTool);
   registry.register(punchCreateCommitTool);
+  registry.register(employeeCreatePrepareTool);
+  registry.register(employeeCreateCommitTool);
 }

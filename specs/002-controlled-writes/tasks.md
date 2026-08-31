@@ -45,11 +45,11 @@ description: "Task list for controlled writes -- Release 2"
 
 ## Phase 4: US2 — employee creation (P2)
 
-- [ ] T021 [P] [US2] Test lookup resolution and name rules in `tests/integration/employee-create.test.ts`: unknown departmentId refuses at prepare; single-part name refuses; out-of-enum `gender`/`contractType` values refuse at prepare (spec FR-006, FR-014)
-- [ ] T022 [P] [US2] Test duplicate warning in `tests/integration/employee-duplicates.test.ts`: matching code or exact name → warning; commit without `acknowledgeDuplicates` refuses (spec FR-015)
-- [ ] T023 [US2] Implement the employee write service in `src/core/services/employees-write-service.ts`: live lookup resolution, enum exactness, duplicate pre-read, submit, mandatory re-read handling `id: null` (research W1)
-- [ ] T024 [US2] Implement `jisr_employee_create_prepare` and `_commit` in `src/core/tools/employees/employee-create.ts`
-- [ ] T025 [US2] Register the pair gated on `hr_operations` + `JISR_WRITE_EMPLOYEES` in `src/core/tools/index.ts`
+- [X] T021 [P] [US2] Test lookup resolution and name rules in `tests/integration/employee-create.test.ts`: unknown departmentId refuses at prepare; single-part name refuses; out-of-enum `gender`/`contractType` values refuse at prepare (spec FR-006, FR-014)
+- [X] T022 [P] [US2] Test duplicate warning in `tests/integration/employee-duplicates.test.ts`: matching code or exact name → warning; commit without `acknowledgeDuplicates` refuses (spec FR-015)
+- [X] T023 [US2] Implement the employee write service in `src/core/services/employees-write-service.ts`: live lookup resolution, enum exactness, duplicate pre-read, submit, mandatory re-read handling `id: null` (research W1)
+- [X] T024 [US2] Implement `jisr_employee_create_prepare` and `_commit` in `src/core/tools/employees/employee-create.ts`
+- [X] T025 [US2] Register the pair gated on `hr_operations` + `JISR_WRITE_EMPLOYEES` in `src/core/tools/index.ts`
 
 ## Phase 5: US3 — payroll deletion, dormant (P3)
 

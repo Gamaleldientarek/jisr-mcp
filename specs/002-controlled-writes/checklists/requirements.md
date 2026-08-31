@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,12 +31,13 @@
 
 ## Notes
 
-**Iteration 1 (2026-08-31) — one item failing.** Two `[NEEDS CLARIFICATION]` markers, both
-scope-defining with real consequences either way:
+**Iteration 1 (2026-08-31)** — two markers held for the owner: domain phasing and payroll deletion.
 
-| Marker | Requirement | Why it cannot be defaulted |
+**Iteration 2 (2026-08-31) — all items passing.** Both resolved by the owner:
+
+| Question | Decision | Effect |
 |---|---|---|
-| Phasing of the four write domains | FR-020 | One release of everything versus attendance-first phasing changes the delivery shape, the test burden per release, and how much trust is placed on unproven machinery at once |
-| Payroll transaction deletion | FR-021 | The single most dangerous operation in the documented surface. Including it even disabled means building and testing a destructive payroll path; excluding it keeps the manifest entry unbound as it is today |
+| Phasing | Attendance + employees in this feature; journals and webhooks deferred | US3/US4 replaced; FR-016–019 now govern payroll deletion; journals and webhook admin moved to Out of Scope with manifest entries unchanged |
+| Payroll deletion | **Include, disabled by default** — owner decision accepting the cost ahead of demonstrated need | New US3; FR-016–019 and SC-006 define the dormant destructive path: own flag, two-step with target re-validation, required reason, single-target only |
 
-Resolve both before `/speckit-plan`.
+**Status: ready for `/speckit-plan`.**

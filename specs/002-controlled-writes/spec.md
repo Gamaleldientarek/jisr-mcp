@@ -81,53 +81,36 @@ verify the created record through the read tools, and verify a duplicate attempt
 
 ---
 
-### User Story 3 - Post accounting journals (Priority: P3)
+### User Story 3 - Remove an erroneous payroll transaction (Priority: P3)
 
-A finance person posts payroll journals to the ledger through their assistant. Debits and credits
-must balance, account references must be current, and the preview shows totals per journal line
-before anything is posted. Requires the finance profile, the finance surface, and the write surface
-— three independent gates.
+A payroll specialist discovers a payroll transaction that must not stand — duplicated, or entered
+against the wrong person. With the deletion capability explicitly enabled by the operator (it ships
+off), they identify the exact transaction, see it in full at prepare — amount, type, employee,
+effect — state a reason, and confirm with the server-issued reference. The deletion is audited with
+the reason, and the result reflects Jisr's state after the fact.
 
-**Why this priority**: Financially consequential and finance-gated. It arrives after the write
-machinery is proven on P1 and the lookup-resolution pattern on P2.
+**Why this priority**: The single most dangerous operation in the documented surface, included by
+deliberate decision and shipped dormant. It is built and tested now so that when a real workflow
+needs it, the path is proven — but it activates only by explicit operator opt-in on top of the
+finance profile, the finance surface, and the payroll-write domain.
 
-**Independent Test**: Post a balanced journal in a test window through the full flow; verify via
-`jisr_accounting_journal_get`; verify an unbalanced journal refuses at prepare.
-
-**Acceptance Scenarios**:
-
-1. **Given** journal lines whose debits and credits do not balance, **When** prepare is attempted,
-   **Then** it refuses naming the imbalance, before Jisr is involved.
-2. **Given** a balanced journal, **When** prepared and confirmed, **Then** it is posted, the strong
-   finance audit record is written, and the result is re-read from Jisr.
-3. **Given** a caller with the finance profile but the write surface disabled, **When** they attempt
-   any journal write, **Then** the tool is undiscoverable — absent, not refused.
-
----
-
-### User Story 4 - Administer webhook subscriptions (Priority: P4)
-
-An integration administrator creates, updates, tests, and removes webhook subscriptions. Endpoints
-are validated hard: HTTPS only, no loopback, link-local, private-network, or cloud-metadata targets.
-Deleting a subscription is destructive and uses the two-step flow. Testing a webhook is treated as
-what it is — an outbound network action, not a read.
-
-**Why this priority**: Infrastructure rather than people-data, but SSRF-sensitive: a webhook
-endpoint is an arbitrary URL the server will be asked to have Jisr call. Last of the
-non-destructive group because its risk is of a different kind, needing its own validation layer.
-
-**Independent Test**: Create a subscription to an approved HTTPS endpoint, update it, test it,
-delete it through the two-step flow — and verify every forbidden endpoint class refuses at prepare.
+**Independent Test**: With the flag enabled in a controlled window, delete a test transaction
+through the full two-step flow and verify via the read tools; with the flag at its default, verify
+the tools are undiscoverable to every profile.
 
 **Acceptance Scenarios**:
 
-1. **Given** a webhook target that is loopback, link-local, private-network, cloud-metadata, or
-   plain HTTP, **When** create or update is attempted, **Then** it refuses naming the rejected
-   class, before Jisr is involved.
-2. **Given** a valid subscription, **When** deletion is requested, **Then** the preview shows what
-   will be lost, and only a server-issued confirmation commits it.
-3. **Given** a webhook test request, **When** it runs, **Then** it is authorized and audited as a
-   write, never as a read.
+1. **Given** a default deployment, **When** any caller lists tools under any profile, **Then** no
+   payroll-deletion tool exists to be found.
+2. **Given** the flag enabled and a finance caller, **When** deletion is prepared, **Then** the
+   preview shows the full transaction as Jisr currently holds it, and a reason is required before a
+   reference is issued.
+3. **Given** the transaction changes or disappears between prepare and commit, **When** commit is
+   attempted, **Then** it refuses because the target no longer matches what was previewed.
+4. **Given** a committed deletion, **When** the audit trail is read, **Then** it carries the actor,
+   the target identifiers, the stated reason, and the outcome.
+5. **Given** an attempt to delete a second transaction with the same reference, **When** commit is
+   called, **Then** it refuses — references are single-use and target-bound.
 
 ---
 
@@ -147,6 +130,8 @@ delete it through the two-step flow — and verify every forbidden endpoint clas
   commit, a material change invalidates the preparation.
 - **The model asks to skip the preview.** There is no path that skips it. Preview-then-confirm is
   structural, not a politeness.
+- **A deletion targets an already-deleted transaction.** Prepare re-reads the target; a missing
+  target refuses at prepare with a distinct outcome, never a pretend success.
 - **A write tool's Jisr permission is missing.** Same four-way capability report as reads: the tool
   is undiscoverable, and capabilities explain which gate failed and who can fix it.
 
@@ -200,31 +185,27 @@ delete it through the two-step flow — and verify every forbidden endpoint clas
 - **FR-015**: Employee creation MUST check for apparent duplicates at prepare and surface any match
   as a warning requiring explicit acknowledgment in the confirmation.
 
-### Accounting journals
+### Payroll transaction deletion
 
-- **FR-016**: Journal creation MUST enforce debit/credit balance per journal at prepare and MUST be
-  gated by the finance profile, the finance surface, and the journals write domain together.
-
-### Webhook administration
-
-- **FR-017**: Webhook create and update MUST validate the endpoint: HTTPS only; loopback,
-  link-local, private-network, and cloud-metadata addresses refused; refusal names the rejected
-  class.
-- **FR-018**: Webhook deletion MUST be destructive-classed and two-step. Webhook testing MUST be
-  authorized and audited as a write.
-- **FR-019**: Webhook authentication material supplied at create or update MUST never be echoed
-  back in any preview, result, log, or audit record — consistent with Release 1's rule that stored
-  webhook secrets are never returned.
+- **FR-016**: Payroll transaction deletion MUST ship disabled, behind its own explicit operator
+  flag, in addition to the finance profile, the finance surface, and the payroll write domain. With
+  the flag at its default, the deletion tools are undiscoverable to every profile.
+- **FR-017**: Deletion MUST be destructive-classed and two-step: prepare re-reads the target from
+  Jisr and previews it in full; a stated reason is required; commit re-validates that the target
+  still matches the preview and refuses if it has changed or vanished.
+- **FR-018**: Deletion MUST be single-target only — no batch deletion exists in any form.
+- **FR-019**: The audit record for a deletion MUST carry the actor, target identifiers, stated
+  reason, and outcome, under the strong finance audit marking.
 
 ### Scope
 
-- **FR-020**: The write operations in scope are the 8 recorded in the endpoint manifest.
-  [NEEDS CLARIFICATION: Ship all four write domains in this feature, or phase them — attendance
-  punches first as the proving ground, with employees, journals, and webhooks following as separate
-  releases on the proven machinery?]
-- **FR-021**: Payroll transaction deletion — the highest-risk operation in the documented surface —
-  [NEEDS CLARIFICATION: include it behind a disabled-by-default flag with the full two-step flow,
-  or exclude it from this feature entirely and leave the manifest entry unbound?]
+- **FR-020**: This feature delivers the shared write machinery plus two write domains — attendance
+  punches and employee creation — and the dormant payroll-deletion capability. Accounting journal
+  creation and webhook administration remain recorded in the endpoint manifest as known and
+  unbound, deferred to a later feature on the machinery this one proves.
+- **FR-021**: Payroll transaction deletion is included behind its disabled-by-default flag per
+  FR-016 through FR-019, by explicit owner decision (2026-08-31), accepting the cost of building
+  and maintaining the riskiest path ahead of demonstrated workflow need.
 
 ## Success Criteria *(mandatory)*
 
@@ -239,8 +220,9 @@ delete it through the two-step flow — and verify every forbidden endpoint clas
 - **SC-004**: 100% of committed writes are verified against Jisr's own state via re-read in the
   test window, and 0 report submitted values as outcomes.
 - **SC-005**: Duplicate commits produce 0 duplicate effects across the suite.
-- **SC-006**: 100% of forbidden webhook endpoint classes refuse at prepare, including against
-  bypass attempts (redirects, DNS tricks, mixed-case schemes).
+- **SC-006**: With the deletion flag at its default, payroll-deletion tools are absent for 100% of
+  profiles in 100% of listings; with it enabled, 0 deletions commit without a re-validated target,
+  a stated reason, and a server-issued reference.
 - **SC-007**: Every write, refusal, and ambiguous outcome appears in the audit trail — 0 gaps in a
   replayed session, with 0 sensitive payloads.
 - **SC-008**: An HR operations user corrects a missed punch end-to-end in under 3 minutes of
@@ -250,6 +232,8 @@ delete it through the two-step flow — and verify every forbidden endpoint clas
 
 ## Out of Scope (Deferred)
 
+- **Accounting journal creation and webhook administration** — deferred to a later feature on the
+  machinery this one proves. Their manifest entries remain recorded and unbound.
 - **Batch or bulk writes of any kind** — one target per confirmation, in every domain.
 - **The hosted multi-tenant deployment** — unchanged from feature 001.
 - **Synchronized storage** — writes operate live, exactly as reads do.
@@ -265,8 +249,8 @@ delete it through the two-step flow — and verify every forbidden endpoint clas
   research as the designed fit) is the expected vehicle; where a client cannot support it, the
   prepare/commit tool pair achieves the same flow in two calls.
 - **The AZMX key currently excludes attendance and financial permissions.** Live verification of
-  punch and journal writes requires deliberately widening a key for a controlled test window, then
-  narrowing it back. This is an operational step, not a spec change.
+  punch creation — and of payroll deletion, if ever activated — requires deliberately widening a
+  key for a controlled test window, then narrowing it back. An operational step, not a spec change.
 - **PDPL review gains urgency here.** Release 1 read personal data; this feature creates and alters
   employee records. The review commissioned for Release 1 must cover write processing before any
   production write use.

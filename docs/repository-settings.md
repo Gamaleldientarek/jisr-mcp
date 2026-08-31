@@ -4,7 +4,11 @@ Spec FR-044b. These are applied in the GitHub UI rather than in code, so they
 are recorded here to be reviewable — an unrecorded setting is one nobody
 notices when it changes.
 
-**Status: not applied.** The GitHub repository does not exist yet.
+**Status: repo exists, PRIVATE, at `Gamaleldientarek/jisr-mcp`.** Dependabot
+alerts are on. Branch protection and the remaining security features require the
+repo to be public (or GitHub Pro) and are applied automatically by
+`scripts/go-public.sh` -- run that, not a manual flip, so the repository is never
+public-and-unprotected.
 
 ## Default branch protection
 

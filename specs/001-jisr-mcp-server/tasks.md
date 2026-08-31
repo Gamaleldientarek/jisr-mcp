@@ -268,7 +268,7 @@ separately, inject an unknown upstream field and confirm it is withheld and reco
 ### GitHub version control and release pipeline
 
 - [X] T114 Adopt semantic versioning and a conventional-commit convention, documented in `CONTRIBUTING.md`, with automated `CHANGELOG.md` generation (spec FR-044)
-- [ ] T115 Configure default-branch protection on GitHub — no direct pushes, with build, lint, full test suite, coverage gate, and secret scan required to pass before merge — and record the applied settings in `docs/repository-settings.md` so they are reviewable (spec FR-044b)
+- [X] T115 Configure default-branch protection on GitHub — no direct pushes, with build, lint, full test suite, coverage gate, and secret scan required to pass before merge — and record the applied settings in `docs/repository-settings.md` so they are reviewable (spec FR-044b)
 - [X] T116 [P] Add `.github/CODEOWNERS`, issue templates, and a pull request template under `.github/`
 - [X] T117 Implement the release workflow in `.github/workflows/release.yml`, triggered by a version tag on the default branch, building, testing, publishing to the registry with build provenance, and creating the GitHub Release with generated notes (spec FR-044a)
 - [X] T118 Add the release notes template in `.github/release-template.md` recording, per release, the supported MCP protocol version(s) and the Jisr specification snapshot the build was verified against (spec FR-044)

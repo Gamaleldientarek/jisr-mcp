@@ -21,7 +21,7 @@ export interface LeaveSummaryInput {
   /**
    * Employee codes. Jisr's documentation says "Array of Integers" with the
    * example [1, 2, 3]; the live AZMX tenant uses alphanumeric codes such as
-   * "AZMX117". Strings and numbers are both accepted and passed through as-is.
+   * "EMP0117". Strings and numbers are both accepted and passed through as-is.
    */
   readonly employeeCodes: readonly (string | number)[];
   /**

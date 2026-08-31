@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "MCP server exposing the documented Jisr HR Open API read surface to any MCP client. Unofficial; not affiliated with Jisr.",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "engines": {
     "node": ">=20"
@@ -58,5 +58,13 @@
     "typescript-eslint": "^8.68.0",
     "vitest": "^4.1.11",
     "yaml": "^2.9.0"
+  },
+  "author": "Gamal Eldien (https://github.com/Gamaleldientarek)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gamaleldientarek/jisr-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Gamaleldientarek/jisr-mcp/issues"
   }
 }

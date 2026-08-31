@@ -7,7 +7,7 @@ payroll data. Please treat findings accordingly.
 
 **Do not open a public issue.**
 
-Use [GitHub private vulnerability reporting](https://github.com/OWNER/jisr-mcp/security/advisories/new).
+Use [GitHub private vulnerability reporting](https://github.com/Gamaleldientarek/jisr-mcp/security/advisories/new).
 It requires no email address and keeps the report private until a fix is out.
 
 **What to expect:**

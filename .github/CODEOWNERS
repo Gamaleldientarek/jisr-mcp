@@ -1,17 +1,17 @@
 # Every change is reviewed. These paths carry the security properties, so they
 # are named rather than left to a blanket rule.
 
-*                                    @OWNER
+*                                    @Gamaleldientarek
 
 # Who sees what.
-/src/core/authorization/             @OWNER
+/src/core/authorization/             @Gamaleldientarek
 
 # The mechanism enforcing that no tool reaches an undocumented Jisr operation.
-/src/core/jisr/endpoint-manifest.ts  @OWNER
-/scripts/verify-endpoint-coverage.ts @OWNER
+/src/core/jisr/endpoint-manifest.ts  @Gamaleldientarek
+/scripts/verify-endpoint-coverage.ts @Gamaleldientarek
 
 # If redaction or audit are wrong, nothing else can be trusted.
-/src/observability/                  @OWNER
+/src/observability/                  @Gamaleldientarek
 
 # The governing principles.
-/.specify/memory/constitution.md     @OWNER
+/.specify/memory/constitution.md     @Gamaleldientarek

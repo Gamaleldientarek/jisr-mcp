@@ -42,11 +42,11 @@ describe('no tool accepts a name', () => {
   });
 
   it('takes employee codes for the leave summary in either real-world shape', () => {
-    // Jisr's docs say integers; the live AZMX tenant uses "AZMX117". Both work.
+    // Jisr's docs say integers; the live AZMX tenant uses "EMP0117". Both work.
     const tool = registry().get('jisr_employee_leave_summary_get');
     const schema = tool?.inputShape['employeeCodes'];
     expect(schema?.safeParse([1001, 1002]).success).toBe(true);
-    expect(schema?.safeParse(['AZMX117']).success).toBe(true);
+    expect(schema?.safeParse(['EMP0117']).success).toBe(true);
     expect(schema?.safeParse([]).success).toBe(false);
   });
 });

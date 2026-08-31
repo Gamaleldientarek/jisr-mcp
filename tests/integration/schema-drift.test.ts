@@ -77,20 +77,20 @@ describe('the two line_manager dialects', () => {
   it('normalizes the basic_info dialect { id, name }', () => {
     const parsed = employeeSchema.parse({
       id: '00000000-0000-4000-8000-000000000001',
-      line_manager: { id: 'b2199670-0000-4000-8000-000000000009', name: 'A Manager' },
+      line_manager: { id: '99999999-0000-4000-8000-000000000009', name: 'A Manager' },
     });
     const record = mapEmployees([parsed], allowed).records[0];
-    expect(record?.lineManager?.id).toBe('b2199670-0000-4000-8000-000000000009');
+    expect(record?.lineManager?.id).toBe('99999999-0000-4000-8000-000000000009');
     expect(record?.lineManager?.name).toBe('A Manager');
   });
 
   it('normalizes the list dialect { guid, full_name }', () => {
     const parsed = employeeSchema.parse({
       id: '00000000-0000-4000-8000-000000000001',
-      line_manager: { guid: 'b2199670-0000-4000-8000-000000000009', full_name: 'A Manager' },
+      line_manager: { guid: '99999999-0000-4000-8000-000000000009', full_name: 'A Manager' },
     });
     const record = mapEmployees([parsed], allowed).records[0];
-    expect(record?.lineManager?.id).toBe('b2199670-0000-4000-8000-000000000009');
+    expect(record?.lineManager?.id).toBe('99999999-0000-4000-8000-000000000009');
     expect(record?.lineManager?.name).toBe('A Manager');
   });
 });

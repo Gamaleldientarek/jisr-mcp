@@ -13,15 +13,15 @@ export const leaveSummaryTool: ToolDefinition<{
 }> = {
   name: 'jisr_employee_leave_summary_get',
   title: 'Get annual leave summary',
-  description: `Retrieves leave balances for the given employees: opening balance, used, pending, reserved, year-end balance and unpaid deduction. Takes employee CODES (e.g. "AZMX117"), not UUIDs. Jisr accepts at most ${LEAVE_SUMMARY_MAX_CODES} codes per upstream call; larger requests are split automatically up to ${MAX_RECORDS_PER_INVOCATION}.`,
+  description: `Retrieves leave balances for the given employees: opening balance, used, pending, reserved, year-end balance and unpaid deduction. Takes employee CODES (e.g. "EMP0117"), not UUIDs. Jisr accepts at most ${LEAVE_SUMMARY_MAX_CODES} codes per upstream call; larger requests are split automatically up to ${MAX_RECORDS_PER_INVOCATION}.`,
   inputShape: {
     // Documentation says integers; real tenants use alphanumeric codes such as
-    // "AZMX117". Both are accepted.
+    // "EMP0117". Both are accepted.
     employeeCodes: z
       .array(z.union([z.string(), z.number()]))
       .min(1)
       .max(MAX_RECORDS_PER_INVOCATION)
-      .describe('Employee codes, as returned by jisr_employees_list (e.g. "AZMX117").'),
+      .describe('Employee codes, as returned by jisr_employees_list (e.g. "EMP0117").'),
     // Required by Jisr even though its specification marks it optional.
     leaveType: z.string().describe('Required by Jisr. For example: annual'),
     pageSize: z.number().int().min(1).max(UPSTREAM_MAX_PAGE_SIZE).optional(),

@@ -36,10 +36,23 @@ npm run typecheck && npm run lint && npm test
 npm run verify:coverage
 ```
 
-## The one thing to do next
+## Current state: LIVE and registered
 
-**Get a Jisr API key and run it.** Every one of those 324 tests runs against
-fixtures. The server has never completed an authentication.
+Connected to the AZMX tenant (2026-08-31) and registered in Claude Code at user
+scope as `jisr` via `bin/jisr-mcp-local.sh`, which sources credentials from
+`~/.claude/.secrets/jisr-mcp.env` so they never enter any client config.
+
+Both adapters pass the full end-to-end protocol test against live data:
+
+    set -a; source ~/.claude/.secrets/jisr-mcp.env; set +a
+    npm run build
+    python3 scripts/e2e-protocol-test.py mcp-v1   # 12/12
+    python3 scripts/e2e-protocol-test.py mcp-v2   # 12/12
+
+Working live: employees, basic info, leave summary, all six lookups, the three
+discovery tools, and the manager profile (verified: 5 of 100 records for a
+manager with 4 reports). Attendance is deliberately excluded on the key (clean
+403). Accruals needs a paygroup id, which is finance-gated.
 
 Credentials template, outside the repo: `~/.claude/.secrets/jisr-mcp.env`
 
